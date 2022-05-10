@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/neverdark/vim.css" />
+	</head>
+<style>
+pre,form { margin: 0 }
+pre { display: inline-block; }
+</style>
+	<body class="cf cb">
+		<div class="sfv vn f">
+			<header class="_ f fic">
+				<h1 class="fg">$_TITLE</h1>
+				$MENU
+				<div class="cf15 txl">$COUNTER</div>
+			</header>
+			<pre class="s_f svf oav mn">
+$_POEM
+			</pre>
+			<form action="./poem.cgi?lang=$lang#comments" method="post" class="_ f ps fic">
+				<a href="#comments" class="txl">💬</a>
+				<input autofocus class="fg" name="comment"></input>
+			</form>
+		</div>
+		<pre id="comments" class="mn">
+$_COMMENTS
+		</pre>
+	</body>
+</html>

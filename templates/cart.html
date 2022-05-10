@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/neverdark/vim.css" />
+	</head>
+<style>
+pre { display: inline-block; }
+</style>
+	<body class="cf cb v">
+		<header class="_ f fic">
+			<h1 class="fg">$_TITLE</h1>
+			<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id">💰</a>
+			$MENU
+		</header>
+		<div class="f _ fw">
+			$PRODUCTS
+		</div>
+		<div class="tcv fic v">
+			<h2>$TOTAL€</h2>
+			<form action="/cgi-bin/cart.cgi" method="POST">
+				<input type="hidden" name="action" value="checkout"></input>
+				<input type="hidden" name="lang" value="$lang"></input>
+				<input type="hidden" name="shop_id" value="$shop_id"></input>
+				<button>$_SUBMIT</Button>
+			</form>
+		</div>
+	</body>
+</html>
+
+

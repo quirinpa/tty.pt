@@ -1,0 +1,41 @@
+#!/bin/sh
+
+REMOTE_USER=anonymous
+shop_id=loja_dos_sonhos
+
+post() {
+	echo "$1" | REQUEST_METHOD=POST ROOT=$ROOT REMOTE_USER=$REMOTE_USER $2
+}
+
+post_cart() {
+	post $1 $ROOT/cgi-bin/cart.cgi
+}
+
+get() {
+	QUERY_STRING=$1 REQUEST_METHOD=GET ROOT=$ROOT REMOTE_USER=$REMOTE_USER $2
+}
+
+get_cart() {
+	get $1 $ROOT/cgi-bin/cart.cgi
+}
+
+query_string=lang=$lang\&shop_id=$shop_id
+
+case "$1" in
+	post-cart)
+		query_string=$query_string\&product_id=produto0\&quantity=5
+		post $query_string $ROOT/cgi-bin/cart.cgi
+		;;
+	post-checkout)
+		query_string=$query_string\&action=checkout
+		post $query_string $ROOT/cgi-bin/cart.cgi
+		;;
+	get-cart) get $query_string $ROOT/cgi-bin/cart.cgi ;;
+	get-shop) get $query_string $ROOT/cgi-bin/shop.cgi ;;
+	get-index) get $query_string $ROOT/cgi-bin/index.cgi ;;
+	get-tty) get $query_string $ROOT/cgi-bin/tty.cgi ;;
+	post-tty)
+		query_string=$query_string\&cmd=quota
+		post $query_string $ROOT/cgi-bin/tty.cgi
+		;;
+esac

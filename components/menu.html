@@ -1,0 +1,18 @@
+<style>
+#flag > div { display: none; }
+#flag input[type="checkbox"] { display: none; }
+#flag :checked + div { display: block; }
+</style>
+<div class="_">
+	<a href="/cgi-bin/index.cgi?lang=$lang"><h1>🏠</h1></a>
+	<label id="flag" class="txl rel">
+		$_FLAG_ICON
+		<input type="checkbox" />
+		<div class="abs vn ak al p c0">
+			<a href="$THIS_URL">🇵🇹</a>
+			<a href="${THIS_URL}lang=en">🇺🇸</a>
+			<a href="${THIS_URL}lang=fa_IR">🇮🇷</a>
+			<a href="${THIS_URL}lang=fr_FR">🇫🇷</a>
+		</div>
+	</label>
+</div>

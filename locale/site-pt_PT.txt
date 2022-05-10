@@ -1,0 +1,16 @@
+Register|Registo
+Username|Nome de utilizador
+Password|Palavra-passe
+Repeat password|Repetir palavra-passe
+Submit|Submeter
+Passwords don't match|As palavras-passes não combinam.
+User already exists|O utilizador já existe
+Programmer's poem|O poema do programador
+flag|🇵🇹
+Never Dark|Nunca Sombrio
+Shared Expenses Manager|Gestor de Despesas Partilhadas
+Anonymous|Anónimo
+Shops|Lojas
+loja_dos_sonhos|Loja Dos Sonhos
+misc|Mistos
+Cart|Carrinho

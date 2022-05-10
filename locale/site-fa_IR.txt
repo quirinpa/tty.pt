@@ -1,0 +1,17 @@
+Register|ثبت
+Username|نام کاربری
+Password|کلمه عبور
+Repeat password|تکرار رمز عبور
+Email|پست الکترونیک
+Submit|ارسال
+Passwords don't match|گذرواژه ها مطابقت ندارند
+User already exists|کاربر از قبل وجود دارد
+Programmer's poem|شعر برنامه نویس
+flag|🇮🇷
+Never Dark|هرگز تاریک نمی شود
+Shared Expenses Manager|مدیر هزینه های مشترک
+Anonymous|ناشناس
+Shops|مغازه ها
+loja_dos_sonhos|فروشگاه رویایی
+Cart|سبد خرید
+Terminal|پایانه
