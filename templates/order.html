@@ -10,22 +10,20 @@ pre { display: inline-block; }
 	<body class="cf cb v p">
 		<header class="_ f fic">
 			<h1 class="fg">$_TITLE</h1>
-			<!--
-			<form action="./shops.cgi" method="get" class="_ f ps fic">
-				<input autofocus type="search" name="query"></input>
-				<select name="category" multiple>
-					$SHOP_CATEGORIES
-				</select>
-				<input type="hidden" name="lang" value="$lang"></input>
-				<button class="tl">🔎</button>
-			</form>
-			-->
-			<a class="txl" href="/cgi-bin/cart.cgi?shop_id=$shop_id&lang=$lang">🛒</a>
+			<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id">💰</a>
 			$MENU
 		</header>
 		<div class="f _ fw">
 			$PRODUCTS
 		</div>
+		<div class="tac">
+			<span class="dib p cf0 c$ORDER_STATE_COLOR">
+				$_ORDER_STATE
+			</span>
+		</div>
+		<h2 class="tac">$TOTAL€</h2>
 	</body>
 </html>
+
+
 

@@ -2,8 +2,56 @@ get_product_path() {
 	echo $ROOT/shops/$shop_id/$1
 }
 
+ProductSummary() {
+	cat <<!
+	<h2 class="tar">
+		$product_price€ x $quantity = $QUANTITY_TIMES_COST€
+	</h2>
+!
+}
+
+ProductForm() {
+	cat <<!
+<form action="./cart.cgi" method="post" class="_ f fic">
+	<div class="fg"></div>
+	<h2 class="tar">
+		$product_price€ x
+	</h2>
+	<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
+	<input name="lang" type="hidden" value="$lang"></input>
+	<input name="shop_id" type="hidden" value="$shop_id"></input>
+	<input name="quantity" type="number" min="0" value="$quantity" style="width: 80px"></input>
+	$return_str
+	<h2 class="tar">
+		= $QUANTITY_TIMES_COST€
+	</h2>
+	<button class="tl">🛒</button>
+</form>
+!
+}
+
 Product() {
-	PRODUCT_ID=$1
+	TEMP="`getopt r: $*`"
+	if [ $? -ne 0 ]; then
+		exit 1;
+	fi
+	set -- $TEMP
+	while [ $# -ne 0 ]; do
+		case "$1" in
+			-r)
+				return_str="<input name=\"return\" type=\"hidden\" value=\"$2\"></input>"
+				shift 2
+				;;
+			--)
+				shift
+				break;
+				;;
+		esac
+	done
+
+	CART_PATH=$1
+	PRODUCT_ID=$2
+
 	PRODUCT_IMAGE="/img/$shop_id/$PRODUCT_ID.png"
 	if [[ ! -f "$ROOT?htdocs$PRODUCT_IMAGE" ]]; then
 		PRODUCT_IMAGE="/img/no-image.png"
@@ -12,17 +60,16 @@ Product() {
 
 	PRODUCT_TITLE="`cat $PRODUCT_PATH/title`"
 	PRODUCT_DESCRIPTION="`cat $PRODUCT_PATH/description`"
-	PRODUCT_PRICE="`cat $PRODUCT_PATH/price`"
-
-	USER_SHOP_PATH=$ROOT/users/$REMOTE_USER/shops/$shop_id
-	CART_PATH=$USER_SHOP_PATH/cart
+	product_price="`cat $PRODUCT_PATH/price`"
 
 	quantity="`cat $CART_PATH | grep $PRODUCT_ID | awk '{print $2}' || echo 0`"
 
-	QUANTITY_TIMES_COST="`echo "$quantity * $PRODUCT_PRICE" | bc -l`" 
+	QUANTITY_TIMES_COST="`echo "$quantity * $product_price" | bc -l`" 
 
-	if [[ $# -ge 2 ]]; then
-		return_str='<input name="return" type="hidden" value="y"></input>'
+	if [[ -z "$return_str" ]]; then
+		summary="`ProductSummary`"
+	else
+		summary="`ProductForm`"
 	fi
 
 	cat <<!
@@ -35,25 +82,29 @@ Product() {
 		<p class="fg">
 			$PRODUCT_DESCRIPTION
 		</p>
-
-		<form action="./cart.cgi" method="post" class="_ f fic">
-			<div class="fg"></div>
-			<h2 class="tar">
-				$PRODUCT_PRICE€ x
-			</h2>
-			<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
-			<input name="lang" type="hidden" value="$lang"></input>
-			<input name="shop_id" type="hidden" value="$shop_id"></input>
-			$return_str
-			<input name="quantity" type="number" min="0" value="$quantity" style="width: 80px"></input>
-			<h2 class="tar">
-				= $QUANTITY_TIMES_COST€
-			</h2>
-			<button class="tl">🛒</button>
-		</form>
+		$summary
 	</div>
 </div>
 !
 }
 
+process_cart() {
+	cat $1 | while read product_id quantity; do
+		PRODUCT_PATH="`get_product_path $product_id`"
+		PRODUCT_PRICE="`cat $PRODUCT_PATH/price`"
+		echo $quantity \* $PRODUCT_PRICE
+	done | sum_lines_exp
+}
 
+ProductsFromCart() {
+	cat $1 | while read product_id quantity; do
+		Product $1 $product_id
+	done
+}
+
+SHOP_PATH=$ROOT/shops/$shop_id
+USER_SHOPS_PATH=$ROOT/users/$REMOTE_USER/shops
+USER_SHOP_PATH=$USER_SHOPS_PATH/$shop_id
+CART_PATH=$USER_SHOP_PATH/cart
+
+export shop_id

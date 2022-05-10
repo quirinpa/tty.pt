@@ -14,3 +14,5 @@ Shops|Lojas
 loja_dos_sonhos|Loja Dos Sonhos
 misc|Mistos
 Cart|Carrinho
+Order|Encomenda
+Pending payment|Pagamento pendente

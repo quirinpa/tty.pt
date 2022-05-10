@@ -6,10 +6,6 @@ noslash() {
 	sed -e 's:/:\\/:g' $1
 }
 
-nl2br() {
-	sed ':a;N;$!ba;s/\n/<br>/g'
-}
-
 COMMENTS_PATH="$ROOT/public/comments-$ILANG.txt"
 
 case "$REQUEST_METHOD" in
@@ -29,8 +25,8 @@ case "$REQUEST_METHOD" in
 			POEM_PATH="$ROOT/htdocs/1-$lang.txt"
 		fi
 
-		export _POEM="`noslash $POEM_PATH | nl2br`"
-		export _COMMENTS="`noslash $COMMENTS_PATH | revlines | nl2br | sed 's/<br>//'`"
+		export _POEM="`cat $POEM_PATH`"
+		export _COMMENTS="`noslash $COMMENTS_PATH | revlines`"
 
 		COUNTER_PATH=$ROOT/public/counter-$lang.txt
 		export COUNTER="`counter_inc $COUNTER_PATH`"

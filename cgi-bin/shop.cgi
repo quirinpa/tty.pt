@@ -27,13 +27,10 @@ case "$REQUEST_METHOD" in
 		echo 'Content-Type: text/html; charset=utf-8'
 		echo
 
-		SHOP_DIR="$ROOT/shops/$shop_id"
-
-		export shop_id
 		export _TITLE="`_ $shop_id`"
 
-		export SHOP_CATEGORIES="`lsshown $SHOP_DIR/.categories/ | while read line; do Category $line; done`"
-		export PRODUCTS="`lsshown $SHOP_DIR/ | while read line; do Product $line "y"; done`"
+		export SHOP_CATEGORIES="`lsshown $SHOP_PATH/.categories/ | while read line; do Category $line; done`"
+		export PRODUCTS="`lsshown $SHOP_PATH/ | while read line; do Product -rshop $CART_PATH $line; done`"
 		export MENU="`Menu ./shop.cgi?shop_id=$shop_id\&`"
 		cat $ROOT/templates/shop.html | envsubst
 		;;

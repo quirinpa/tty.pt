@@ -2,6 +2,7 @@
 
 REMOTE_USER=anonymous
 shop_id=loja_dos_sonhos
+order_id=1
 
 post() {
 	echo "$1" | REQUEST_METHOD=POST ROOT=$ROOT REMOTE_USER=$REMOTE_USER $2
@@ -19,7 +20,7 @@ get_cart() {
 	get $1 $ROOT/cgi-bin/cart.cgi
 }
 
-query_string=lang=$lang\&shop_id=$shop_id
+query_string=lang=$lang\&shop_id=$shop_id\&order_id=$order_id
 
 case "$1" in
 	post-cart)
@@ -38,4 +39,8 @@ case "$1" in
 		query_string=$query_string\&cmd=quota
 		post $query_string $ROOT/cgi-bin/tty.cgi
 		;;
+	post-order)
+		post $query_string $ROOT/cgi-bin/order.cgi
+		;;
+	get-order) get $query_string $ROOT/cgi-bin/order.cgi ;;
 esac

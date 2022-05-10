@@ -1,5 +1,7 @@
 #!/bin/ksh
 
+umask 002
+
 urldecode() {
 	echo $@ | sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
 }
@@ -62,6 +64,16 @@ counter_inc() {
 
 	((COUNTER = COUNTER + 1))
 	echo $COUNTER
+}
+
+sum_lines_exp() {
+	echo -n '('
+	sed 's/$/ +/' | tr '\n' ' ' | sed 's/ + $//'
+	echo -n ')'
+}
+
+revlines() {
+	rev | tr '\n' '~' | rev | tr '~' '\n'
 }
 
 ## COMPONENTS

@@ -7,7 +7,7 @@
 <style>
 pre { display: inline-block; }
 </style>
-	<body class="cf cb v">
+	<body class="cf cb v p">
 		<header class="_ f fic">
 			<h1 class="fg">$_TITLE</h1>
 			<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id">💰</a>
@@ -18,8 +18,7 @@ pre { display: inline-block; }
 		</div>
 		<div class="tcv fic v">
 			<h2>$TOTAL€</h2>
-			<form action="/cgi-bin/cart.cgi" method="POST">
-				<input type="hidden" name="action" value="checkout"></input>
+			<form action="/cgi-bin/order.cgi" method="POST">
 				<input type="hidden" name="lang" value="$lang"></input>
 				<input type="hidden" name="shop_id" value="$shop_id"></input>
 				<button>$_SUBMIT</Button>
