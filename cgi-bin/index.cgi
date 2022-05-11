@@ -8,9 +8,8 @@ case "$REQUEST_METHOD" in
 		echo 'Content-Type: text/html; charset=utf-8'
 		echo
 
+		export LOGINLOGOUT="`LoginLogout`"
 		export _POEM="`_ "Programmer's poem"`"
-		export _ANONYMOUS="`_ "Anonymous"`"
-		export _REGISTER="`_ "Register"`"
 		export _NEVERDARK="`_ "Never Dark"`"
 		export _SHOPS="`_ "Shops"`"
 		export _SEM="`_ "Shared Expenses Manager"`"

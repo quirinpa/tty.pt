@@ -4,7 +4,7 @@
 
 error() {
 	echo 'Status: 303 See Other'
-	echo "Location: register.cgi?error=$1"
+	echo "Location: register.cgi?error=$1&lang=$1"
 	echo
 }
 
@@ -16,7 +16,7 @@ case "$REQUEST_METHOD" in
 			else
 				echo `urldecode $username`:`urldecode $password` | htpasswd -I $ROOT/.htpasswd
 				echo 'Status: 303 See Other'
-				echo "Location: https://$username:$password@tty.pt/cgi-bin/poem.cgi"
+				echo "Location: https://$username:$password@tty.pt/cgi-bin/user.cgi"
 				echo
 			fi
 		else

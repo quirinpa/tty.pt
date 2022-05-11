@@ -15,3 +15,4 @@ Shops|مغازه ها
 loja_dos_sonhos|فروشگاه رویایی
 Cart|سبد خرید
 Terminal|پایانه
+Login|وارد شدن

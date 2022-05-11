@@ -2,41 +2,7 @@
 
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
-
-OrderStateVendor() {
-	cat <<!
-<form action="/cgi-bin/order.cgi" method="POST" class="tac">
-	<input type="hidden" name="lang" value="$lang"></input>
-	<input type="hidden" name="shop_id" value="$shop_id"></input>
-	<input type="hidden" name="order_id" value="$order_id"></input>
-	<button class="dib p cf0 c$ORDER_STATE_COLOR">
-		$_ORDER_STATE
-	</button>
-</form>
-!
-}
-
-OrderStateUser() {
-	cat <<!
-<div class="tac">
-	<span class="dib p cf0 c$ORDER_STATE_COLOR">
-		$_ORDER_STATE
-	</span>
-</div>
-!
-}
-
-OrderState() {
-	ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
-	_ORDER_STATE="`_ "$ORDER_STATE_TEXT"`"
-	ORDER_STATE_COLOR="`order_state_color "$ORDER_STATE_TEXT"`"
-
-	if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
-		OrderStateVendor
-	else
-		OrderStateUser
-	fi
-}
+. $ROOT/lib/order.sh
 
 case "$REQUEST_METHOD" in
 	POST)
@@ -58,7 +24,7 @@ case "$REQUEST_METHOD" in
 
 			cat $CART_PATH > $ORDER_PATH/raw
 			echo $REMOTE_USER > $ORDER_PATH/owner
-			echo Pending payment > $ORDER_PATH/state
+			echo Pending_payment > $ORDER_PATH/state
 
 			rm $CART_PATH # TODO also remove unneeded directories?
 
@@ -66,7 +32,7 @@ case "$REQUEST_METHOD" in
 			echo "Location: /cgi-bin/order.cgi?lang=${lang}&shop_id=${shop_id}&order_id=${ORDER_ID}"
 			echo
 		else
-			if [[ -z "$shop_id" ]] || [[ -z "$order_id" ]]; then
+			if [[ -z "$shop_id" ]]; then
 				echo 'Status: 400 Bad Request'
 				echo
 				exit 1
@@ -83,20 +49,28 @@ case "$REQUEST_METHOD" in
 
 			ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
 			case "$ORDER_STATE_TEXT" in
-				Pending\ payment)
-					ORDER_STATE_TEXT=Pending\ shipment
+				Pending_payment)
+					ORDER_STATE_TEXT=Pending_shipment
 					;;
-				Pending\ shipment)
+				Pending_shipment)
 					ORDER_STATE_TEXT=Shipped
 					;;
 				Shipped)
+					ORDER_STATE_TEXT=Delivered
 					;;
 			esac
 
 			echo $ORDER_STATE_TEXT > $ORDER_PATH/state
 
 			echo 'Status: 303 See Other'
-			echo "Location: /cgi-bin/order.cgi?lang=${lang}&shop_id=${shop_id}&order_id=${order_id}"
+			case "$return" in
+				order)
+					echo "Location: /cgi-bin/order.cgi?lang=${lang}&shop_id=${shop_id}&order_id=${order_id}"
+					;;
+				orders)
+					echo "Location: /cgi-bin/orders.cgi?lang=${lang}&shop_id=${shop_id}"
+					;;
+			esac
 			echo
 		fi
 
@@ -134,7 +108,8 @@ case "$REQUEST_METHOD" in
 		export TOTAL="`echo "$TOTAL_EXP" | bc -l`"
 		export PRODUCTS="`ProductsFromCart  $ORDER_PATH/raw`"
 		export MENU="`Menu ./order.cgi?shop_id=$shop_id\&`"
-		export ORDER_STATE="`OrderState`"
+		ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
+		export ORDER_STATE="`OrderState -rorder "$ORDER_STATE_TEXT" $order_id`"
 		cat $ROOT/templates/order.html | envsubst
 		;;
 	*)

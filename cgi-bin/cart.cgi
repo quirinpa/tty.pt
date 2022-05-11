@@ -12,7 +12,7 @@ Contents() {
 	TOTAL_CART_EXP="`process_cart $CART_PATH`"
 	TOTAL="`echo "$TOTAL_CART_EXP" | bc -l`"
 	_SUBMIT="`_ Submit`"
-	PRODUCTS="`ProductsFromCart $CART_PATH`"
+	PRODUCTS="`ProductsFromCart -rcart $CART_PATH`"
 
 	cat <<!
 <div class="f _ fw">

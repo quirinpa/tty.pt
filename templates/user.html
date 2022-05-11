@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/neverdark/vim.css" />
+	</head>
+<style>
+pre { display: inline-block; }
+</style>
+	<body class="cf cb f vn fcc fic sfv v">
+		$MENU
+
+		<h1 class="tac">$_TITLE</h1>
+
+		<div class="txl">$_WELCOME</div>
+
+		$LOGINLOGOUT
+
+		<form method="POST" class="v">
+			<input type="hidden" name="lang" value="$lang"></input>
+			<p>
+				$_CHANGE_SHIPPING_ADDRESS
+			</p>
+			<label>
+				$_ADDRESS_LINE_1
+				<input type="text" name="address_line_1" value="$address_line_1"></input>
+			</label>
+			<label>
+				$_ADDRESS_LINE_2
+				<input type="text" name="address_line_2" value="$address_line_2"></input>
+			</label>
+			<label>
+				$_ZIP_CODE
+				<input id="zip" name="zip" type="text" value="$zip">
+
+			</label>
+			<button>$_SUBMIT</button>
+		</form>
+	</body>
+</html>
+
+

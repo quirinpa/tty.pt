@@ -2,6 +2,7 @@
 
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
+. $ROOT/lib/order.sh
 
 Order() {
 	ORDER_PATH=$SHOP_PATH/.orders/$1
@@ -9,16 +10,16 @@ Order() {
 	TOTAL_EXP="`process_cart $ORDER_PATH/raw`"
 	TOTAL="`echo "$TOTAL_EXP" | bc -l`"
 	ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
-	_ORDER_STATE="`_ "$ORDER_STATE_TEXT"`"
-	ORDER_STATE_COLOR="`order_state_color "$ORDER_STATE_TEXT"`"
+	ORDER_STATE="`OrderState -rorders "$ORDER_STATE_TEXT" $1`"
 
 	cat <<!
 <a href="/cgi-bin/order.cgi?lang=$lang&shop_id=$shop_id&order_id=$1" class="b0 p _ f fic">
-	<span class="txl fg">
+	<span class="fg">
 		$_ORDER #$1 - $ORDER_OWNER $TOTAL€
 	</span>
 
-	<span class="dib ps cf0 c$ORDER_STATE_COLOR">
+	$ORDER_STATE
+	<span class="dib ps c$ORDER_STATE_COLOR">
 		$_ORDER_STATE
 	</span>
 </a>

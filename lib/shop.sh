@@ -73,8 +73,8 @@ Product() {
 	fi
 
 	cat <<!
-<div class="f fw _ b0 s_f p">
-	<img height="180" width="256" src="$PRODUCT_IMAGE" />
+<div class="f fw _ b0 s_f p fic">
+	<img height="128" class="ofc" src="$PRODUCT_IMAGE" />
 	<div class="f v fg">
 		<h1><a href="/cgi-bin/product.cgi?lang=$lang&product_id=$PRODUCT_ID">
 			$PRODUCT_TITLE
@@ -97,27 +97,30 @@ process_cart() {
 }
 
 ProductsFromCart() {
+	TEMP="`getopt r: $*`"
+	if [ $? -ne 0 ]; then
+		exit 1;
+	fi
+	set -- $TEMP
+	while [ $# -ne 0 ]; do
+		case "$1" in
+			-r)
+				ret=$1$2
+				shift 2
+				;;
+			--)
+				shift
+				break;
+				;;
+		esac
+	done
+
+
 	cat $1 | while read product_id quantity; do
-		Product $1 $product_id
+		Product $ret $1 $product_id
 	done
 }
 
-order_state_color() {
-	case "$1" in
-		Pending\ payment)
-			echo 11
-			;;
-		Pending\ shipment)
-			echo 9
-			;;
-		Shipped)
-			echo 10
-			;;
-		#Delivered)
-			#ORDER_STATE_COLOR=9
-			#;;
-	esac
-}
 SHOP_PATH=$ROOT/shops/$shop_id
 USER_SHOPS_PATH=$ROOT/users/$REMOTE_USER/shops
 USER_SHOP_PATH=$USER_SHOPS_PATH/$shop_id

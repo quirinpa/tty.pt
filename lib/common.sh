@@ -70,8 +70,22 @@ revlines() {
 	rev | tr '\n' '~' | rev | tr '~' '\n'
 }
 
+LoginLogout() {
+	_LOGINLOGOUT="`_ "Login / Logout"`"
+	cat <<!
+<div class="tac txl">
+	<a href="/cgi-bin/login.cgi" class="txl">$_LOGINLOGOUT 🔑</a>
+</div>
+!
+}
+
 ## COMPONENTS
 Menu() {
+	if [[ ! -z "$REMOTE_USER" ]]; then
+		USER_NAME="<span class=\"t\">$REMOTE_USER</span>"
+		USER_ICON="<a class=\"txl f _ fic\" href=\"/cgi-bin/user.cgi?lang=$lang\"><span>🔑 </span><span> $USER_NAME</span></a>"
+	fi
+	export USER_ICON
 	export _FLAG_ICON="`_ flag`"
 	export THIS_URL="$1"
 	cat $ROOT/components/menu.html | envsubst

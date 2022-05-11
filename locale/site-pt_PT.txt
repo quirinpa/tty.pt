@@ -19,4 +19,8 @@ Orders|Encomedas
 Pending payment|Pagamento pendente
 Pending shipment|Envio pendente
 Shipped|Enviado
+Delivered|Entregue
 Empty|Vazio
+User|Utilizador
+change_shipping_address|Mudar o endereço de entrega
+Welcome|Bem-vindo

@@ -35,4 +35,5 @@ case "$1" in
 		post $query_string $ROOT/cgi-bin/order.cgi
 		;;
 	get-order) get $query_string $ROOT/cgi-bin/order.cgi ;;
+	get-orders) get $query_string $ROOT/cgi-bin/orders.cgi ;;
 esac
