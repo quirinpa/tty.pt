@@ -15,4 +15,8 @@ loja_dos_sonhos|Loja Dos Sonhos
 misc|Mistos
 Cart|Carrinho
 Order|Encomenda
+Orders|Encomedas
 Pending payment|Pagamento pendente
+Pending shipment|Envio pendente
+Shipped|Enviado
+Empty|Vazio

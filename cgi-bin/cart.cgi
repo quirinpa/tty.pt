@@ -3,6 +3,32 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
 
+EmptyContents() {
+	_EMPTY="`_ "Empty"`"
+	echo "<div class=\"txl tac\">$_EMPTY</div>"
+}
+
+Contents() {
+	TOTAL_CART_EXP="`process_cart $CART_PATH`"
+	TOTAL="`echo "$TOTAL_CART_EXP" | bc -l`"
+	_SUBMIT="`_ Submit`"
+	PRODUCTS="`ProductsFromCart $CART_PATH`"
+
+	cat <<!
+<div class="f _ fw">
+	$PRODUCTS
+</div>
+<div class="tcv fic v">
+	<h2>$TOTAL€</h2>
+	<form action="/cgi-bin/order.cgi" method="POST">
+		<input type="hidden" name="lang" value="$lang"></input>
+		<input type="hidden" name="shop_id" value="$shop_id"></input>
+		<button>$_SUBMIT</Button>
+	</form>
+</div>
+!
+}
+
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$shop_id" ]] || [[ $quantity -lt 0 ]]; then
@@ -46,17 +72,19 @@ case "$REQUEST_METHOD" in
 		echo 'Content-Type: text/html; charset=utf-8'
 		echo
 
-		TOTAL_CART_EXP="`process_cart $CART_PATH`"
-
 		export shop_id
+
+		if [[ -f "$CART_PATH" ]]; then
+			CONTENTS="`Contents`"
+		else
+			CONTENTS="`EmptyContents`"
+		fi
+		export CONTENTS
 
 		export _TITLE="`_ $shop_id` - `_ Cart`"
 
 		# ignore the possible error
-		export _SUBMIT="`_ Submit`"
 
-		export TOTAL="`echo "$TOTAL_CART_EXP" | bc -l`"
-		export PRODUCTS="`ProductsFromCart $CART_PATH`"
 		export MENU="`Menu ./cart.cgi?shop_id=$shop_id\&`"
 		cat $ROOT/templates/cart.html | envsubst
 		;;

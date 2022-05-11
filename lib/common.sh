@@ -11,7 +11,7 @@ url2vars() {
 }
 
 case "$REQUEST_METHOD" in
-	POST)
+	PUT|POST)
 		read line1
 		url2vars $line1
 		;;
@@ -55,15 +55,9 @@ _() {
 # }
 
 counter_inc() {
-	typeset -LZ COUNTER
-	if [[ -f $1 ]]; then
-		COUNTER="`cat $1`"
-	else
-		COUNTER=0
-	fi
-
-	((COUNTER = COUNTER + 1))
-	echo $COUNTER
+	current="`[[ -f $1 ]] && cat $1 || echo 0`"
+	next="`echo $current + 1 | bc`"
+	echo $next | tee $1
 }
 
 sum_lines_exp() {

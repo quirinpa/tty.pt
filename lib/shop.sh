@@ -62,7 +62,7 @@ Product() {
 	PRODUCT_DESCRIPTION="`cat $PRODUCT_PATH/description`"
 	product_price="`cat $PRODUCT_PATH/price`"
 
-	quantity="`cat $CART_PATH | grep $PRODUCT_ID | awk '{print $2}' || echo 0`"
+	quantity="`[[ -f $CART_PATH ]] && cat $CART_PATH | grep $PRODUCT_ID | awk '{print $2}' || echo 0`"
 
 	QUANTITY_TIMES_COST="`echo "$quantity * $product_price" | bc -l`" 
 
@@ -102,6 +102,22 @@ ProductsFromCart() {
 	done
 }
 
+order_state_color() {
+	case "$1" in
+		Pending\ payment)
+			echo 11
+			;;
+		Pending\ shipment)
+			echo 9
+			;;
+		Shipped)
+			echo 10
+			;;
+		#Delivered)
+			#ORDER_STATE_COLOR=9
+			#;;
+	esac
+}
 SHOP_PATH=$ROOT/shops/$shop_id
 USER_SHOPS_PATH=$ROOT/users/$REMOTE_USER/shops
 USER_SHOP_PATH=$USER_SHOPS_PATH/$shop_id

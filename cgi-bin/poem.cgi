@@ -30,7 +30,6 @@ case "$REQUEST_METHOD" in
 
 		COUNTER_PATH=$ROOT/public/counter-$lang.txt
 		export COUNTER="`counter_inc $COUNTER_PATH`"
-		echo $COUNTER > $COUNTER_PATH
 
 		export _TITLE="`_ "Programmer's poem"`"
 		export _FLAG_ICON="`_ flag`"
