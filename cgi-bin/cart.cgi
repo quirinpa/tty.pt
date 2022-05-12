@@ -15,7 +15,7 @@ Contents() {
 	PRODUCTS="`ProductsFromCart -rcart $CART_PATH`"
 
 	cat <<!
-<div class="f _ fw">
+<div class="v">
 	$PRODUCTS
 </div>
 <div class="tcv fic v">

@@ -16,8 +16,8 @@ misc|Mistos
 Cart|Carrinho
 Order|Encomenda
 Orders|Encomedas
-Pending payment|Pagamento pendente
-Pending shipment|Envio pendente
+Pending_payment|Pagamento pendente
+Pending_shipment|Envio pendente
 Shipped|Enviado
 Delivered|Entregue
 Empty|Vazio

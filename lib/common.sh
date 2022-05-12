@@ -11,9 +11,19 @@ url2vars() {
 }
 
 case "$REQUEST_METHOD" in
-	PUT|POST)
-		read line1
-		url2vars $line1
+	POST)
+		case "$CONTENT_TYPE" in
+			multipart/form-data*)
+				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
+
+				mpfd "$boundary"
+				lang="`cat $ROOT/tmp/mpfd/lang`"
+				;;
+			*)
+				read line1
+				url2vars $line1
+				;;
+		esac
 		;;
 	GET)
 		url2vars $QUERY_STRING
@@ -22,7 +32,7 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
-url2vars $QUERY_STRING
+export lang
 export TEXTDOMAIN=site
 export TEXTDOMAINDIR=$ROOT/usr/share/locale
 export LANG=$lang
@@ -90,5 +100,3 @@ Menu() {
 	export THIS_URL="$1"
 	cat $ROOT/components/menu.html | envsubst
 }
-
-export lang

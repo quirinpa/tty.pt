@@ -1,6 +1,6 @@
 #!/bin/sh
 
-REMOTE_USER=isabel
+REMOTE_USER=quirinpa4
 shop_id=loja_dos_sonhos
 order_id=9
 
@@ -36,4 +36,9 @@ case "$1" in
 		;;
 	get-order) get $query_string $ROOT/cgi-bin/order.cgi ;;
 	get-orders) get $query_string $ROOT/cgi-bin/orders.cgi ;;
+	get-image-add) get $query_string $ROOT/cgi-bin/image-add.cgi ;;
+	post-image-add)
+		content="`cat $ROOT/image-add-content.txt`"
+		post "$content" $ROOT/cgi-bin/image-add.cgi
+		;;
 esac

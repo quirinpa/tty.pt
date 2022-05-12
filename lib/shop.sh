@@ -52,12 +52,12 @@ Product() {
 	CART_PATH=$1
 	PRODUCT_ID=$2
 
-	PRODUCT_IMAGE="/img/$shop_id/$PRODUCT_ID.png"
-	if [[ ! -f "$ROOT?htdocs$PRODUCT_IMAGE" ]]; then
-		PRODUCT_IMAGE="/img/no-image.png"
-	fi
 	PRODUCT_PATH="`get_product_path $PRODUCT_ID`"
 
+	PRODUCT_IMAGE="`cat $PRODUCT_PATH/image`"
+	if [[ -z "$PRODUCT_IMAGE" ]]; then
+		PRODUCT_IMAGE=/img/no-image.png
+	fi
 	PRODUCT_TITLE="`cat $PRODUCT_PATH/title`"
 	PRODUCT_DESCRIPTION="`cat $PRODUCT_PATH/description`"
 	product_price="`cat $PRODUCT_PATH/price`"
@@ -73,7 +73,7 @@ Product() {
 	fi
 
 	cat <<!
-<div class="f fw _ b0 s_f p fic">
+<div class="f _ b0 p fic">
 	<img height="128" class="ofc" src="$PRODUCT_IMAGE" />
 	<div class="f v fg">
 		<h1><a href="/cgi-bin/product.cgi?lang=$lang&product_id=$PRODUCT_ID">

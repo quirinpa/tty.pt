@@ -31,6 +31,11 @@ case "$REQUEST_METHOD" in
 
 		export SHOP_CATEGORIES="`lsshown $SHOP_PATH/.categories/ | while read line; do Category $line; done`"
 		export PRODUCTS="`lsshown $SHOP_PATH/ | while read line; do Product -rshop $CART_PATH $line; done`"
+		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+		if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
+			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"txl round c0 ps tdn ch00\" href=\"/cgi-bin/product-add.cgi?lang=$lang&shop_id=$shop_id\">+</a></div>"
+		fi
+		export ADD_PRODUCT_BUTTON
 		export MENU="`Menu ./shop.cgi?shop_id=$shop_id\&`"
 		cat $ROOT/templates/shop.html | envsubst
 		;;
@@ -39,4 +44,3 @@ case "$REQUEST_METHOD" in
 		echo
 		;;
 esac
-

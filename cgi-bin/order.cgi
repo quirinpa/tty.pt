@@ -58,6 +58,13 @@ case "$REQUEST_METHOD" in
 				Shipped)
 					ORDER_STATE_TEXT=Delivered
 					;;
+				Delivered)
+					rm -rf $ORDER_PATH
+					echo 'Status: 303 See Other'
+					echo "Location: /cgi-bin/orders.cgi?lang=${lang}&shop_id=${shop_id}"
+					echo
+					exit
+					;;
 			esac
 
 			echo $ORDER_STATE_TEXT > $ORDER_PATH/state
