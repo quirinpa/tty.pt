@@ -1,6 +1,11 @@
-subdirs := htdocs
+subdirs := htdocs src
 
-$(subdirs):
+all: ${subdirs}
+
+src:
+	${MAKE} -C $@ install
+
+${subdirs}:
 	${MAKE} -C $@
 
-.PHONY: ${subdirs}
+.PHONY: ${subdirs} all
