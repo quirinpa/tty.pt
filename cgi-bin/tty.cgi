@@ -28,7 +28,8 @@ comments_df() {
 }
 
 mydf() {
-	df_dir /users/$REMOTE_USER
+	df_dir users/$REMOTE_USER
+	df_dir htdocs/img/$REMOTE_USER
 	comments_df pt_PT
 	comments_df en_US
 	comments_df fa_IR

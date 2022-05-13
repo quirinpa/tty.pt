@@ -16,11 +16,41 @@ Category() {
 }
 
 case "$REQUEST_METHOD" in
+	POST)
+		if [[ -z "$shop_id" ]]; then
+			echo 'Status: 400 Bad Request'
+			echo
+			exit
+		fi
+
+		case "$action" in
+			delete)
+				if [[ -z "$product_id" ]]; then
+					echo 'Status: 400 Bad Request'
+					echo
+					exit
+				fi
+
+				rm -rf $SHOP_PATH/$product_id
+
+				echo 'Status: 303 See Other'
+				echo "Location: /cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id"
+				echo
+
+				;;
+			*)
+				echo 'Status 400 Bad Request'
+				echo
+				exit
+				;;
+		esac
+
+		;;
 	GET)
 		if [[ -z "$shop_id" ]]; then
 			echo 'Status: 400 Bad Request'
 			echo
-			exit;
+			exit
 		fi
 
 		echo 'Status: 200 OK'

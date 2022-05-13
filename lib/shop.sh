@@ -12,20 +12,35 @@ ProductSummary() {
 
 ProductForm() {
 	cat <<!
-<form action="./cart.cgi" method="post" class="_ f fic">
+<div class="_ f fic">
 	<div class="fg"></div>
-	<h2 class="tar">
-		$product_price€ x
-	</h2>
+	<form action="./cart.cgi" method="post" class="_ f fic">
+		<h2 class="tar">
+			$product_price€ x
+		</h2>
+		<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
+		<input name="lang" type="hidden" value="$lang"></input>
+		<input name="shop_id" type="hidden" value="$shop_id"></input>
+		<input name="quantity" type="number" min="0" value="$quantity" style="width: 80px"></input>
+		$return_str
+		<h2 class="tar">
+			= $QUANTITY_TIMES_COST€
+		</h2>
+		<button class="tl">🛒</button>
+	</form>
+	$delete_form
+</div>
+!
+}
+
+DeleteProductForm() {
+	cat <<!
+<form action="./shop.cgi" method="post">
+	<input name="action" type="hidden" value="delete"></input>
 	<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 	<input name="lang" type="hidden" value="$lang"></input>
 	<input name="shop_id" type="hidden" value="$shop_id"></input>
-	<input name="quantity" type="number" min="0" value="$quantity" style="width: 80px"></input>
-	$return_str
-	<h2 class="tar">
-		= $QUANTITY_TIMES_COST€
-	</h2>
-	<button class="tl">🛒</button>
+	<button class="tl">X</button>
 </form>
 !
 }
@@ -40,6 +55,10 @@ Product() {
 		case "$1" in
 			-r)
 				return_str="<input name=\"return\" type=\"hidden\" value=\"$2\"></input>"
+				if [[ "$2" == "shop" ]]; then
+					delete_form=y
+				fi
+
 				shift 2
 				;;
 			--)
@@ -51,6 +70,10 @@ Product() {
 
 	CART_PATH=$1
 	PRODUCT_ID=$2
+
+	if [[ ! -z "$delete_form" ]]; then
+		delete_form="`DeleteProductForm`"
+	fi
 
 	PRODUCT_PATH="`get_product_path $PRODUCT_ID`"
 
@@ -76,9 +99,9 @@ Product() {
 <div class="f _ b0 p fic">
 	<img height="128" class="ofc" src="$PRODUCT_IMAGE" />
 	<div class="f v fg">
-		<h1><a href="/cgi-bin/product.cgi?lang=$lang&product_id=$PRODUCT_ID">
+		<a class="txl" href="/cgi-bin/product.cgi?lang=$lang&product_id=$PRODUCT_ID">
 			$PRODUCT_TITLE
-		</a></h1>
+		</a>
 		<p class="fg">
 			$PRODUCT_DESCRIPTION
 		</p>
