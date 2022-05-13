@@ -115,6 +115,13 @@ Head() {
 !
 }
 
+Whisper() {
+	WHISPER_PATH=$ROOT/users/$REMOTE_USER/.whisper
+	echo "<pre>"
+	[[ -f $WHISPER_PATH ]] && cat $WHISPER_PATH | no_html && rm $WHISPER_PATH
+	echo "</pre>"
+}
+
 Normal() {
 	case "$1" in
 		200) STATUS_TEXT="OK";;
@@ -127,6 +134,7 @@ Normal() {
 	echo
 	Head
 
+	Whisper
 	export MENU="`Menu ./$2.cgi?$3`"
 }
 

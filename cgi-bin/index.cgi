@@ -4,6 +4,7 @@
 
 case "$REQUEST_METHOD" in
 	GET)
+		export _TITLE="tty.pt"
 		export LOGINLOGOUT="`LoginLogout`"
 		export _POEM="`_ "Programmer's poem"`"
 		export _NEVERDARK="`_ "Never Dark"`"

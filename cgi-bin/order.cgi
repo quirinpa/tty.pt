@@ -4,6 +4,13 @@
 . $ROOT/lib/shop.sh
 . $ROOT/lib/order.sh
 
+TransferData() {
+	SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+	echo "<pre>"
+	cat $ROOT/users/$SHOP_OWNER/.transfer_data
+	echo "</pre>"
+}
+
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$order_id" ]]; then
@@ -95,6 +102,14 @@ case "$REQUEST_METHOD" in
 		export PRODUCTS="`ProductsFromCart  $ORDER_PATH/raw`"
 		ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
 		export ORDER_STATE="`OrderState -rorder "$ORDER_STATE_TEXT" $order_id`"
+		if [[ "$REMOTE_USER" != "$SHOP_OWNER" ]]; then
+			case "$ORDER_STATE_TEXT" in
+				Pending_payment)
+					TRANSFER_DATA=`TransferData`
+					export TRANSFER_DATA
+					;;
+			esac
+		fi
 		Normal 200 order shop_id=$shop_id\&
 		Cat order
 		;;

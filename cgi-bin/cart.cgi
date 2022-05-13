@@ -3,16 +3,6 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
 
-AIcon() {
-	icon="$1"
-	page="$2"
-	query_str="$3"
-
-	cat <<!
-<a class="txl" href="/cgi-bin/$page.cgi?lang=$lang&$query_str">💰</a>
-!
-}
-
 EmptyContents() {
 	_EMPTY="`_ "Empty"`"
 	echo "<div class=\"txl tac\">$_EMPTY</div>"
@@ -77,7 +67,6 @@ case "$REQUEST_METHOD" in
 		fi
 		export CONTENTS
 
-		TITLE=Cart
 		export _TITLE="`_ $shop_id` - `_ $TITLE`"
 
 		Normal 200 cart
