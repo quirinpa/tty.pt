@@ -43,18 +43,12 @@ UserOrders() {
 case "$REQUEST_METHOD" in
 	GET)
 		if [[ -z "$shop_id" ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit 1
+			fatal 400
 		fi
 
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
 		ORDERS_PATH=$SHOP_PATH/.orders
-
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
 
 		export _TITLE="`_ $shop_id` - `_ Orders`"
 
@@ -67,8 +61,7 @@ case "$REQUEST_METHOD" in
 		fi
 
 		export ORDERS
-		export MENU="`Menu ./orders.cgi?shop_id=$shop_id\&`"
-		cat $ROOT/templates/orders.html | envsubst
+		page 200 orders shop_id=$shop_id\&
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

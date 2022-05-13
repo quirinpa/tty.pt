@@ -18,52 +18,35 @@ Category() {
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$shop_id" ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit
+			fatal 400
 		fi
 
 		case "$action" in
 			delete)
 				if [[ -z "$product_id" ]]; then
-					echo 'Status: 400 Bad Request'
-					echo
-					exit
+					fatal 400
 				fi
 
 				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
 				if [[ "$SHOP_OWNER" != "$REMOTE_USER" ]]; then
-					echo 'Status: 401 Unauthorized'
-					echo
-					exit 1
+					fatal 401
 				fi
 
 				rm -rf $SHOP_PATH/$product_id
 
-				echo 'Status: 303 See Other'
-				echo "Location: /cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id"
-				echo
-
+				see_other shop \&shop_id=$shop_id
 				;;
 			*)
-				echo 'Status 400 Bad Request'
-				echo
-				exit
+				fatal 400
 				;;
 		esac
 
 		;;
 	GET)
 		if [[ -z "$shop_id" ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit
+			fatal 400
 		fi
-
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
 
 		export _TITLE="`_ $shop_id`"
 
@@ -74,8 +57,7 @@ case "$REQUEST_METHOD" in
 			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"txl round c0 ps tdn ch00\" href=\"/cgi-bin/product-add.cgi?lang=$lang&shop_id=$shop_id\">+</a></div>"
 		fi
 		export ADD_PRODUCT_BUTTON
-		export MENU="`Menu ./shop.cgi?shop_id=$shop_id\&`"
-		cat $ROOT/templates/shop.html | envsubst
+		page 200 shop shop_id=$shop_id\&
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

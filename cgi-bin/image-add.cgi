@@ -10,25 +10,17 @@ case "$REQUEST_METHOD" in
 			IMAGE_ID="`counter_inc $ROOT/public/img-counter`"
 			mv $ROOT/tmp/mpfd/file $USER_IMAGES_PATH/$IMAGE_ID.png
 
-			echo 'Status: 303 See Other'
-			echo "Location: /cgi-bin/images.cgi?lang=$lang"
-			echo
+			see_other images
 		else
-			echo 'Status: 401 Unauthorized'
-			echo
+			fatal 401
 		fi
 
 		;;
 	GET)
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
-
 		export _TITLE="`_ "Upload image"`"
 		export _SUBMIT="`_ Submit`"
 
-		export MENU="`Menu ./image-add.cgi?`"
-		cat $ROOT/templates/image-add.html | envsubst
+		page 200 image-add
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

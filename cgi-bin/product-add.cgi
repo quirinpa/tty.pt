@@ -6,17 +6,13 @@
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$shop_id" ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit
+			fatal 400
 		fi
 
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
 		if [[ "$REMOTE_USER" != "$SHOP_OWNER" ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit
+			fatal 400
 		fi
 
 		PRODUCT_ID_PATH=$SHOP_PATH/.count
@@ -30,21 +26,13 @@ case "$REQUEST_METHOD" in
 		echo $price > $PRODUCT_PATH/price
 		echo $stock > $PRODUCT_PATH/stock
 
-		echo 'Status: 303 See Other'
-		echo "Location: /cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id"
-		echo
+		see_other shop \&shop_id=$shop_id
 		;;
 
 	GET)
 		if [[ -z "$shop_id" ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit
+			fatal 400
 		fi
-
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
 
 		export _TITLE="`_ $shop_id` - `_ "Add product"`"
 		export __TITLE="`_ Title`"
@@ -54,8 +42,7 @@ case "$REQUEST_METHOD" in
 		export _PRICE="`_ Price`"
 		export _SUBMIT="`_ Submit`"
 
-		export MENU="`Menu ./product-add.cgi?shop_id=$shop_id\&`"
-		cat $ROOT/templates/product-add.html | envsubst
+		page 200 product-add shop_id=$shop_id\&
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

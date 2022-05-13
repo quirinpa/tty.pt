@@ -74,16 +74,9 @@ case "$REQUEST_METHOD" in
 				N_USERS="`cat /.htpasswd | wc -l | sed 's/ //g'`"
 				FREE_SPACE_EXP="(20000000000 / $N_USERS)"
 				USED_EXP="`df_total_exp`"
-				#QUOTA_EXP="($FREE_SPACE_EXP - $USED_EXP)"
-				#ROUNDED_QUOTA="`calcround $QUOTA_EXP`"
-				#ROUNDED_TOTAL="`calcround $FREE_SPACE_EXP`"
 				{
-					#echo "$ROUNDED_QUOTA/$ROUNDED_TOTAL K"
-					#echo -n "`calcround "$ROUNDED_QUOTA / 1000"`/"
-					#echo "`calcround "$ROUNDED_TOTAL / 1000"` M"
 					echo -n "`calcround $USED_EXP`"/
 					echo "`calcround $FREE_SPACE_EXP`"
-					#echo " `echo "$USED_EXP / $FREE_SPACE_EXP" | bc -l`%"
 				} | ibeg $OUTPUT_PATH
 				;;
 			clear)
@@ -103,13 +96,7 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
-
-echo 'Status: 200 OK'
-echo 'Content-Type: text/html; charset=utf-8'
-echo
-
 export OUTPUT="`cat $OUTPUT_PATH`"
 export _TITLE="`_ "Terminal"`"
 
-export MENU="`Menu ./tty.cgi?`"
-cat $ROOT/templates/tty.html | envsubst
+page 200 tty

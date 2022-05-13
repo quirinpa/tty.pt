@@ -72,6 +72,31 @@ revlines() {
 	rev | tr '\n' '~' | rev | tr '~' '\n'
 }
 
+page() {
+	case "$1" in
+		200) STATUS_TEXT="OK";;
+		400) STATUS_TEXT="Bad Request";;
+	esac
+	export STATUS_TEXT
+	echo "Status: $1 $STATUS_TEXT"
+	echo 'Content-Type: text/html; charset=utf-8'
+	echo
+	export MENU="`Menu ./$2.cgi?$3`"
+	cat $ROOT/templates/$2.html | envsubst
+}
+
+see_other() {
+	echo 'Status: 303 See Other'
+	echo "Location: /cgi-bin/$1.cgi?lang=${lang}$2"
+	echo
+}
+
+fatal() {
+	export STATUS_CODE=$1
+	page $STATUS_CODE fatal
+	exit 1
+}
+
 LoginLogout() {
 	_LOGINLOGOUT="`_ "Login / Logout"`"
 	cat <<!

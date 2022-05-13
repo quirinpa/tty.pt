@@ -32,9 +32,7 @@ Contents() {
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$shop_id" ]] || [[ $quantity -lt 0 ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit 1
+			fatal 400
 		fi
 
 		[[ -d "$USER_SHOP_PATH" ]] || mkdir -m 770 -p $USER_SHOP_PATH
@@ -48,31 +46,21 @@ case "$REQUEST_METHOD" in
 				> $CART_PATH
 		fi
 
-		echo 'Status: 303 See Other'
 		case "$return" in
 			cart)
-				echo "Location: /cgi-bin/cart.cgi?lang=${lang}&shop_id=${shop_id}"
+				see_other cart \&shop_id=${shop_id}
 				;;
 			shop)
-				echo "Location: /cgi-bin/shop.cgi?lang=${lang}&shop_id=${shop_id}"
+				see_other shop \&shop_id=${shop_id}
 				;;
 		esac
 
-		echo
 		;;
 
 	GET)
 		if [[ -z "$shop_id" ]]; then
-			echo 'Status: 400 Bad Request'
-			echo
-			exit 1
+			fatal 400
 		fi
-
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
-
-		export shop_id
 
 		if [[ -f "$CART_PATH" ]]; then
 			CONTENTS="`Contents`"
@@ -85,8 +73,7 @@ case "$REQUEST_METHOD" in
 
 		# ignore the possible error
 
-		export MENU="`Menu ./cart.cgi?shop_id=$shop_id\&`"
-		cat $ROOT/templates/cart.html | envsubst
+		page 200 cart shop_id=$shop_id\&
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

@@ -15,8 +15,7 @@ case "$REQUEST_METHOD" in
 				error match
 			else
 				echo `urldecode $username`:`urldecode $password` | htpasswd -I $ROOT/.htpasswd
-				echo 'Status: 303 See Other'
-				echo "Location: https://$username:$password@tty.pt/cgi-bin/user.cgi"
+				see_other login
 				echo
 			fi
 		else
@@ -24,10 +23,6 @@ case "$REQUEST_METHOD" in
 		fi
 		;;
 	GET)
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
-
 		export _REGISTER="`_ "Register"`"
 		export _USERNAME="`_ "Username"`"
 		export _PASSWORD="`_ "Password"`"
@@ -48,8 +43,7 @@ case "$REQUEST_METHOD" in
 
 		export ERROR
 
-		export MENU="`Menu ./register.cgi?`"
-		cat $ROOT/templates/register.html | envsubst
+		page 200 register
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

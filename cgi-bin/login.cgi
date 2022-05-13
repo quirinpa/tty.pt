@@ -19,10 +19,6 @@ case "$REQUEST_METHOD" in
 		fi
 		;;
 	GET)
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
-
 		export _TITLE="`_ Login`"
 		export _ANONYMOUS_LOGIN="`_ Login` - `_ Anonymous`"
 		export _REGISTER="`_ "Register"`"
@@ -40,8 +36,7 @@ case "$REQUEST_METHOD" in
 
 		export ERROR
 
-		export MENU="`Menu ./login.cgi?`"
-		cat $ROOT/templates/login.html | envsubst
+		page 200 login
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

@@ -20,14 +20,10 @@ find_images() {
 
 case "$REQUEST_METHOD" in
 	GET)
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
-
 		export _TITLE="`_ Images`"
-		export MENU="`Menu ./images.cgi?`"
+
 		export IMAGES="`find_images $ROOT/htdocs/img | Images`"
-		cat $ROOT/templates/images.html | envsubst
+		page 200 images
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

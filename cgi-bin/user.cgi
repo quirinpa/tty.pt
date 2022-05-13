@@ -12,15 +12,9 @@ case "$REQUEST_METHOD" in
 			echo $zip
 		} > $USER_PATH/address
 
-		echo 'Status: 303 See Other'
-		echo "Location: /cgi-bin/user.cgi?lang=${lang}"
-		echo
+		see_other user
 		;;
 	GET)
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
-
 		export _TITLE="`_ User` - $REMOTE_USER"
 		export _WELCOME="`_ Welcome`"
 		export LOGINLOGOUT="`LoginLogout`"
@@ -29,8 +23,6 @@ case "$REQUEST_METHOD" in
 		export _ZIP_CODE="`_ "Zip code"`"
 		export _SUBMIT="`_ Submit`"
 		export _CHANGE_SHIPPING_ADDRESS="`_ change_shipping_address`"
-
-		export MENU="`Menu ./user.cgi?`"
 
 		cat $USER_PATH/address | {
 			read address_line_1
@@ -45,7 +37,7 @@ case "$REQUEST_METHOD" in
 			export address_line_2
 			export zip
 
-			cat $ROOT/templates/user.html | envsubst
+			page 200 user
 		}
 		;;
 	*)

@@ -11,15 +11,9 @@ COMMENTS_PATH="$ROOT/public/comments-$ILANG.txt"
 case "$REQUEST_METHOD" in
 	POST)
 		echo $REMOTE_USER: "`urldecode "$comment"`" >> $COMMENTS_PATH
-		echo 'Status: 303 See Other'
-		echo "Location: /cgi-bin/poem.cgi?lang=${lang}"
-		echo
+		see_other poem
 		;;
 	GET)
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/html; charset=utf-8'
-		echo
-
 		POEM_PATH="$ROOT/htdocs/1.txt"
 		if [[ ! -z "$lang" ]]; then
 			POEM_PATH="$ROOT/htdocs/1-$lang.txt"
@@ -34,8 +28,7 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ "Programmer's poem"`"
 		export _FLAG_ICON="`_ flag`"
 
-		export MENU="`Menu ./poem.cgi?`"
-		cat $ROOT/templates/poem.html | envsubst
+		page 200 poem
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"
