@@ -1,33 +1,26 @@
-<html>
-	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/neverdark/vim.css" />
-	</head>
 <style>
 pre { display: inline-block; }
 </style>
-	<body class="cf cb v p">
-		<header class="_ f fic">
-			<h1 class="fg">$_TITLE</h1>
-			<!--
-			<form action="./shops.cgi" method="get" class="_ f ps fic">
-				<input autofocus type="search" name="query"></input>
-				<select name="category" multiple>
-					$SHOP_CATEGORIES
-				</select>
-				<input type="hidden" name="lang" value="$lang"></input>
-				<button class="tl">🔎</button>
-			</form>
-			-->
-			<a class="txl" href="/cgi-bin/orders.cgi?shop_id=$shop_id&lang=$lang">🚚</a>
-			<a class="txl" href="/cgi-bin/cart.cgi?shop_id=$shop_id&lang=$lang">🛒</a>
-			$MENU
-		</header>
-		<div class="v">
-			$PRODUCTS
-			$ADD_PRODUCT_BUTTON
-		</div>
-	</body>
-</html>
 
+<body class="cf cb v p">
+	<header class="_ f fic">
+		<h1 class="fg">$_TITLE</h1>
+		<!--
+		<form action="./shops.cgi" method="get" class="_ f ps fic">
+			<input autofocus type="search" name="query"></input>
+			<select name="category" multiple>
+				$SHOP_CATEGORIES
+			</select>
+			<input type="hidden" name="lang" value="$lang"></input>
+			<button class="tl">🔎</button>
+		</form>
+		-->
+		<a class="txl" href="/cgi-bin/orders.cgi?shop_id=$shop_id&lang=$lang">🚚</a>
+		<a class="txl" href="/cgi-bin/cart.cgi?shop_id=$shop_id&lang=$lang">🛒</a>
+		$MENU
+	</header>
+	<div class="v">
+		$PRODUCTS
+		$ADD_PRODUCT_BUTTON
+	</div>
+</body>

@@ -1,27 +1,20 @@
-<html>
-	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/neverdark/vim.css" />
-	</head>
 <style>
-pre { display: inline-block; }
+	pre { display: inline-block; }
 </style>
-	<body class="cf cb f vn fcc fic sfv v">
-		<div class="f _">
-			<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id">💰</a>
-			$MENU
-		</div>
+<body class="cf cb f vn fcc fic sfv v">
+	<div class="f _">
+		<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id">💰</a>
+		$MENU
+	</div>
 
-		<h1>$_TITLE</h1>
+	<h1>$_TITLE</h1>
 
-		<form action="/cgi-bin/image-add.cgi" method="POST" class="v" enctype="multipart/form-data">
-			<input type="hidden" name="lang" value="$lang" />
-			<label>
-				$_FILE
-				<input required type="file" name="file" accept="png"></input>
-			</label>
-			<button>$_SUBMIT</button>
-		</form>
-	</body>
-</html>
+	<form action="/cgi-bin/image-add.cgi" method="POST" class="v" enctype="multipart/form-data">
+		<input type="hidden" name="lang" value="$lang" />
+		<label>
+			$_FILE
+			<input required type="file" name="file" accept="png"></input>
+		</label>
+		<button>$_SUBMIT</button>
+	</form>
+</body>

@@ -1,34 +1,25 @@
-<html>
-	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/neverdark/vim.css" />
-	</head>
-	<body class="cf cb f vn fcc fic sfv v">
-		$MENU
+<body class="cf cb f vn fcc fic sfv v">
+	$MENU
 
-		<h1>$_TITLE</h1>
+	<h1>$_TITLE</h1>
 
-		<form action="./login.cgi" method="POST" class="v">
-			<label>
-				$_USERNAME: <input required name="username"></input>
-			</label>
-			<label>
-				$_PASSWORD: <input required type="password" name="password"></input>
-			</label>
-			<button>$_SUBMIT</button>
-		</form>
+	<form action="./login.cgi" method="POST" class="v">
+		<label>
+			$_USERNAME: <input required name="username"></input>
+		</label>
+		<label>
+			$_PASSWORD: <input required type="password" name="password"></input>
+		</label>
+		<button>$_SUBMIT</button>
+	</form>
 
-		<p class="c9">$ERROR</p>
+	<p class="c9">$ERROR</p>
 
-		<a class="c0 cf15 p" href="/cgi-bin/register.cgi?lang=$lang">
-			$_REGISTER
-		</a>
+	<a class="c0 cf15 p" href="/cgi-bin/register.cgi?lang=$lang">
+		$_REGISTER
+	</a>
 
-		<a class="c0 cf15 p" href="https://anonymous:anonymous@tty.pt/cgi-bin/user.cgi?lang=$lang">
-			$_ANONYMOUS_LOGIN
-		</a>
-	</body>
-</html>
-
-
+	<a class="c0 cf15 p" href="https://anonymous:anonymous@tty.pt/cgi-bin/user.cgi?lang=$lang">
+		$_ANONYMOUS_LOGIN
+	</a>
+</body>

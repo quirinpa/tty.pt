@@ -1,28 +1,20 @@
-<html>
-	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/neverdark/vim.css" />
-	</head>
-	<body class="cf cb f vn fcc fic sfv v">
-		$MENU
-		<h1>$_REGISTER</h1>
-		<form action="./register.cgi" method="post" class="v">
-			<label>
-				$_USERNAME: <input required name="username"></input>
-			</label>
-			<label>
-				$_PASSWORD: <input required type="password" name="password"></input>
-			</label>
-			<label>
-				$_REPEAT_PASSWORD: <input required type="password" name="password2"></input>
-			</label>
-			<label>
-				$_EMAIL: <input required type="email" name="email"></input>
-			</label>
-			<button>$_SUBMIT</button>
-		</form>
-		<p class="c9">$ERROR</p>
-	</body>
-</html>
-
+<body class="cf cb f vn fcc fic sfv v">
+	$MENU
+	<h1>$_REGISTER</h1>
+	<form action="./register.cgi" method="post" class="v">
+		<label>
+			$_USERNAME: <input required name="username"></input>
+		</label>
+		<label>
+			$_PASSWORD: <input required type="password" name="password"></input>
+		</label>
+		<label>
+			$_REPEAT_PASSWORD: <input required type="password" name="password2"></input>
+		</label>
+		<label>
+			$_EMAIL: <input required type="email" name="email"></input>
+		</label>
+		<button>$_SUBMIT</button>
+	</form>
+	<p class="c9">$ERROR</p>
+</body>

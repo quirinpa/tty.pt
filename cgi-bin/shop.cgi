@@ -57,7 +57,9 @@ case "$REQUEST_METHOD" in
 			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"txl round c0 ps tdn ch00\" href=\"/cgi-bin/product-add.cgi?lang=$lang&shop_id=$shop_id\">+</a></div>"
 		fi
 		export ADD_PRODUCT_BUTTON
-		page 200 shop shop_id=$shop_id\&
+
+		Normal 200 shop shop_id=$shop_id\&
+		Cat shop
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

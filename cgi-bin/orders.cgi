@@ -61,7 +61,8 @@ case "$REQUEST_METHOD" in
 		fi
 
 		export ORDERS
-		page 200 orders shop_id=$shop_id\&
+		Normal 200 orders shop_id=$shop_id\&
+		Cat orders
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

@@ -43,7 +43,8 @@ case "$REQUEST_METHOD" in
 
 		export ERROR
 
-		page 200 register
+		Normal 200 register
+		Cat register
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

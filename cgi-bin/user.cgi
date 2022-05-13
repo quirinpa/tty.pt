@@ -37,7 +37,8 @@ case "$REQUEST_METHOD" in
 			export address_line_2
 			export zip
 
-			page 200 user
+			Normal 200 user
+			Cat user
 		}
 		;;
 	*)

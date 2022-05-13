@@ -3,6 +3,16 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
 
+AIcon() {
+	icon="$1"
+	page="$2"
+	query_str="$3"
+
+	cat <<!
+<a class="txl" href="/cgi-bin/$page.cgi?lang=$lang&$query_str">💰</a>
+!
+}
+
 EmptyContents() {
 	_EMPTY="`_ "Empty"`"
 	echo "<div class=\"txl tac\">$_EMPTY</div>"
@@ -58,9 +68,7 @@ case "$REQUEST_METHOD" in
 		;;
 
 	GET)
-		if [[ -z "$shop_id" ]]; then
-			fatal 400
-		fi
+		[[ -z "$shop_id" ]] && fatal 400
 
 		if [[ -f "$CART_PATH" ]]; then
 			CONTENTS="`Contents`"
@@ -69,15 +77,14 @@ case "$REQUEST_METHOD" in
 		fi
 		export CONTENTS
 
-		export _TITLE="`_ $shop_id` - `_ Cart`"
+		TITLE=Cart
+		export _TITLE="`_ $shop_id` - `_ $TITLE`"
 
-		# ignore the possible error
-
-		page 200 cart shop_id=$shop_id\&
+		Normal 200 cart
+		Cat cart
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"
 		echo
 		;;
 esac
-

@@ -28,7 +28,7 @@ case "$1" in
 	get-index) get $query_string $ROOT/cgi-bin/index.cgi ;;
 	get-tty) get $query_string $ROOT/cgi-bin/tty.cgi ;;
 	post-tty)
-		query_string=$query_string\&cmd=quota
+		query_string=$query_string\&cmd=whisper%20quirinpa%20teste
 		post $query_string $ROOT/cgi-bin/tty.cgi
 		;;
 	post-order)

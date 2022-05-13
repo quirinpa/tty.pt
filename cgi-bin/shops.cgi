@@ -20,8 +20,9 @@ case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Shops`"
 
-		export SHOPS="`ls $ROOT/shops | shops`"
-		page 200 shops
+		export SHOPS="`ls $ROOT/shops | Shops`"
+		Normal 200 shops
+		Cat shops
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

@@ -21,9 +21,9 @@ find_images() {
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Images`"
-
 		export IMAGES="`find_images $ROOT/htdocs/img | Images`"
-		page 200 images
+		Normal 200 images
+		Cat images
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

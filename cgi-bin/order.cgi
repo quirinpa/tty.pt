@@ -95,7 +95,8 @@ case "$REQUEST_METHOD" in
 		export PRODUCTS="`ProductsFromCart  $ORDER_PATH/raw`"
 		ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
 		export ORDER_STATE="`OrderState -rorder "$ORDER_STATE_TEXT" $order_id`"
-		page 200 order shop_id=$shop_id\&
+		Normal 200 order shop_id=$shop_id\&
+		Cat order
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

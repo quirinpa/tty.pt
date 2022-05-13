@@ -27,16 +27,13 @@ case "$REQUEST_METHOD" in
 		export _SUBMIT="`_ "Submit"`"
 
 		case "$error" in
-			nouser)
-				ERROR="`_ "No such user"`"
-				;;
-			*)
-				;;
+			nouser) ERROR="`_ "No such user"`" ;;
 		esac
 
 		export ERROR
 
-		page 200 login
+		Normal 200 login
+		Cat login
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

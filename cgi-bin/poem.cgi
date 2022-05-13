@@ -20,7 +20,7 @@ case "$REQUEST_METHOD" in
 		fi
 
 		export _POEM="`cat $POEM_PATH`"
-		export _COMMENTS="`noslash $COMMENTS_PATH | revlines`"
+		export _COMMENTS="`cat $COMMENTS_PATH | revlines | no_html`"
 
 		COUNTER_PATH=$ROOT/public/counter-$lang.txt
 		export COUNTER="`counter_inc $COUNTER_PATH`"
@@ -28,7 +28,8 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ "Programmer's poem"`"
 		export _FLAG_ICON="`_ flag`"
 
-		page 200 poem
+		Normal 200 poem
+		Cat poem
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

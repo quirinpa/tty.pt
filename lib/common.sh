@@ -72,36 +72,21 @@ revlines() {
 	rev | tr '\n' '~' | rev | tr '~' '\n'
 }
 
-page() {
-	case "$1" in
-		200) STATUS_TEXT="OK";;
-		400) STATUS_TEXT="Bad Request";;
-	esac
-	export STATUS_TEXT
-	echo "Status: $1 $STATUS_TEXT"
-	echo 'Content-Type: text/html; charset=utf-8'
-	echo
-	export MENU="`Menu ./$2.cgi?$3`"
-	cat $ROOT/templates/$2.html | envsubst
-}
-
 see_other() {
 	echo 'Status: 303 See Other'
 	echo "Location: /cgi-bin/$1.cgi?lang=${lang}$2"
 	echo
 }
 
-fatal() {
-	export STATUS_CODE=$1
-	page $STATUS_CODE fatal
-	exit 1
+no_html() {
+	sed -e 's/</\&lt\;/g' -e 's/>/\&gt\;/g' 
 }
 
 LoginLogout() {
 	_LOGINLOGOUT="`_ "Login / Logout"`"
 	cat <<!
 <div class="tac txl">
-	<a href="/cgi-bin/login.cgi" class="txl">$_LOGINLOGOUT 🔑</a>
+	<a href="/cgi-bin/login.cgi?lang=$lang" class="txl">$_LOGINLOGOUT 🔑</a>
 </div>
 !
 }
@@ -117,3 +102,46 @@ Menu() {
 	export THIS_URL="$1"
 	cat $ROOT/components/menu.html | envsubst
 }
+
+Head() {
+	cat<<!
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/neverdark/vim.css" />
+		<title>$_TITLE</title>
+	</head>
+!
+}
+
+Normal() {
+	case "$1" in
+		200) STATUS_TEXT="OK";;
+		400) STATUS_TEXT="Bad Request";;
+		401) STATUS_TEXT="Unauthorized";;
+	esac
+	export STATUS_TEXT
+	echo "Status: $1 $STATUS_TEXT"
+	echo 'Content-Type: text/html; charset=utf-8'
+	echo
+	Head
+
+	export MENU="`Menu ./$2.cgi?$3`"
+}
+
+Cat() {
+	if [[ $# -lt 1 ]]; then
+		envsubst
+	else
+		cat $ROOT/templates/$1.html | envsubst
+	fi
+	echo "</html>"
+}
+
+Fatal() {
+	Normal $1
+	Cat fatal
+	exit 1
+}
+

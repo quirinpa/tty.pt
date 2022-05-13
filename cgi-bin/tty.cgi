@@ -61,11 +61,9 @@ case "$REQUEST_METHOD" in
 
 		case "$CMD" in
 			help) 
-				{
-					echo Welcome to the terminal
-					echo Beware - the values might not be correct
-					echo commands: df quota clear
-				} | ibeg $OUTPUT_PATH
+				echo Welcome to the terminal
+				echo Beware - the values might not be correct
+				echo commands: df quota clear whisper
 				;;
 			df)
 				mydf | ibeg $OUTPUT_PATH
@@ -74,17 +72,26 @@ case "$REQUEST_METHOD" in
 				N_USERS="`cat /.htpasswd | wc -l | sed 's/ //g'`"
 				FREE_SPACE_EXP="(20000000000 / $N_USERS)"
 				USED_EXP="`df_total_exp`"
-				{
-					echo -n "`calcround $USED_EXP`"/
-					echo "`calcround $FREE_SPACE_EXP`"
-				} | ibeg $OUTPUT_PATH
+				echo -n "`calcround $USED_EXP`"/
+				echo "`calcround $FREE_SPACE_EXP`"
 				;;
 			clear)
 				echo -n "" > $OUTPUT_PATH
 				;;
+			whisper*)
+				set -- $CMD
+				shift
+				username=$1
+				shift
+				message=$@
+
+				[[ -d $ROOT/users/$username ]] || fatal 400
+				printf "%s: %s\n" "$REMOTE_USER" "$message" >> $ROOT/users/$username/.whisper
+				echo "Sent whisper."
+				;;
 			*)
 				;;
-		esac
+		esac | ibeg $OUTPUT_PATH
 
 		;;
 	GET)
@@ -96,7 +103,8 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
-export OUTPUT="`cat $OUTPUT_PATH`"
+export OUTPUT="`cat $OUTPUT_PATH | no_html`"
 export _TITLE="`_ "Terminal"`"
 
-page 200 tty
+Normal 200 tty
+Cat tty
