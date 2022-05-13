@@ -31,6 +31,14 @@ case "$REQUEST_METHOD" in
 					exit
 				fi
 
+				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+
+				if [[ "$SHOP_OWNER" != "$REMOTE_USER" ]]; then
+					echo 'Status: 401 Unauthorized'
+					echo
+					exit 1
+				fi
+
 				rm -rf $SHOP_PATH/$product_id
 
 				echo 'Status: 303 See Other'

@@ -55,7 +55,8 @@ Product() {
 		case "$1" in
 			-r)
 				return_str="<input name=\"return\" type=\"hidden\" value=\"$2\"></input>"
-				if [[ "$2" == "shop" ]]; then
+				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+				if [[ "$2" == "shop" ]] && [[ "$SHOP_OWNER" == "$REMOTE_USER" ]]; then
 					delete_form=y
 				fi
 
