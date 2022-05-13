@@ -6,10 +6,13 @@ echo -n Enter password:\  1>&2
 stty -echo
 read password
 stty echo
+echo
 
-auth="`urlencode $username`:`urlencode $password`"
+#auth="`echo "$username" | urlencode`:`echo "$password" | urlencode`"
+auth="$username:$password"
 
-curl "https://$auth/cgi-bin/cart.cgi" \
+curl "https://tty.pt/cgi-bin/cart.cgi" \
+	-u $auth \
 	-H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
 	-H 'Accept-Language: en-US,en;q=0.9,pt;q=0.8,es;q=0.7' \
 	-H 'Cache-Control: no-cache' \
