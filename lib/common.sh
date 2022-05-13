@@ -2,6 +2,8 @@
 
 umask 002
 
+. $ROOT/lib/more-common.sh
+
 urldecode() {
 	echo $@ | sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
 }
@@ -53,16 +55,6 @@ _() {
 	value="`cat $ROOT/locale/$TEXTDOMAIN-$LANG.txt | sed -n "s/^$1\|//p"`"
 	[[ -z "$value" ]] && echo $1 || echo $value
 }
-
-# urlencode() {
-# 	while IFS= read -r c; do
-# 		case $c in [a-zA-Z0-9.~_-]) printf "$c"; continue ;; esac
-# 		printf "$c" | od -An -tx1 | tr ' ' % | tr -d '\n'
-# 	done <<EOF
-# $(fold -w1)
-# EOF
-# 	echo
-# }
 
 counter_inc() {
 	current="`[[ -f $1 ]] && cat $1 || echo 0`"
