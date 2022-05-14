@@ -59,10 +59,13 @@ case "$REQUEST_METHOD" in
 
 		case "$return" in
 			cart)
-				see_other cart \&shop_id=${shop_id}
+				see_other cart \&shop_id=$shop_id
 				;;
 			shop)
-				see_other shop \&shop_id=${shop_id}
+				see_other shop \&shop_id=$shop_id
+				;;
+			product)
+				see_other product \&shop_id=$shop_id\&product_id=$product_id
 				;;
 		esac
 

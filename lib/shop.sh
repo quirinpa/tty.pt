@@ -41,6 +41,12 @@ DeleteProductForm() {
 !
 }
 
+ProductImage() {
+	cat <<!
+<a href="$1"><img height="128" class="ofc" src="$1" /></a>
+!
+}
+
 Product() {
 	TEMP="`getopt r: $*`"
 	if [ $? -ne 0 ]; then
@@ -74,10 +80,11 @@ Product() {
 
 	PRODUCT_PATH="`get_product_path $PRODUCT_ID`"
 
-	PRODUCT_IMAGE="`cat $PRODUCT_PATH/image`"
-	if [[ -z "$PRODUCT_IMAGE" ]]; then
-		PRODUCT_IMAGE=/img/no-image.png
+	PRODUCT_IMAGE_PATH="`cat $PRODUCT_PATH/image`"
+	if [[ -z "$PRODUCT_IMAGE_PATH" ]]; then
+		PRODUCT_IMAGE_PATH=/img/no-image.png
 	fi
+	PRODUCT_IMAGE="`ProductImage $PRODUCT_IMAGE_PATH`"
 	PRODUCT_TITLE="`cat $PRODUCT_PATH/title`"
 	PRODUCT_DESCRIPTION="`cat $PRODUCT_PATH/description`"
 	product_price="`cat $PRODUCT_PATH/price`"
@@ -94,8 +101,8 @@ Product() {
 
 	cat <<!
 <div class="f v b0 fic p">
-	<img height="128" class="ofc" src="$PRODUCT_IMAGE" />
-	<a class="txl" href="/cgi-bin/product.cgi?lang=$lang&product_id=$PRODUCT_ID">
+	$PRODUCT_IMAGE
+	<a class="txl" href="/cgi-bin/product.cgi?lang=$lang&shop_id=$shop_id&product_id=$PRODUCT_ID">
 		$PRODUCT_TITLE
 	</a>
 	<p>
