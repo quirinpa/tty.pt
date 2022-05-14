@@ -9,7 +9,7 @@ pre { display: inline-block; }
 
 	<h1 class="tac">$_TITLE</h1>
 
-	<form action="/cgi-bin/product-add.cgi" method="POST" class="v">
+	<form action="/cgi-bin/product-add.cgi" method="POST" class="v f fic">
 		<input type="hidden" name="lang" value="$lang" />
 		<input type="hidden" name="shop_id" value="$shop_id" />
 		<label>
@@ -21,9 +21,9 @@ pre { display: inline-block; }
 			<textarea name="description"></textarea>
 		</label>
 		<label>
-			$_IMAGE
+			$_IMAGES
 			<div class="_ f fic">
-				<input type="url" name="image"></input>
+				<textarea type="url" name="images"></textarea>
 				<a class="txl round c0 ps tdn ch00" href="/cgi-bin/images.cgi?lang=$lang" target="_blank">🔍</a>
 			</div>
 		</label>

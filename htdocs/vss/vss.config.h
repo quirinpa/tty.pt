@@ -16,9 +16,11 @@ CALL(HORIZONTAL, SS)
 CALL(VERTICAL, SS)
 CALL(MARGIN, SS)
 CALL(FLEX_VERTICAL, SS)
-CALL(ROUND_T, SS)
+CALL(ROUND_T, TS)
 CALL(ROUND_EDGE, SS)
 ROUND_PADDING( , l)
+ROUND_PADDING( s, l)
+ROUND_PADDING( s, xl)
 
 .cf { background: #3c403c; }
 .cb { color: #c1c3da; }
@@ -26,7 +28,11 @@ body { caret-color: #9589c5; }
 h1,h2,h3,h4,h5,h6 { color: #f5f5f5; }
 img { color: #c1c3da; };
 .modal a { color: #9589c5; }
-input { border: solid thin #2c2c2c; }
+input,textarea {
+	border: solid thin #2c2c2c;
+	font-size: inherit;
+	padding: var(--Ss);
+}
 input:focus {
         border: solid thin #9589c5;
         outline: #9589c5;
@@ -34,4 +40,20 @@ input:focus {
 a { color: #c1c3da; }
 style { display: none !important; }
 .oav { overflow: auto; }
-form,pre,p,h2 { margin: 0; }
+form,pre,p,h2,h1 { margin: 0; }
+pre { font-family: monospace; }
+.dib { display: inline-block; }
+.ofc { object-fit: cover; }
+.tdn { text-decoration: none; }
+.ch00:hover { background: black; }
+.s_k256 { max-width: 256px; }
+.s_5 { width: 64px; }
+.s_4_5 { width: 48px; }
+.wn { white-space: nowrap; }
+button {
+	font-size: inherit;
+	padding: var(--S);
+	background-color: var(--C0);
+	color: var(--C15);
+	border: none;
+}

@@ -28,6 +28,10 @@ case "$REQUEST_METHOD" in
 			nouser) ERROR="`_ "No such user"`" ;;
 		esac
 
+		if [[ ! -z "$ERROR" ]]; then
+			ERROR="<p class=\"c9\">$ERROR</p>"
+		fi
+
 		export ERROR
 
 		Normal 200 login

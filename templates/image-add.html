@@ -2,16 +2,13 @@
 	pre { display: inline-block; }
 </style>
 <body class="cf cb f fic v">
-	<div class="f _">
-		<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id">💰</a>
-		$MENU
-	</div>
+	$MENU
 
 	<h1 class="tac">$_TITLE</h1>
 
-	<form action="/cgi-bin/image-add.cgi" method="POST" class="v" enctype="multipart/form-data">
+	<form action="/cgi-bin/image-add.cgi" method="POST" class="v f fic" enctype="multipart/form-data">
 		<input type="hidden" name="lang" value="$lang" />
-		<label>
+		<label class="mkn">
 			$_FILE
 			<input required type="file" name="file" accept="png"></input>
 		</label>

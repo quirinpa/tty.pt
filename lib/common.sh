@@ -149,7 +149,7 @@ _fbytes() {
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
 	CAN="`echo $CAN_EXP | bc -l`"
 	if [[ "$CAN" == "0" ]]; then
-		Fatal 400
+		Fatal 400 No available space
 	fi
 }
 
@@ -207,8 +207,8 @@ Head() {
 <html>
 	<head>
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/neverdark/vim.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+		<link rel="stylesheet" href="/vim.css" />
 		<title>$_TITLE</title>
 	</head>
 !

@@ -19,7 +19,7 @@ Contents() {
 	$PRODUCTS
 </div>
 <div class="tcv fic v">
-	<h2>$TOTAL€</h2>
+	<div class="txl">$TOTAL€</div>
 	<form action="/cgi-bin/order.cgi" method="POST">
 		<input type="hidden" name="lang" value="$lang"></input>
 		<input type="hidden" name="shop_id" value="$shop_id"></input>
@@ -35,6 +35,11 @@ fi
 
 case "$REQUEST_METHOD" in
 	POST)
+		PRODUCT_PATH=$SHOP_PATH/$product_id
+		if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
+			Fatal 404 Product not found
+		fi
+
 		if [[ $quantity -lt 0 ]]; then
 			Fatal 400 Invalid quantity
 		fi
@@ -42,11 +47,12 @@ case "$REQUEST_METHOD" in
 		SHOP_OWNER="`cat $SHOP_PATH/owner`"
 		USER=$SHOP_OWNER
 		fmkdir $USER_SHOP_PATH
+		STOCK="`cat $PRODUCT_PATH/stock`"
 		OLD_QUANTITY="`cat $CART_PATH | grep $product_id | awk '{ print $2 }'`"
 		AVAILABLE_EXP="$STOCK - ($quantity - $OLD_QUANTITY) > 0"
 		AVAILABLE="`echo $AVAILABLE_EXP | bc`"
 
-		[[ "$AVAILABLE" == "0" ]] && Fatal 400 No available space
+		[[ "$AVAILABLE" == "0" ]] && Fatal 400 No available stock
 
 		if [[ "$quantity" == "0" ]]; then
 			sed -n "/^$product_id /,/^[^+]/{x;/^$/!p;}" $CART_PATH > $CART_PATH

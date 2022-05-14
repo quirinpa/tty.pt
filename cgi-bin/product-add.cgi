@@ -23,7 +23,7 @@ case "$REQUEST_METHOD" in
 		fmkdir $PRODUCT_PATH
 		fwrite $PRODUCT_PATH/title urldecode $title
 		fwrite $PRODUCT_PATH/description urldecode $description
-		fwrite $PRODUCT_PATH/image urldecode $image
+		fwrite $PRODUCT_PATH/images urldecode $images
 		fwrite $PRODUCT_PATH/price echo $price
 		fwrite $PRODUCT_PATH/stock echo $stock
 
@@ -34,7 +34,7 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ $shop_id` - `_ "Add product"`"
 		export __TITLE="`_ Title`"
 		export _DESCRIPTION="`_ Description`"
-		export _IMAGE="`_ Image`"
+		export _IMAGES="`_ Images`"
 		export _STOCK="`_ Stock`"
 		export _PRICE="`_ Price`"
 		export _SUBMIT="`_ Submit`"

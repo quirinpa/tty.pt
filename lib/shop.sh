@@ -4,25 +4,24 @@ get_product_path() {
 
 ProductSummary() {
 	cat <<!
-	<h2 class="tar">
-		$product_price€ x $quantity = $QUANTITY_TIMES_COST€
-	</h2>
+	<div class="tl tar">
+		$product_price€ x $quantity
+	</div>
 !
 }
 
 ProductForm() {
 	PRODUCT_STOCK="`cat $PRODUCT_PATH/stock`"
 	cat <<!
+<div class="tl">$product_price€</div>
 <div class="_ f fic">
-	<form action="./cart.cgi" method="post" class="_ f fic">
-		$product_price€ x
+	<form action="./cart.cgi" method="post" class="_ f fic wn">
 		<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 		<input name="lang" type="hidden" value="$lang"></input>
 		<input name="shop_id" type="hidden" value="$shop_id"></input>
-		<input name="quantity" type="number" min="0" max="$PRODUCT_STOCK" value="$quantity" style="width: 80px"></input>
+		<input name="quantity" type="number" min="0" max="$PRODUCT_STOCK" value="$quantity" class="s_4_5"></input>
 		$return_str
-		<span>= $QUANTITY_TIMES_COST€</span>
-		<button class="tl">🛒</button>
+		<button class="tl round ps">🛒</button>
 	</form>
 	$delete_form
 </div>
@@ -36,7 +35,7 @@ DeleteProductForm() {
 	<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 	<input name="lang" type="hidden" value="$lang"></input>
 	<input name="shop_id" type="hidden" value="$shop_id"></input>
-	<button class="tl">X</button>
+	<button class="tl round ps">X</button>
 </form>
 !
 }
@@ -60,6 +59,10 @@ Product() {
 				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 				if [[ "$2" == "shop" ]] && [[ "$SHOP_OWNER" == "$REMOTE_USER" ]]; then
 					delete_form=y
+				else
+					if [[ "$2" == "product" ]]; then
+						multiple_images=y
+					fi
 				fi
 
 				shift 2
@@ -80,18 +83,26 @@ Product() {
 
 	PRODUCT_PATH="`get_product_path $PRODUCT_ID`"
 
-	PRODUCT_IMAGE_PATH="`cat $PRODUCT_PATH/image`"
-	if [[ -z "$PRODUCT_IMAGE_PATH" ]]; then
-		PRODUCT_IMAGE_PATH=/img/no-image.png
+	PRODUCT_IMAGES_CONTENT="`cat $PRODUCT_PATH/images`"
+	if [[ -z "$PRODUCT_IMAGES_CONTENT" ]]; then
+		PRODUCT_IMAGES_CONTENT=/img/no-image.png
 	fi
-	PRODUCT_IMAGE="`ProductImage $PRODUCT_IMAGE_PATH`"
+
+	if [[ -z "$multiple_images" ]]; then
+		PRODUCT_IMAGES="`echo "$PRODUCT_IMAGES_CONTENT" | head -n 1 | while read image_path; do ProductImage $image_path; done`"
+	else
+		PRODUCT_IMAGES="`echo "$PRODUCT_IMAGES_CONTENT" | while read image_path; do ProductImage $image_path; done`"
+	fi
+
 	PRODUCT_TITLE="`cat $PRODUCT_PATH/title`"
 	PRODUCT_DESCRIPTION="`cat $PRODUCT_PATH/description`"
+	if [[ ! -z "$PRODUCT_DESCRIPTION" ]]; then
+		PRODUCT_DESCRIPTION="<p>$PRODUCT_DESCRIPTION</p>"
+	fi
+
 	product_price="`cat $PRODUCT_PATH/price`"
 
 	quantity="`[[ -f $CART_PATH ]] && cat $CART_PATH | grep $PRODUCT_ID | awk '{print $2}' || echo 0`"
-
-	QUANTITY_TIMES_COST="`echo "$quantity * $product_price" | bc -l`" 
 
 	if [[ -z "$return_str" ]]; then
 		summary="`ProductSummary`"
@@ -101,13 +112,11 @@ Product() {
 
 	cat <<!
 <div class="f v b0 fic p">
-	$PRODUCT_IMAGE
+	$PRODUCT_IMAGES
 	<a class="txl" href="/cgi-bin/product.cgi?lang=$lang&shop_id=$shop_id&product_id=$PRODUCT_ID">
 		$PRODUCT_TITLE
 	</a>
-	<p>
-		$PRODUCT_DESCRIPTION
-	</p>
+	$PRODUCT_DESCRIPTION
 	$summary
 </div>
 !
