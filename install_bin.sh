@@ -6,4 +6,4 @@ ldd $path | awk '{ print $7 }' | tail -n +3 | while read line; do
 	[[ -d "$ROOT$target_path" ]] || mkdir -p $target_path
 	[[ -f "$ROOT$line" ]] || cp $line $ROOT$line
 done
-echo $path >> .instal_lbin
+echo $path >> .install_bin

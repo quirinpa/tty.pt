@@ -9,7 +9,8 @@ urldecode() {
 }
 
 url2vars() {
-	eval "`echo $1 | tr '&' '\n'`"
+	# always lowercase to prevent overwriting REMOTE_USER
+	eval "`echo $1 tr '[A-Z]' '[a-z]'| tr '&' '\n'`"
 }
 
 case "$REQUEST_METHOD" in

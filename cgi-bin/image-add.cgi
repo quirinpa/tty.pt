@@ -9,7 +9,8 @@ case "$REQUEST_METHOD" in
 		USER_IMAGES_PATH=$ROOT/htdocs/img/$REMOTE_USER
 		[[ -d "$USER_IMAGES_PATH" ]] || mkdir $USER_IMAGES_PATH
 		IMAGE_ID="`counter_inc $ROOT/public/img-counter`"
-		mv $ROOT/tmp/mpfd/file $USER_IMAGES_PATH/$IMAGE_ID.png
+		ext="`file -i $ROOT/tmp/mpfd/file | awk '{print $2}' | tr '/' ' ' | awk '{print $2}'`"
+		mv $ROOT/tmp/mpfd/file $USER_IMAGES_PATH/$IMAGE_ID.$ext
 
 		see_other images
 

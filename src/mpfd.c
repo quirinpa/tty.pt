@@ -54,11 +54,26 @@ int main(int argc, char * argv[]) {
 					limit = strchr(key, '"');
 				 	*limit = '\0';
 
+					if (limit[1] == ';') {
+						char *filename = &limit[13];
+						limit = strchr(filename, '"');
+						*limit = '\0';
+						// filename
+						snprintf(mpfd_file_path, sizeof(mpfd_file_path),
+								"%s/%s-name", mpfd_path, key);
+						fp = fopen(mpfd_file_path, "w");
+						assert(fp);
+						fprintf(fp, "%s", filename);
+						fclose(fp);
+					}
+
+					// actual file
 					snprintf(mpfd_file_path, sizeof(mpfd_file_path),
 							"%s/%s", mpfd_path, key);
 
 					fp = fopen(mpfd_file_path, "w");
 					assert(fp);
+
 				}
 
 				// printf("HEADER=%s\n", line);
