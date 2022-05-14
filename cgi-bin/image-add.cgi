@@ -1,17 +1,20 @@
 #!/bin/ksh
 
 . $ROOT/lib/common.sh
+USER=$REMOTE_USER
 
 case "$REQUEST_METHOD" in
 	POST)
 		grep "^$REMOTE_USER$" $ROOT/.uploaders || fatal 401
 
 		USER_IMAGES_PATH=$ROOT/htdocs/img/$REMOTE_USER
-		[[ -d "$USER_IMAGES_PATH" ]] || mkdir $USER_IMAGES_PATH
+
+		fmkdir $USER_IMAGES_PATH
+		fbytes $ROOT/tmp/mpfd/file
+
 		IMAGE_ID="`counter_inc $ROOT/public/img-counter`"
 		ext="`file -i $ROOT/tmp/mpfd/file | awk '{print $2}' | tr '/' ' ' | awk '{print $2}'`"
 		mv $ROOT/tmp/mpfd/file $USER_IMAGES_PATH/$IMAGE_ID.$ext
-
 		see_other images
 
 		;;

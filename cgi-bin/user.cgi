@@ -6,12 +6,11 @@ USER_PATH=$ROOT/users/$REMOTE_USER
 
 case "$REQUEST_METHOD" in
 	POST)
-		{
-			echo $address_line_1
-			echo $address_line_2
-			echo $zip
-		} > $USER_PATH/address
-
+		fwrite $USER_PATH/address cat <<!
+$address_line_1
+$address_line_2
+$zip
+!
 		see_other user
 		;;
 	GET)

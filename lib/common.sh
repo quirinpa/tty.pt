@@ -98,19 +98,19 @@ shops_df() {
 		while read line; do
 			SHOP_PATH=$ROOT/shops/$line
 			OWNER="`cat $SHOP_PATH/.owner`"
-			[[ "$OWNER" == "$REMOTE_USER" ]] && df_dir $SHOP_PATH
+			[[ "$OWNER" == "$USER" ]] && df_dir $SHOP_PATH
 		done
 }
 
 comments_df() {
 	COMMENTS_PATH=/public/comments-$1.txt
-	COMMENTS_SIZE="`sed -n "/^$REMOTE_USER:/p" $COMMENTS_PATH | wc | awk '{ print $3 }'`"
+	COMMENTS_SIZE="`sed -n "/^$USER:/p" $COMMENTS_PATH | wc | awk '{ print $3 }'`"
 	format_df $COMMENTS_PATH $COMMENTS_SIZE
 }
 
-mydf() {
-	df_dir users/$REMOTE_USER
-	df_dir htdocs/img/$REMOTE_USER
+df() {
+	df_dir users/$USER
+	df_dir htdocs/img/$USER
 	comments_df pt_PT
 	comments_df en_US
 	comments_df fa_IR
@@ -119,11 +119,60 @@ mydf() {
 }
 
 df_total_exp() {
-	mydf | awk '{ print $2 }' | sum_lines_exp
+	df | awk '{ print $2 }' | sum_lines_exp
 }
 
 df_total() {
 	echo "`df_total_exp`" | bc
+}
+
+calcround() {
+	echo $@ | bc -l | xargs printf "%.0f"
+}
+
+free_space() {
+	N_USERS="`cat $ROOT/.htpasswd | wc -l | sed 's/ //g'`"
+	FREE_SPACE_EXP="(20000000000 / $N_USERS)"
+	calcround $FREE_SPACE_EXP
+}
+
+FREE_SPACE="`free_space`"
+
+_fbytes() {
+	OCCUPIED_SPACE="`df_total`"
+	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
+	CAN="`echo $CAN_EXP | bc -l`"
+	if [[ "$CAN" == "0" ]]; then
+		Fatal 400
+	fi
+}
+
+fbytes() {
+	STAT="`stat -f%z $1`"
+	_fbytes $USER $STAT
+}
+
+fmkdir() {
+	if [[ ! -d "$1" ]]; then
+		fbytes /empty
+		mkdir -p "$1"
+	fi
+}
+
+fwrite() {
+	TARGET=$1
+	shift
+	count="`$@ | wc | awk '{print $3}'`"
+	_fail_bytes $USER $count
+	$@ > $TARGET
+}
+
+fappend() {
+	TARGET=$1
+	shift
+	count="`$@ | wc | awk '{print $3}'`"
+	_fail_bytes $USER $count
+	$@ >> $TARGET
 }
 
 LoginLogout() {
@@ -196,4 +245,3 @@ Fatal() {
 	Cat fatal
 	exit 1
 }
-

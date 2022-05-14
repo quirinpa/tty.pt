@@ -10,7 +10,7 @@ COMMENTS_PATH="$ROOT/public/comments-$ILANG.txt"
 
 case "$REQUEST_METHOD" in
 	POST)
-		echo $REMOTE_USER: "`urldecode "$comment"`" >> $COMMENTS_PATH
+		fappend $COMMENTS_PATH echo $REMOTE_USER: "`urldecode "$comment"`" 
 		see_other poem
 		;;
 	GET)

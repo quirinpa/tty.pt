@@ -18,18 +18,18 @@ case "$REQUEST_METHOD" in
 				fatal 400
 			fi
 
+			SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 			ORDERS_PATH=$SHOP_PATH/.orders
-			[[ -d "$ORDERS_PATH" ]] || mkdir -p -m 770 $ORDERS_PATH
-
 			ORDER_ID_PATH=$SHOP_PATH/.orders/.count
 			ORDER_ID="`counter_inc $ORDER_ID_PATH`"
-
 			ORDER_PATH=$SHOP_PATH/.orders/$ORDER_ID
-			mkdir -p $ORDER_PATH
+			USER=$SHOP_OWNER
 
-			cat $CART_PATH > $ORDER_PATH/raw
-			echo $REMOTE_USER > $ORDER_PATH/owner
-			echo Pending_payment > $ORDER_PATH/state
+			fmkdir $ORDERS_PATH
+			fmkdir $ORDER_PATH
+			fwrite $ORDER_PATH/raw cat $CART_PATH
+			fwrite $ORDER_PATH/owner echo $REMOTE_USER
+			fwrite $ORDER_PATH/state echo Pending_payment
 
 			rm $CART_PATH # TODO also remove unneeded directories?
 
@@ -64,7 +64,8 @@ case "$REQUEST_METHOD" in
 					;;
 			esac
 
-			echo $ORDER_STATE_TEXT > $ORDER_PATH/state
+			USER=$SHOP_OWNER
+			fwrite $ORDER_PATH/state echo $ORDER_STATE_TEXT
 
 			case "$return" in
 				order)

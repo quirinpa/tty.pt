@@ -6,17 +6,15 @@ error() {
 	echo 'Status: 303 See Other'
 	echo "Location: login.cgi?error=$1&lang=$lang"
 	echo
+	exit
 }
 
 case "$REQUEST_METHOD" in
 	POST)
-		if grep -q "^$username" $ROOT/.htpasswd; then
-			echo 'Status: 303 See Other'
-			echo "Location: https://$username:$password@tty.pt/cgi-bin/user.cgi"
-			echo
-		else
-			error nouser
-		fi
+		grep -q "^$username" $ROOT/.htpasswd || error nouser
+		echo 'Status: 303 See Other'
+		echo "Location: https://$username:$password@tty.pt/cgi-bin/user.cgi"
+		echo
 		;;
 	GET)
 		export _TITLE="`_ Login`"

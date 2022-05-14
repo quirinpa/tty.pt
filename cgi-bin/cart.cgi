@@ -35,12 +35,14 @@ case "$REQUEST_METHOD" in
 			fatal 400
 		fi
 
-		[[ -d "$USER_SHOP_PATH" ]] || mkdir -m 770 -p $USER_SHOP_PATH
+		SHOP_OWNER="`cat $SHOP_PATH/owner`"
+		USER=$SHOP_OWNER
+		fmkdir $USER_SHOP_PATH
 
 		if [[ "$quantity" == "0" ]]; then
 			sed -n "/^$product_id /,/^[^+]/{x;/^$/!p;}" $CART_PATH > $CART_PATH
 		else
-			echo $product_id $quantity >> $CART_PATH
+			fwrite $CART_PATH echo $product_id $quantity
 			cat $CART_PATH | awk \
 				'{a[$1]=$2} END{for (i in a) print i FS a[i]}' \
 				> $CART_PATH

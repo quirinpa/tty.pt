@@ -4,21 +4,19 @@
 
 ibeg() {
 	cat - $1 > $ROOT/tmp/ibeg && mv $ROOT/tmp/ibeg $1
-}
-
-calcround() {
-	echo $@ | bc -l | xargs printf "%.0f"
+	#fwrite $ROOT/tmp/ibeg "cat - $1" && mv $ROOT/tmp/ibeg $1
 }
 
 USER_DIR="$ROOT/users/$REMOTE_USER"
-[[ -d "$USER_DIR" ]] || mkdir -m 770 -p $USER_DIR
+USER=$REMOTE_USER
+fmkdir $USER_DIR
 OUTPUT_PATH="$USER_DIR/.tty"
 
 case "$REQUEST_METHOD" in
 	POST)
 		CMD="`urldecode $cmd`"
 		[[ -f $OUTPUT_PATH ]] || touch $OUTPUT_PATH
-		echo "$ $CMD" | ibeg $OUTPUT_PATH
+		echo "$REMOTE_USER$ $CMD" | ibeg $OUTPUT_PATH
 
 		case "$CMD" in
 			help) 
@@ -27,13 +25,10 @@ case "$REQUEST_METHOD" in
 				echo commands: df quota clear whisper
 				;;
 			df)
-				mydf | ibeg $OUTPUT_PATH
+				df
 				;;
 			quota)
-				N_USERS="`cat /.htpasswd | wc -l | sed 's/ //g'`"
-				FREE_SPACE_EXP="(20000000000 / $N_USERS)"
-				echo -n "`df_total`"/
-				echo "`calcround $FREE_SPACE_EXP`"
+				echo "`df_total`/`free_space`"
 				;;
 			clear)
 				echo -n "" > $OUTPUT_PATH
@@ -46,7 +41,10 @@ case "$REQUEST_METHOD" in
 				message=$@
 
 				[[ -d $ROOT/users/$username ]] || fatal 400
-				printf "%s: %s\n" "$REMOTE_USER" "$message" >> $ROOT/users/$username/.whisper
+
+				USER=$username
+				fappend $ROOT/users/$username/.whisper \
+					echo "$REMOTE_USER": "$message"
 				echo "Sent whisper."
 				;;
 			*)

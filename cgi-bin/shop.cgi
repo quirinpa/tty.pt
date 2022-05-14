@@ -17,21 +17,15 @@ Category() {
 
 case "$REQUEST_METHOD" in
 	POST)
-		if [[ -z "$shop_id" ]]; then
-			fatal 400
-		fi
+		[[ -z "$shop_id" ]] && fatal 400
 
 		case "$action" in
 			delete)
-				if [[ -z "$product_id" ]]; then
-					fatal 400
-				fi
+				[[ -z "$product_id" ]] && fatal 400
 
 				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
-				if [[ "$SHOP_OWNER" != "$REMOTE_USER" ]]; then
-					fatal 401
-				fi
+				[[ "$SHOP_OWNER" != "$REMOTE_USER" ]] && fatal 401
 
 				rm -rf $SHOP_PATH/$product_id
 
@@ -44,9 +38,7 @@ case "$REQUEST_METHOD" in
 
 		;;
 	GET)
-		if [[ -z "$shop_id" ]]; then
-			fatal 400
-		fi
+		[[ -z "$shop_id" ]] && fatal 400
 
 		export _TITLE="`_ $shop_id`"
 

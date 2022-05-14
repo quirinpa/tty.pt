@@ -18,13 +18,14 @@ case "$REQUEST_METHOD" in
 		PRODUCT_ID_PATH=$SHOP_PATH/.count
 		PRODUCT_ID="`counter_inc $PRODUCT_ID_PATH`"
 		PRODUCT_PATH=$SHOP_PATH/$PRODUCT_ID
+		USER=$SHOP_OWNER
 
-		mkdir $PRODUCT_PATH
-		urldecode $title > $PRODUCT_PATH/title
-		urldecode $description > $PRODUCT_PATH/description
-		urldecode $image > $PRODUCT_PATH/image
-		echo $price > $PRODUCT_PATH/price
-		echo $stock > $PRODUCT_PATH/stock
+		fmkdir $PRODUCT_PATH
+		fwrite $PRODUCT_PATH/title urldecode $title
+		fwrite $PRODUCT_PATH/description urldecode $description
+		fwrite $PRODUCT_PATH/image urldecode $image
+		fwrite $PRODUCT_PATH/price echo $price
+		fwrite $PRODUCT_PATH/stock echo $stock
 
 		see_other shop \&shop_id=$shop_id
 		;;
