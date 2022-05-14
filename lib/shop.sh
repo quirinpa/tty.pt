@@ -11,6 +11,7 @@ ProductSummary() {
 }
 
 ProductForm() {
+	PRODUCT_STOCK="`cat $PRODUCT_PATH/stock`"
 	cat <<!
 <div class="_ f fic">
 	<div class="fg"></div>
@@ -21,7 +22,7 @@ ProductForm() {
 		<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 		<input name="lang" type="hidden" value="$lang"></input>
 		<input name="shop_id" type="hidden" value="$shop_id"></input>
-		<input name="quantity" type="number" min="0" value="$quantity" style="width: 80px"></input>
+		<input name="quantity" type="number" min="0" max="$PRODUCT_STOCK" value="$quantity" style="width: 80px"></input>
 		$return_str
 		<h2 class="tar">
 			= $QUANTITY_TIMES_COST€

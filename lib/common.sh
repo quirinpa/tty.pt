@@ -63,6 +63,12 @@ counter_inc() {
 	echo $next | tee $1
 }
 
+counter_dec() {
+	current="`[[ -f $1 ]] && cat $1 || echo 0`"
+	next="`echo $current - $2 | bc`"
+	echo $next | tee $1
+}
+
 sum_lines_exp() {
 	echo -n '('
 	sed 's/$/ +/' | tr '\n' ' ' | sed 's/ + $//'

@@ -6,7 +6,7 @@
 
 TransferData() {
 	SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-	echo "<pre>"
+	echo "<pre class=\"oa\">"
 	cat $ROOT/users/$SHOP_OWNER/.transfer_data
 	echo "</pre>"
 }
@@ -14,7 +14,8 @@ TransferData() {
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$order_id" ]]; then
-			if [[ -z "$shop_id" ]] || [[ ! -f "$CART_PATH" ]]; then
+			if [[ -z "$shop_id" ]] || [[ ! -f "$CART_PATH" ]] \
+				|| [[ -z "`cat $CART_PATH`" ]]; then
 				fatal 400
 			fi
 
@@ -30,6 +31,10 @@ case "$REQUEST_METHOD" in
 			fwrite $ORDER_PATH/raw cat $CART_PATH
 			fwrite $ORDER_PATH/owner echo $REMOTE_USER
 			fwrite $ORDER_PATH/state echo Pending_payment
+
+			cat $ORDER_PATH/raw | while read product_id quantity; do
+				counter_dec $SHOP_PATH/$product_id/stock $quantity
+			done
 
 			rm $CART_PATH # TODO also remove unneeded directories?
 

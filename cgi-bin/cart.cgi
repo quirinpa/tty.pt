@@ -38,6 +38,11 @@ case "$REQUEST_METHOD" in
 		SHOP_OWNER="`cat $SHOP_PATH/owner`"
 		USER=$SHOP_OWNER
 		fmkdir $USER_SHOP_PATH
+		OLD_QUANTITY="`cat $CART_PATH | grep $product_id | awk '{ print $2 }'`"
+		AVAILABLE_EXP="$STOCK - ($quantity - $OLD_QUANTITY) > 0"
+		AVAILABLE="`echo $AVAILABLE_EXP | bc`"
+
+		[[ "$AVAILABLE" == "0" ]] && fail 400
 
 		if [[ "$quantity" == "0" ]]; then
 			sed -n "/^$product_id /,/^[^+]/{x;/^$/!p;}" $CART_PATH > $CART_PATH
@@ -62,7 +67,7 @@ case "$REQUEST_METHOD" in
 	GET)
 		[[ -z "$shop_id" ]] && fatal 400
 
-		if [[ -f "$CART_PATH" ]]; then
+		if [[ -f "$CART_PATH" ]] && [[ ! -z `cat $CART_PATH` ]]; then
 			CONTENTS="`Contents`"
 		else
 			CONTENTS="`EmptyContents`"

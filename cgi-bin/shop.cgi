@@ -15,6 +15,14 @@ Category() {
 !
 }
 
+Products() {
+	while read line; do
+		if [[ "`cat $SHOP_PATH/$line/stock`" -gt 0 ]]; then
+			Product -rshop $CART_PATH $line;
+		fi
+	done
+}
+
 case "$REQUEST_METHOD" in
 	POST)
 		[[ -z "$shop_id" ]] && fatal 400
@@ -43,7 +51,7 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ $shop_id`"
 
 		export SHOP_CATEGORIES="`lsshown $SHOP_PATH/.categories/ | while read line; do Category $line; done`"
-		export PRODUCTS="`lsshown $SHOP_PATH/ | while read line; do Product -rshop $CART_PATH $line; done`"
+		export PRODUCTS="`lsshown $SHOP_PATH/ | Products`"
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
 			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"txl round c0 ps tdn ch00\" href=\"/cgi-bin/product-add.cgi?lang=$lang&shop_id=$shop_id\">+</a></div>"
