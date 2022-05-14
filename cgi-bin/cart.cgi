@@ -29,7 +29,7 @@ Contents() {
 !
 }
 
-if [[ -z "$shop_id" ]] || [[ -d $SHOP_PATH ]]; then
+if [[ -z "$shop_id" ]] || [[ ! -d $SHOP_PATH ]]; then
 	Fatal 404 Shop not found
 fi
 
