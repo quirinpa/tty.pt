@@ -83,6 +83,49 @@ no_html() {
 	sed -e 's/</\&lt\;/g' -e 's/>/\&gt\;/g' 
 }
 
+format_df() {
+	#printf "%-40.40s %s\n" "$1" "$2"
+	echo "$1 $2"
+}
+
+df_dir() {
+	du_user="`du -c $ROOT/$1 | tail -1 | awk '{print $1}'`"
+	format_df $1 `calcround "$du_user \* 1024"`
+}
+
+shops_df() {
+	ls $ROOT/shops | \
+		while read line; do
+			SHOP_PATH=$ROOT/shops/$line
+			OWNER="`cat $SHOP_PATH/.owner`"
+			[[ "$OWNER" == "$REMOTE_USER" ]] && df_dir $SHOP_PATH
+		done
+}
+
+comments_df() {
+	COMMENTS_PATH=/public/comments-$1.txt
+	COMMENTS_SIZE="`sed -n "/^$REMOTE_USER:/p" $COMMENTS_PATH | wc | awk '{ print $3 }'`"
+	format_df $COMMENTS_PATH $COMMENTS_SIZE
+}
+
+mydf() {
+	df_dir users/$REMOTE_USER
+	df_dir htdocs/img/$REMOTE_USER
+	comments_df pt_PT
+	comments_df en_US
+	comments_df fa_IR
+	comments_df fr_FR
+	shops_df
+}
+
+df_total_exp() {
+	mydf | awk '{ print $2 }' | sum_lines_exp
+}
+
+df_total() {
+	echo "`df_total_exp`" | bc
+}
+
 LoginLogout() {
 	_LOGINLOGOUT="`_ "Login / Logout"`"
 	cat <<!
