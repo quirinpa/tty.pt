@@ -5,24 +5,28 @@ pre {
 	white-space: pre-wrap;
 	word-wrap: break-word;
 }
+.s_k9 {
+	max-width: 512px;
+}
 </style>
 
-<body class="cf cb">
-	<div class="sfv vn f">
-		<header class="_ f fic p">
-			<h1 class="fg">$_TITLE</h1>
-			$MENU
-			<div class="cf15 txl">$COUNTER</div>
-		</header>
-		<pre class="s_f svf oav mn">
+<body class="cf cb v f fic">
+	<header class="_ f fic">
+		$MENU
+		<div class="cf15 txl">$COUNTER</div>
+	</header>
+	<h1 class="tac">$_TITLE</h1>
+
+	<pre>
 $_POEM
-		</pre>
-		<form action="./poem.cgi?lang=$lang#comments" method="post" class="_ f ps fic">
-			<a href="#comments" class="txl">💬</a>
-			<input autofocus class="fg" name="comment"></input>
-		</form>
-	</div>
-	<pre id="comments" class="mn">
+	</pre>
+
+	<form action="./poem.cgi?lang=$lang#comments" method="post" class="_ f ps fic">
+		<a href="#comments" class="txl">💬</a>
+		<input class="fg" name="comment"></input>
+	</form>
+
+	<pre id="comments" class="s_k9">
 $_COMMENTS
 	</pre>
 </body>

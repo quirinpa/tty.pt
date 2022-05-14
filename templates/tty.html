@@ -2,15 +2,13 @@
 pre,form { margin: 0 }
 pre { display: inline-block; }
 </style>
-<body class="cf cb sfv vn f">
-	<header class="_ f fic">
-		<h1 class="fg">$_TITLE</h1>
-		$MENU
-	</header>
+<body class="cf cb v f fic">
+	$MENU
+	<h1 class="tac">$_TITLE</h1>
 	<form action="./tty.cgi?lang=$lang" method="post" class="_ f ps fic">
 		<input autofocus class="fg" name="cmd"></input>
 	</form>
-	<pre class="s_f oav mn">
+	<pre>
 $OUTPUT
 	</pre>
 </body>

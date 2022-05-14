@@ -14,19 +14,14 @@ ProductForm() {
 	PRODUCT_STOCK="`cat $PRODUCT_PATH/stock`"
 	cat <<!
 <div class="_ f fic">
-	<div class="fg"></div>
 	<form action="./cart.cgi" method="post" class="_ f fic">
-		<h2 class="tar">
-			$product_price€ x
-		</h2>
+		$product_price€ x
 		<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 		<input name="lang" type="hidden" value="$lang"></input>
 		<input name="shop_id" type="hidden" value="$shop_id"></input>
 		<input name="quantity" type="number" min="0" max="$PRODUCT_STOCK" value="$quantity" style="width: 80px"></input>
 		$return_str
-		<h2 class="tar">
-			= $QUANTITY_TIMES_COST€
-		</h2>
+		<span>= $QUANTITY_TIMES_COST€</span>
 		<button class="tl">🛒</button>
 	</form>
 	$delete_form
@@ -98,17 +93,15 @@ Product() {
 	fi
 
 	cat <<!
-<div class="f _ b0 p fic">
+<div class="f v b0 fic p">
 	<img height="128" class="ofc" src="$PRODUCT_IMAGE" />
-	<div class="f v fg">
-		<a class="txl" href="/cgi-bin/product.cgi?lang=$lang&product_id=$PRODUCT_ID">
-			$PRODUCT_TITLE
-		</a>
-		<p class="fg">
-			$PRODUCT_DESCRIPTION
-		</p>
-		$summary
-	</div>
+	<a class="txl" href="/cgi-bin/product.cgi?lang=$lang&product_id=$PRODUCT_ID">
+		$PRODUCT_TITLE
+	</a>
+	<p>
+		$PRODUCT_DESCRIPTION
+	</p>
+	$summary
 </div>
 !
 }

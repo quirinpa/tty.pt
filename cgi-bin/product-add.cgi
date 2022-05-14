@@ -3,16 +3,16 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
 
+if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
+	fatal 404 Shop not found
+fi
+
 case "$REQUEST_METHOD" in
 	POST)
-		if [[ -z "$shop_id" ]]; then
-			fatal 400
-		fi
-
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
 		if [[ "$REMOTE_USER" != "$SHOP_OWNER" ]]; then
-			fatal 400
+			Fatal 401 "You cannot do that"
 		fi
 
 		PRODUCT_ID_PATH=$SHOP_PATH/.count
@@ -31,10 +31,6 @@ case "$REQUEST_METHOD" in
 		;;
 
 	GET)
-		if [[ -z "$shop_id" ]]; then
-			fatal 400
-		fi
-
 		export _TITLE="`_ $shop_id` - `_ "Add product"`"
 		export __TITLE="`_ Title`"
 		export _DESCRIPTION="`_ Description`"

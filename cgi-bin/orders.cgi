@@ -13,15 +13,12 @@ Order() {
 	ORDER_STATE="`OrderState -rorders "$ORDER_STATE_TEXT" $1`"
 
 	cat <<!
-<a href="/cgi-bin/order.cgi?lang=$lang&shop_id=$shop_id&order_id=$1" class="b0 p _ f fic">
-	<span class="fg">
+<a href="/cgi-bin/order.cgi?lang=$lang&shop_id=$shop_id&order_id=$1" class="b0 p v">
+	<span>
 		$_ORDER #$1 - $ORDER_OWNER $TOTAL€
 	</span>
 
 	$ORDER_STATE
-	<span class="dib ps c$ORDER_STATE_COLOR">
-		$_ORDER_STATE
-	</span>
 </a>
 !
 }
@@ -40,11 +37,12 @@ UserOrders() {
 	done
 }
 
+if [[ -z "$shop_id" ]] || [[ -d "$SHOP_PATH" ]]; then
+	Fatal 404 Shop not found
+fi
+
 case "$REQUEST_METHOD" in
 	GET)
-		if [[ -z "$shop_id" ]]; then
-			fatal 400
-		fi
 
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 

@@ -23,31 +23,35 @@ Products() {
 	done
 }
 
+if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
+	Fatal 404 Shop not found
+fi
+
 case "$REQUEST_METHOD" in
 	POST)
-		[[ -z "$shop_id" ]] && fatal 400
-
 		case "$action" in
 			delete)
-				[[ -z "$product_id" ]] && fatal 400
+				PRODUCT_PATH=$SHOP_PATH/$product_id
+				if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
+					Fatal 404 Product not found
+				fi
 
 				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
-				[[ "$SHOP_OWNER" != "$REMOTE_USER" ]] && fatal 401
+				[[ "$SHOP_OWNER" != "$REMOTE_USER" ]] \
+					&& Fatal 401 "You can not do that"
 
 				rm -rf $SHOP_PATH/$product_id
 
 				see_other shop \&shop_id=$shop_id
 				;;
 			*)
-				fatal 400
+				Fatal 400 Invalid action
 				;;
 		esac
 
 		;;
 	GET)
-		[[ -z "$shop_id" ]] && fatal 400
-
 		export _TITLE="`_ $shop_id`"
 
 		export SHOP_CATEGORIES="`lsshown $SHOP_PATH/.categories/ | while read line; do Category $line; done`"

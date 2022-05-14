@@ -226,8 +226,10 @@ Normal() {
 		200) STATUS_TEXT="OK";;
 		400) STATUS_TEXT="Bad Request";;
 		401) STATUS_TEXT="Unauthorized";;
+		404) STATUS_TEXT="Not Found";;
 	esac
 	export STATUS_TEXT
+	export STATUS_CODE=$1
 	echo "Status: $1 $STATUS_TEXT"
 	echo 'Content-Type: text/html; charset=utf-8'
 	echo
@@ -247,7 +249,12 @@ Cat() {
 }
 
 Fatal() {
-	Normal $1
+	SC=$1
+	shift
+	allargs="$@"
+	export _TITLE="`_ "$allargs"`"
+	export _HEAD_TITLE="tty.pt - $SC - $_TITLE"
+	Normal $SC
 	Cat fatal
 	exit 1
 }

@@ -5,7 +5,8 @@ USER=$REMOTE_USER
 
 case "$REQUEST_METHOD" in
 	POST)
-		grep "^$REMOTE_USER$" $ROOT/.uploaders || fatal 401
+		grep "^$REMOTE_USER$" $ROOT/.uploaders \
+			|| Fatal 401 "You can not do that"
 
 		USER_IMAGES_PATH=$ROOT/htdocs/img/$REMOTE_USER
 

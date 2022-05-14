@@ -24,3 +24,6 @@ Empty|Vazio
 User|Utilizador
 change_shipping_address|Mudar o endereço de entrega
 Welcome|Bem-vindo
+Shop not found|Loja não encontrada
+Order not found|Encomenda não encontrada
+You can not do that|Não pode fazer isso

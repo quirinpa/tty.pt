@@ -11,12 +11,16 @@ TransferData() {
 	echo "</pre>"
 }
 
+if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
+	Fatal 404 Shop not found
+fi
+
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$order_id" ]]; then
-			if [[ -z "$shop_id" ]] || [[ ! -f "$CART_PATH" ]] \
+			if [[ ! -f "$CART_PATH" ]] \
 				|| [[ -z "`cat $CART_PATH`" ]]; then
-				fatal 400
+				Fatal 404 Cart not found
 			fi
 
 			SHOP_OWNER="`cat $SHOP_PATH/.owner`"
@@ -40,15 +44,11 @@ case "$REQUEST_METHOD" in
 
 			see_other order \&shop_id=$shop_id\&order_id=$ORDER_ID
 		else
-			if [[ -z "$shop_id" ]]; then
-				fatal 400
-			fi
-
 			ORDER_PATH=$SHOP_PATH/.orders/$order_id
 			SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
 			if [[ "$SHOP_OWNER" != "$REMOTE_USER" ]]; then
-				fatal 401
+				Fatal 401 "You can not do that"
 			fi
 
 			ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
@@ -85,18 +85,18 @@ case "$REQUEST_METHOD" in
 		;;
 
 	GET)
-		if [[ -z "$shop_id" ]] || [[ -z "$order_id" ]]; then
-			fatal 400
+		ORDER_PATH=$SHOP_PATH/.orders/$order_id
+		if [[ -z "$order_id" ]] || [[ ! -d "$ORDER_PATH" ]]; then
+			Fatal 404 Order not found
 		fi
 
-		ORDER_PATH=$SHOP_PATH/.orders/$order_id
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		ORDER_OWNER="`cat $ORDER_PATH/owner`"
 
 		if [[ "$REMOTE_USER" != "$ORDER_OWNER" ]] \
 			&& [[ "$REMOTE_USER" != "$SHOP_OWNER" ]]; then
 
-			fatal 401
+			Fatal 401 "You can not do that"
 		fi
 
 		export order_id

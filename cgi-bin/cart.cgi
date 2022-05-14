@@ -29,10 +29,14 @@ Contents() {
 !
 }
 
+if [[ -z "$shop_id" ]] || [[ -d $SHOP_PATH ]]; then
+	Fatal 404 Shop not found
+fi
+
 case "$REQUEST_METHOD" in
 	POST)
-		if [[ -z "$shop_id" ]] || [[ $quantity -lt 0 ]]; then
-			fatal 400
+		if [[ $quantity -lt 0 ]]; then
+			Fatal 400 Invalid quantity
 		fi
 
 		SHOP_OWNER="`cat $SHOP_PATH/owner`"
@@ -42,7 +46,7 @@ case "$REQUEST_METHOD" in
 		AVAILABLE_EXP="$STOCK - ($quantity - $OLD_QUANTITY) > 0"
 		AVAILABLE="`echo $AVAILABLE_EXP | bc`"
 
-		[[ "$AVAILABLE" == "0" ]] && fail 400
+		[[ "$AVAILABLE" == "0" ]] && Fatal 400 No available space
 
 		if [[ "$quantity" == "0" ]]; then
 			sed -n "/^$product_id /,/^[^+]/{x;/^$/!p;}" $CART_PATH > $CART_PATH
@@ -65,8 +69,6 @@ case "$REQUEST_METHOD" in
 		;;
 
 	GET)
-		[[ -z "$shop_id" ]] && fatal 400
-
 		if [[ -f "$CART_PATH" ]] && [[ ! -z `cat $CART_PATH` ]]; then
 			CONTENTS="`Contents`"
 		else
@@ -74,7 +76,7 @@ case "$REQUEST_METHOD" in
 		fi
 		export CONTENTS
 
-		export _TITLE="`_ $shop_id` - `_ $TITLE`"
+		export _TITLE="`_ $shop_id` - `_ Cart`"
 
 		Normal 200 cart
 		Cat cart

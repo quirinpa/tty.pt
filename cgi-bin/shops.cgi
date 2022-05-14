@@ -6,9 +6,9 @@ Shop() {
 	SHOPNAME="$1"
 	_TITLE="`_ $SHOPNAME`"
 	cat <<EOF
-<h1><a href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$SHOPNAME">
+<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$SHOPNAME">
 	$_TITLE
-</a></h1>
+</a>
 EOF
 }
 
