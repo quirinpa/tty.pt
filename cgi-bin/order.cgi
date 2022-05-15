@@ -42,7 +42,7 @@ case "$REQUEST_METHOD" in
 
 			rm $CART_PATH # TODO also remove unneeded directories?
 
-			see_other order \&shop_id=$shop_id\&order_id=$ORDER_ID
+			see_other order ?shop_id=$shop_id\&order_id=$ORDER_ID
 		else
 			ORDER_PATH=$SHOP_PATH/.orders/$order_id
 			SHOP_OWNER="`cat $SHOP_PATH/.owner`"
@@ -64,7 +64,7 @@ case "$REQUEST_METHOD" in
 					;;
 				Delivered)
 					rm -rf $ORDER_PATH
-					see_other orders \&shop_id=$shop_id
+					see_other orders ?shop_id=$shop_id
 					exit
 					;;
 			esac
@@ -74,10 +74,10 @@ case "$REQUEST_METHOD" in
 
 			case "$return" in
 				order)
-					see_other order \&shop_id=$shop_id\&order_id=$order_id
+					see_other order ?shop_id=$shop_id\&order_id=$order_id
 					;;
 				orders)
-					see_other orders \&shop_id=$shop_id
+					see_other orders ?shop_id=$shop_id
 					;;
 			esac
 		fi
@@ -116,7 +116,7 @@ case "$REQUEST_METHOD" in
 					;;
 			esac
 		fi
-		Normal 200 order shop_id=$shop_id\&
+		Normal 200 order ?shop_id=$shop_id
 		Cat order
 		;;
 	*)

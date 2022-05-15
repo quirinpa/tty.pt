@@ -1,14 +1,44 @@
-Register|S'inscrire
+
+Programmer's poem|Poème du programmeur
+Never Dark|Jamais Sombre
+Shops|Magasins
+Shared Expenses Manager|Gestionnaire des dépenses partagées
+
+
+
 Username|Nom d'utilisateur
 Password|Mot de passe
-Repeat password|Répéter le mot de passe
 Submit|nous faire parvenir
+Register|S'inscrire
+Anonymous|Anonyme
+Repeat password|Répéter le mot de passe
+
 Passwords don't match|Les mots de passe ne correspondent pas
 User already exists|L'utilisateur existe déjà
-Programmer's poem|Poème du programmeur
-flag|🇫🇷
-Never Dark|Jamais Sombre
-Shared Expenses Manager|Gestionnaire des dépenses partagées
-Anonymous|Anonyme
-Shops|Magasins
 loja_dos_sonhos|Boutique de rêve
+misc|mixte
+Cart|Panier
+Order|Commande
+Orders|Ordres
+Pending_payment|En attente de paiement
+Pending_shipment|Soumission en attente
+Shipped|Expédié
+Delivered|Livré
+Empty|Vider
+User|Utilisateur
+change_shipping_address|Changer l'adresse de livraison
+Welcome|Bienvenue
+Shop not found|Magasin introuvable
+Order not found|Commande introuvable
+You can not do that|Toi ne peux pas le faire
+Add product|Ajouter un produit
+Title|Titre
+Description|La description
+
+Price|Prix
+Upload image|Télécharger une image
+File|Fichier
+Product|Produit
+Address line 1|Première ligne d'adresse
+Address line 2|Deuxième ligne d'adresse
+Zip code|Code postal

@@ -1,16 +1,20 @@
-Register|Registo
+
+Programmer's poem|O poema do programador
+Never Dark|Nunca Sombrio
+Shops|Lojas
+Shared Expenses Manager|Gestor de Despesas Partilhadas
+
+
+
 Username|Nome de utilizador
 Password|Palavra-passe
-Repeat password|Repetir palavra-passe
 Submit|Submeter
+Register|Registo
+Anonymous|Anónimo
+Repeat password|Repetir palavra-passe
+
 Passwords don't match|As palavras-passes não combinam.
 User already exists|O utilizador já existe
-Programmer's poem|O poema do programador
-flag|🇵🇹
-Never Dark|Nunca Sombrio
-Shared Expenses Manager|Gestor de Despesas Partilhadas
-Anonymous|Anónimo
-Shops|Lojas
 loja_dos_sonhos|Loja Dos Sonhos
 misc|Mistos
 Cart|Carrinho
@@ -34,3 +38,7 @@ Images|Imagens
 Price|Preço
 Upload image|Fazer upload de uma imagem
 File|Ficheiro
+Product|Produto
+Address line 1|Primeira linha da morada
+Address line 2|Segunda linha da morada
+Zip code|Código postal

@@ -21,7 +21,6 @@ Contents() {
 <div class="tcv fic v">
 	<div class="txl">$TOTAL€</div>
 	<form action="/cgi-bin/order.cgi" method="POST">
-		<input type="hidden" name="lang" value="$lang"></input>
 		<input type="hidden" name="shop_id" value="$shop_id"></input>
 		<button>$_SUBMIT</Button>
 	</form>
@@ -65,13 +64,13 @@ case "$REQUEST_METHOD" in
 
 		case "$return" in
 			cart)
-				see_other cart \&shop_id=$shop_id
+				see_other cart ?shop_id=$shop_id
 				;;
 			shop)
-				see_other shop \&shop_id=$shop_id
+				see_other shop ?shop_id=$shop_id
 				;;
 			product)
-				see_other product \&shop_id=$shop_id\&product_id=$product_id
+				see_other product ?shop_id=$shop_id\&product_id=$product_id
 				;;
 		esac
 

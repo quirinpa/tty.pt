@@ -3,9 +3,7 @@
 . $ROOT/lib/common.sh
 
 error() {
-	echo 'Status: 303 See Other'
-	echo "Location: register.cgi?error=$1&lang=$1"
-	echo
+	see_other register ?error=$1
 }
 
 case "$REQUEST_METHOD" in

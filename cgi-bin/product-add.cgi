@@ -27,7 +27,7 @@ case "$REQUEST_METHOD" in
 		fwrite $PRODUCT_PATH/price echo $price
 		fwrite $PRODUCT_PATH/stock echo $stock
 
-		see_other shop \&shop_id=$shop_id
+		see_other shop ?shop_id=$shop_id
 		;;
 
 	GET)
@@ -39,7 +39,7 @@ case "$REQUEST_METHOD" in
 		export _PRICE="`_ Price`"
 		export _SUBMIT="`_ Submit`"
 
-		Normal 200 product-add shop_id=$shop_id\&
+		Normal 200 product-add ?shop_id=$shop_id
 		Cat product-add
 		;;
 	*)

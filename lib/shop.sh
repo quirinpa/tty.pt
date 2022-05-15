@@ -17,7 +17,6 @@ ProductForm() {
 <div class="_ f fic">
 	<form action="./cart.cgi" method="post" class="_ f fic wn">
 		<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
-		<input name="lang" type="hidden" value="$lang"></input>
 		<input name="shop_id" type="hidden" value="$shop_id"></input>
 		<input name="quantity" type="number" min="0" max="$PRODUCT_STOCK" value="$quantity" class="s_4_5"></input>
 		$return_str
@@ -33,9 +32,8 @@ DeleteProductForm() {
 <form action="./shop.cgi" method="post">
 	<input name="action" type="hidden" value="delete"></input>
 	<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
-	<input name="lang" type="hidden" value="$lang"></input>
 	<input name="shop_id" type="hidden" value="$shop_id"></input>
-	<button class="tl round ps">X</button>
+	<button class="tl round ps">×</button>
 </form>
 !
 }
@@ -113,7 +111,7 @@ Product() {
 	cat <<!
 <div class="f v b0 fic p">
 	$PRODUCT_IMAGES
-	<a class="txl" href="/cgi-bin/product.cgi?lang=$lang&shop_id=$shop_id&product_id=$PRODUCT_ID">
+	<a class="txl" href="/cgi-bin/product.cgi?shop_id=$shop_id&product_id=$PRODUCT_ID">
 		$PRODUCT_TITLE
 	</a>
 	$PRODUCT_DESCRIPTION

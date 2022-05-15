@@ -20,7 +20,6 @@ case "$REQUEST_METHOD" in
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
 
 				mpfd "$boundary"
-				lang="`cat $ROOT/tmp/mpfd/lang`"
 				;;
 			*)
 				read line1
@@ -35,6 +34,16 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
+get_lang() {
+	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr ';' ' ' | tr '-' '_' | \
+		while read alang qlang; do \
+			if grep "$alang" $ROOT/locale/langs; then
+				break
+			fi
+		done
+}
+
+lang="`get_lang`"
 export lang
 export TEXTDOMAIN=site
 export TEXTDOMAINDIR=$ROOT/usr/share/locale
@@ -53,7 +62,7 @@ ILANG=$LANG
 
 _() {
 	IFS='$'
-	value="`cat $ROOT/locale/$TEXTDOMAIN-$LANG.txt | sed -n "s/^$1\|//p"`"
+	value="`cat $ROOT/locale/$TEXTDOMAIN-$LANG.txt | sed -n "s|^$1\|||p"`"
 	[[ -z "$value" ]] && echo $1 || echo $value
 }
 
@@ -81,7 +90,7 @@ revlines() {
 
 see_other() {
 	echo 'Status: 303 See Other'
-	echo "Location: /cgi-bin/$1.cgi?lang=${lang}$2"
+	echo "Location: /cgi-bin/$1.cgi$2"
 	echo
 }
 
@@ -185,7 +194,7 @@ LoginLogout() {
 	_LOGINLOGOUT="`_ "Login / Logout"`"
 	cat <<!
 <div class="tac txl">
-	<a href="/cgi-bin/login.cgi?lang=$lang" class="txl">$_LOGINLOGOUT 🔑</a>
+	<a href="/cgi-bin/login.cgi" class="txl">$_LOGINLOGOUT 🔑</a>
 </div>
 !
 }
@@ -194,11 +203,9 @@ LoginLogout() {
 Menu() {
 	if [[ ! -z "$REMOTE_USER" ]]; then
 		USER_NAME="<span class=\"t\">$REMOTE_USER</span>"
-		USER_ICON="<a class=\"txl f _ fic\" href=\"/cgi-bin/user.cgi?lang=$lang\"><span>🔑 </span><span> $USER_NAME</span></a>"
+		USER_ICON="<a class=\"txl f _ fic\" href=\"/cgi-bin/user.cgi\"><span>🔑 </span><span> $USER_NAME</span></a>"
 	fi
 	export USER_ICON
-	export _FLAG_ICON="`_ flag`"
-	export THIS_URL="$1"
 	cat $ROOT/components/menu.html | envsubst
 }
 
@@ -232,11 +239,12 @@ Normal() {
 	export STATUS_CODE=$1
 	echo "Status: $1 $STATUS_TEXT"
 	echo 'Content-Type: text/html; charset=utf-8'
+	echo "Link: <https://tty.pt/cgi-bin/$1.cgi$2>; rel=\"alternate\"; hreflang=\"x-default\""
 	echo
 	Head
 
 	Whisper
-	export MENU="`Menu ./$2.cgi?$3`"
+	export MENU="`Menu`"
 }
 
 Cat() {

@@ -43,7 +43,7 @@ case "$REQUEST_METHOD" in
 
 				rm -rf $SHOP_PATH/$product_id
 
-				see_other shop \&shop_id=$shop_id
+				see_other shop ?shop_id=$shop_id
 				;;
 			*)
 				Fatal 400 Invalid action
@@ -58,11 +58,11 @@ case "$REQUEST_METHOD" in
 		export PRODUCTS="`lsshown $SHOP_PATH/ | Products`"
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
-			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"txl round c0 ps tdn ch00\" href=\"/cgi-bin/product-add.cgi?lang=$lang&shop_id=$shop_id\">+</a></div>"
+			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"txl round c0 ps tdn ch00\" href=\"/cgi-bin/product-add.cgi?shop_id=$shop_id\">+</a></div>"
 		fi
 		export ADD_PRODUCT_BUTTON
 
-		Normal 200 shop shop_id=$shop_id\&
+		Normal 200 shop ?shop_id=$shop_id
 		Cat shop
 		;;
 	*)

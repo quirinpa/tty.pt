@@ -1,18 +1,44 @@
-Register|ثبت
+Login / Logout|داخل شدن و خارج شدن
+Programmer's poem|شعر برنامه نویس
+Never Dark|هرگز تاریک نمی شود
+Shops|مغازه ها
+Shared Expenses Manager|مدیر هزینه های مشترک
+Terminal|پایانه
+
+Login|وارد شدن
 Username|نام کاربری
 Password|کلمه عبور
+Submit|ارسال
+Register|ثبت
+Anonymous|ناشناس
 Repeat password|تکرار رمز عبور
 Email|پست الکترونیک
-Submit|ارسال
 Passwords don't match|گذرواژه ها مطابقت ندارند
 User already exists|کاربر از قبل وجود دارد
-Programmer's poem|شعر برنامه نویس
-flag|🇮🇷
-Never Dark|هرگز تاریک نمی شود
-Shared Expenses Manager|مدیر هزینه های مشترک
-Anonymous|ناشناس
-Shops|مغازه ها
 loja_dos_sonhos|فروشگاه رویایی
+misc|مختلط
 Cart|سبد خرید
-Terminal|پایانه
-Login|وارد شدن
+Order|سفارش
+Orders|سفارشات
+Pending_payment|در انتظار پرداخت
+Pending_shipment|در انتظار ارسال
+Shipped|ارسال شد
+Delivered|تحویل داده شده
+Empty|خالی
+User|کاربر
+change_shipping_address|تغییر آدرس حمل و نقل
+Welcome|خوش آمدی
+Shop not found|فروشگاه پیدا نشد
+Order not found|سفارش پیدا نشد
+You can not do that|نمی تواند این کار را انجام دهد
+Add product|نمی تواند این کار را انجام دهد
+Title|عنوان
+Description|شرح
+Images|تصاویر
+Price|قیمت
+Upload image|آپلود تصویر
+File|فایل
+Product|تولید - محصول
+Address line 1|خط اول آدرس
+Address line 2|خط آدرس دوم
+Zip code|کد پستی

@@ -13,7 +13,7 @@ Order() {
 	ORDER_STATE="`OrderState -rorders "$ORDER_STATE_TEXT" $1`"
 
 	cat <<!
-<a href="/cgi-bin/order.cgi?lang=$lang&shop_id=$shop_id&order_id=$1" class="b0 p v">
+<a href="/cgi-bin/order.cgi?shop_id=$shop_id&order_id=$1" class="b0 p v">
 	<span>
 		$_ORDER #$1 - $ORDER_OWNER $TOTAL€
 	</span>
@@ -59,7 +59,7 @@ case "$REQUEST_METHOD" in
 		fi
 
 		export ORDERS
-		Normal 200 orders shop_id=$shop_id\&
+		Normal 200 orders ?shop_id=$shop_id
 		Cat orders
 		;;
 	*)

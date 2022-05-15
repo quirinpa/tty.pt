@@ -3,14 +3,13 @@ pre { display: inline-block; }
 </style>
 <body class="cf cb f fic v p">
 	<div class="f _">
-		<a class="txl" href="/cgi-bin/shop.cgi?lang=$lang&shop_id=$shop_id">💰</a>
+		<a class="txl" href="/cgi-bin/shop.cgi?shop_id=$shop_id">💰</a>
 		$MENU
 	</div>
 
 	<h1 class="tac">$_TITLE</h1>
 
 	<form action="/cgi-bin/product-add.cgi" method="POST" class="v f fic">
-		<input type="hidden" name="lang" value="$lang" />
 		<input type="hidden" name="shop_id" value="$shop_id" />
 		<label class="mkn">
 			$__TITLE
@@ -24,7 +23,7 @@ pre { display: inline-block; }
 			$_IMAGES
 			<div class="_ f fic">
 				<textarea type="url" name="images"></textarea>
-				<a class="txl round c0 ps tdn ch00" href="/cgi-bin/images.cgi?lang=$lang" target="_blank">🔍</a>
+				<a class="txl round c0 ps tdn ch00" href="/cgi-bin/images.cgi" target="_blank">🔍</a>
 			</div>
 		</label>
 		<label>

@@ -4,7 +4,7 @@
 
 error() {
 	echo 'Status: 303 See Other'
-	echo "Location: login.cgi?error=$1&lang=$lang"
+	echo "Location: login.cgi?error=$1"
 	echo
 	exit
 }
