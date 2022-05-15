@@ -4,6 +4,7 @@
 
 error() {
 	see_other register ?error=$1
+	exit
 }
 
 case "$REQUEST_METHOD" in
@@ -11,11 +12,14 @@ case "$REQUEST_METHOD" in
 		if [[ "$password" == "$password2" ]];  then
 			if grep -q "^$username" $ROOT/.htpasswd; then
 				error match
-			else
-				echo `urldecode $username`:`urldecode $password` | htpasswd -I $ROOT/.htpasswd
-				see_other login
-				echo
 			fi
+
+			DF_USER=$username
+			USER_DIR=$ROOT/users/$username
+			fmkdir $USER_DIR
+			fwrite $USER_DIR/email urldecode $email
+			echo `urldecode $username`:`urldecode $password` | htpasswd -I $ROOT/.htpasswd
+			see_other login
 		else
 			error nomatch
 		fi

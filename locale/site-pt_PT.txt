@@ -26,7 +26,6 @@ Shipped|Enviado
 Delivered|Entregue
 Empty|Vazio
 User|Utilizador
-change_shipping_address|Mudar o endereço de entrega
 Welcome|Bem-vindo
 Shop not found|Loja não encontrada
 Order not found|Encomenda não encontrada
@@ -39,6 +38,15 @@ Price|Preço
 Upload image|Fazer upload de uma imagem
 File|Ficheiro
 Product|Produto
+change_personal_data|Mudar dados pessoais
 Address line 1|Primeira linha da morada
 Address line 2|Segunda linha da morada
 Zip code|Código postal
+Phone number|Número de telefone
+change_vendor_data|Mudar dados de vendedor
+Account IBAN|IBAN da conta
+Account BICSWIFT|BICSWIFT da conta
+Checking bytes of unknown user|A verificar bytes de um utilizador desconhecido
+Please refer to the order number in the credit description.|Por favor faça referência ao número da encomenda no descritivo do crédito.
+You can send an e-mail to|Pode enviar um email a
+to speed up shipment.|para acelerar o envio.

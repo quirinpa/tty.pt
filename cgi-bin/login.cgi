@@ -11,7 +11,8 @@ error() {
 
 case "$REQUEST_METHOD" in
 	POST)
-		grep -q "^$username" $ROOT/.htpasswd || error nouser
+
+		grep -q "^$username:" $ROOT/.htpasswd || error nouser
 		echo 'Status: 303 See Other'
 		echo "Location: https://$username:$password@tty.pt/cgi-bin/user.cgi"
 		echo

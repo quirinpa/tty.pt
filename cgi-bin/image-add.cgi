@@ -1,7 +1,6 @@
 #!/bin/ksh
 
 . $ROOT/lib/common.sh
-USER=$REMOTE_USER
 
 case "$REQUEST_METHOD" in
 	POST)

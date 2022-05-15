@@ -43,8 +43,7 @@ case "$REQUEST_METHOD" in
 			Fatal 400 Invalid quantity
 		fi
 
-		SHOP_OWNER="`cat $SHOP_PATH/owner`"
-		USER=$SHOP_OWNER
+		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		fmkdir $USER_SHOP_PATH
 		STOCK="`cat $PRODUCT_PATH/stock`"
 		OLD_QUANTITY="`cat $CART_PATH | grep $product_id | awk '{ print $2 }'`"

@@ -18,7 +18,7 @@ case "$REQUEST_METHOD" in
 		PRODUCT_ID_PATH=$SHOP_PATH/.count
 		PRODUCT_ID="`counter_inc $PRODUCT_ID_PATH`"
 		PRODUCT_PATH=$SHOP_PATH/$PRODUCT_ID
-		USER=$SHOP_OWNER
+		DF_USER=$SHOP_OWNER
 
 		fmkdir $PRODUCT_PATH
 		fwrite $PRODUCT_PATH/title urldecode $title

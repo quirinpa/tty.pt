@@ -56,4 +56,9 @@ button {
 	background-color: var(--C0);
 	color: var(--C15);
 	border: none;
+	//border: solid thin black;
+	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
+}
+button:hover {
+	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 }

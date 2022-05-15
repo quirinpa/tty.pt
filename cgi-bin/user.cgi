@@ -6,39 +6,52 @@ USER_PATH=$ROOT/users/$REMOTE_USER
 
 case "$REQUEST_METHOD" in
 	POST)
-		fwrite $USER_PATH/address cat <<!
-$address_line_1
-$address_line_2
-$zip
-!
+		case "$action" in
+			personal_data)
+				address_line_1="`urldecode $address_line_1`"
+				address_line_2="`urldecode $address_line_2`"
+				zip="`urldecode $zip`"
+				phone_number="`urldecode $phone_number`"
+				fwrite $USER_PATH/address_line_1 echo $address_line_1
+				fwrite $USER_PATH/address_line_2 echo $address_line_2
+				fwrite $USER_PATH/zip echo $zip
+				fwrite $USER_PATH/phone_number echo $phone_number
+				;;
+			vendor_data)
+				iban="`urldecode $iban`"
+				bicswift="`urldecode $bicswift`"
+				fwrite $USER_PATH/iban echo $iban
+				fwrite $USER_PATH/bicswift echo $bicswift
+				;;
+			*)
+				Fatal 400 Invalid action
+		esac
 		see_other user
 		;;
 	GET)
 		export _TITLE="`_ User` - $REMOTE_USER"
 		export _WELCOME="`_ Welcome`"
 		export LOGINLOGOUT="`LoginLogout`"
+		export _CHANGE_PERSONAL_DATA="`_ change_personal_data`"
 		export _ADDRESS_LINE_1="`_ "Address line 1"`"
 		export _ADDRESS_LINE_2="`_ "Address line 2"`"
 		export _ZIP_CODE="`_ "Zip code"`"
+		export _PHONE_NUMBER="`_ "Phone number"`"
+		export _CHANGE_VENDOR_DATA="`_ change_vendor_data`"
+		export _ACCOUNT_IBAN="`_ "Account IBAN"`"
+		export _ACCOUNT_BICSWIFT="`_ "Account BICSWIFT"`"
 		export _SUBMIT="`_ Submit`"
-		export _CHANGE_SHIPPING_ADDRESS="`_ change_shipping_address`"
 
-		cat $USER_PATH/address | {
-			read address_line_1
-			read address_line_2
-			read zip
+		export address_line_1="`zcat $USER_PATH/address_line_1`"
+		export address_line_2="`zcat $USER_PATH/address_line_2`"
+		export zip="`zcat $USER_PATH/zip`"
+		export phone_number="`zcat $USER_PATH/phone_number`"
 
-			address_line_1="`urldecode $address_line_1`"
-			address_line_2="`urldecode $address_line_2`"
-			zip="`urldecode $zip`"
+		export iban="`zcat $USER_PATH/iban`"
+		export bicswift="`zcat $USER_PATH/bicswift`"
 
-			export address_line_1
-			export address_line_2
-			export zip
-
-			Normal 200 user
-			Cat user
-		}
+		Normal 200 user
+		Cat user
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

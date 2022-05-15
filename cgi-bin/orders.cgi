@@ -43,7 +43,6 @@ fi
 
 case "$REQUEST_METHOD" in
 	GET)
-
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
 		ORDERS_PATH=$SHOP_PATH/.orders

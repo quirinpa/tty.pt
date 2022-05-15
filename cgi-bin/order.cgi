@@ -4,31 +4,65 @@
 . $ROOT/lib/shop.sh
 . $ROOT/lib/order.sh
 
+AccountInfo() {
+	ACCOUNT_IBAN="`zcat $ROOT/users/$SHOP_OWNER/iban`"
+
+	if [[ -z "$ACCOUNT_IBAN" ]]; then
+		return
+	fi
+
+	cat <<!
+<div>
+	<div>`_ "Account IBAN"`</div>
+	<div>$ACCOUNT_IBAN</div>
+</div>
+!
+}
+
+MBWayInfo() {
+	PHONE_NUMBER="`zcat $ROOT/users/$SHOP_OWNER/phone_number`"
+
+	if [[ -z $PHONE_NUMBER ]]; then
+		return
+	fi
+
+	cat <<!
+<div>
+	<span>`_ "Phone number"` (MBWay): </span>
+	<a href="tel:$PHONE_NUMBER">$PHONE_NUMBER</a>
+</div>
+!
+}
+
 TransferData() {
-	SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-	echo "<pre class=\"oa\">"
-	cat $ROOT/users/$SHOP_OWNER/.transfer_data
-	echo "</pre>"
+	OWNER_PATH=$ROOT/users/$SHOP_OWNER
+	OWNER_EMAIL="`cat $OWNER_PATH/email`"
+	cat <<!
+<div>`_ "Please refer to the order number in the credit description."` (#$order_id)</div>
+<div>`_ "You can send an e-mail to"` <a href="mailto:$OWNER_EMAIL">$OWNER_EMAIL</a> `_ "to speed up shipment."`</div>
+`AccountInfo`
+`MBWayInfo`
+!
 }
 
 if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
 	Fatal 404 Shop not found
 fi
 
+SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+DF_USER=$SHOP_OWNER
+
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ -z "$order_id" ]]; then
-			if [[ ! -f "$CART_PATH" ]] \
-				|| [[ -z "`cat $CART_PATH`" ]]; then
+			if [[ -z "`zcat $CART_PATH`" ]]; then
 				Fatal 404 Cart not found
 			fi
 
-			SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 			ORDERS_PATH=$SHOP_PATH/.orders
 			ORDER_ID_PATH=$SHOP_PATH/.orders/.count
 			ORDER_ID="`counter_inc $ORDER_ID_PATH`"
 			ORDER_PATH=$SHOP_PATH/.orders/$ORDER_ID
-			USER=$SHOP_OWNER
 
 			fmkdir $ORDERS_PATH
 			fmkdir $ORDER_PATH
@@ -37,15 +71,14 @@ case "$REQUEST_METHOD" in
 			fwrite $ORDER_PATH/state echo Pending_payment
 
 			cat $ORDER_PATH/raw | while read product_id quantity; do
-				counter_dec $SHOP_PATH/$product_id/stock $quantity >/dev/null
-			done
+				counter_dec $SHOP_PATH/$product_id/stock $quantity
+			done >/tmp/null
 
 			rm $CART_PATH # TODO also remove unneeded directories?
 
 			see_other order ?shop_id=$shop_id\&order_id=$ORDER_ID
 		else
 			ORDER_PATH=$SHOP_PATH/.orders/$order_id
-			SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
 			if [[ "$SHOP_OWNER" != "$REMOTE_USER" ]]; then
 				Fatal 401 "You can not do that"
@@ -69,7 +102,6 @@ case "$REQUEST_METHOD" in
 					;;
 			esac
 
-			USER=$SHOP_OWNER
 			fwrite $ORDER_PATH/state echo $ORDER_STATE_TEXT
 
 			case "$return" in
@@ -108,7 +140,7 @@ case "$REQUEST_METHOD" in
 		export PRODUCTS="`ProductsFromCart  $ORDER_PATH/raw`"
 		ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
 		export ORDER_STATE="`OrderState -rorder "$ORDER_STATE_TEXT" $order_id`"
-		if [[ "$REMOTE_USER" != "$SHOP_OWNER" ]]; then
+		if [[ "$REMOTE_USER" == "$ORDER_OWNER" ]]; then
 			case "$ORDER_STATE_TEXT" in
 				Pending_payment)
 					TRANSFER_DATA=`TransferData`

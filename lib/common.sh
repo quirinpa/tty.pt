@@ -1,6 +1,7 @@
 #!/bin/ksh
 
 umask 002
+set -e
 
 . $ROOT/lib/more-common.sh
 
@@ -13,6 +14,10 @@ url2vars() {
 	eval "`echo $1 | tr '[A-Z]' '[a-z]'| tr '&' '\n'`"
 }
 
+zcat() {
+	[[ -f "$@" ]] && cat $@ || true
+}
+
 case "$REQUEST_METHOD" in
 	POST)
 		case "$CONTENT_TYPE" in
@@ -21,8 +26,8 @@ case "$REQUEST_METHOD" in
 
 				mpfd "$boundary"
 				;;
-			*)
-				read line1
+			application/x-www-form-urlencoded*)
+				read line1 || true
 				url2vars $line1
 				;;
 		esac
@@ -35,7 +40,8 @@ case "$REQUEST_METHOD" in
 esac
 
 get_lang() {
-	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr ';' ' ' | tr '-' '_' | \
+	IFS=";"
+	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr '-' '_' | \
 		while read alang qlang; do \
 			if grep "$alang" $ROOT/locale/langs; then
 				break
@@ -43,10 +49,10 @@ get_lang() {
 		done
 }
 
+
 lang="`get_lang`"
+#debug
 export lang
-export TEXTDOMAIN=site
-export TEXTDOMAINDIR=$ROOT/usr/share/locale
 export LANG=$lang
 if [[ -z "$LANG" ]]; then
 	LANG=pt_PT
@@ -62,8 +68,9 @@ ILANG=$LANG
 
 _() {
 	IFS='$'
-	value="`cat $ROOT/locale/$TEXTDOMAIN-$LANG.txt | sed -n "s|^$1\|||p"`"
-	[[ -z "$value" ]] && echo $1 || echo $value
+	TEXTDOMAIN=site
+	value="`cat $ROOT/locale/$TEXTDOMAIN-$lang.txt | sed -n "s|^$@\|||p"`"
+	[[ -z "$value" ]] && echo $@ || echo $value
 }
 
 counter_inc() {
@@ -113,19 +120,19 @@ shops_df() {
 		while read line; do
 			SHOP_PATH=$ROOT/shops/$line
 			OWNER="`cat $SHOP_PATH/.owner`"
-			[[ "$OWNER" == "$USER" ]] && df_dir $SHOP_PATH
+			[[ "$OWNER" == "$DF_USER" ]] && df_dir $SHOP_PATH
 		done
 }
 
 comments_df() {
 	COMMENTS_PATH=/public/comments-$1.txt
-	COMMENTS_SIZE="`sed -n "/^$USER:/p" $COMMENTS_PATH | wc | awk '{ print $3 }'`"
+	COMMENTS_SIZE="`sed -n "/^$DF_USER:/p" $COMMENTS_PATH | wc | awk '{ print $3 }'`"
 	format_df $COMMENTS_PATH $COMMENTS_SIZE
 }
 
 df() {
-	df_dir users/$USER
-	df_dir htdocs/img/$USER
+	df_dir users/$DF_USER
+	df_dir htdocs/img/$DF_USER
 	comments_df pt_PT
 	comments_df en_US
 	comments_df fa_IR
@@ -154,6 +161,7 @@ free_space() {
 FREE_SPACE="`free_space`"
 
 _fbytes() {
+	[[ -z "$DF_USER" ]] && Fatal 400 Checking bytes of unknown user
 	OCCUPIED_SPACE="`df_total`"
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
 	CAN="`echo $CAN_EXP | bc -l`"
@@ -164,7 +172,7 @@ _fbytes() {
 
 fbytes() {
 	STAT="`stat -f%z $1`"
-	_fbytes $USER $STAT
+	_fbytes $STAT
 }
 
 fmkdir() {
@@ -178,7 +186,7 @@ fwrite() {
 	TARGET=$1
 	shift
 	count="`$@ | wc | awk '{print $3}'`"
-	_fail_bytes $USER $count
+	_fbytes $count
 	$@ > $TARGET
 }
 
@@ -186,14 +194,14 @@ fappend() {
 	TARGET=$1
 	shift
 	count="`$@ | wc | awk '{print $3}'`"
-	_fail_bytes $USER $count
+	_fbytes $count
 	$@ >> $TARGET
 }
 
 LoginLogout() {
 	_LOGINLOGOUT="`_ "Login / Logout"`"
 	cat <<!
-<div class="tac txl">
+<div class="tac txl mkn">
 	<a href="/cgi-bin/login.cgi" class="txl">$_LOGINLOGOUT 🔑</a>
 </div>
 !
@@ -266,3 +274,5 @@ Fatal() {
 	Cat fatal
 	exit 1
 }
+
+DF_USER=$REMOTE_USER

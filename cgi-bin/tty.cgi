@@ -8,7 +8,6 @@ ibeg() {
 }
 
 USER_DIR="$ROOT/users/$REMOTE_USER"
-USER=$REMOTE_USER
 fmkdir $USER_DIR
 OUTPUT_PATH="$USER_DIR/.tty"
 
@@ -42,7 +41,7 @@ case "$REQUEST_METHOD" in
 
 				[[ -d $ROOT/users/$username ]] || fatal 400
 
-				USER=$username
+				DF_USER=$username
 				fappend $ROOT/users/$username/.whisper \
 					echo "$REMOTE_USER": "$message"
 				echo "Sent whisper."
