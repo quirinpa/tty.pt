@@ -37,7 +37,7 @@ case "$REQUEST_METHOD" in
 			fwrite $ORDER_PATH/state echo Pending_payment
 
 			cat $ORDER_PATH/raw | while read product_id quantity; do
-				counter_dec $SHOP_PATH/$product_id/stock $quantity
+				counter_dec $SHOP_PATH/$product_id/stock $quantity >/dev/null
 			done
 
 			rm $CART_PATH # TODO also remove unneeded directories?

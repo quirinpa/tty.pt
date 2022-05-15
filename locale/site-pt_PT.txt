@@ -27,3 +27,10 @@ Welcome|Bem-vindo
 Shop not found|Loja não encontrada
 Order not found|Encomenda não encontrada
 You can not do that|Não pode fazer isso
+Add product|Adicionar produto
+Title|Título
+Description|Descrição
+Images|Imagens
+Price|Preço
+Upload image|Fazer upload de uma imagem
+File|Ficheiro
