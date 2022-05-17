@@ -21,8 +21,7 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ Shops`"
 
 		export SHOPS="`ls $ROOT/shops | Shops`"
-		Normal 200 shops
-		Cat shops
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

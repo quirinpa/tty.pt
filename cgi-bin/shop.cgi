@@ -62,8 +62,7 @@ case "$REQUEST_METHOD" in
 		fi
 		export ADD_PRODUCT_BUTTON
 
-		Normal 200 shop ?shop_id=$shop_id
-		Cat shop
+		NormalCat ?shop_id=$shop_id
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

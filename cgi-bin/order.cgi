@@ -45,6 +45,22 @@ TransferData() {
 !
 }
 
+AddressInfo() {
+	if [[ "$ORDER_STATE_TEXT" != "Pending_shipment" ]] \
+		|| [[ "$REMOTE_USER" != "$SHOP_OWNER" ]]; then
+		return;
+	fi
+
+	cat <<!
+<pre>
+`cat $ORDER_PATH/address_line_1`
+`cat $ORDER_PATH/address_line_2`
+`cat $ORDER_PATH/zip`
+</pre>
+
+!
+}
+
 if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
 	Fatal 404 Shop not found
 fi
@@ -59,6 +75,12 @@ case "$REQUEST_METHOD" in
 				Fatal 404 Cart not found
 			fi
 
+			if [[ -z "`zcat $USER_PATH/address_line_1`" ]] \
+				|| [[ -z "`zcat $USER_PATH/address_line_2`" ]] \
+				|| [[ -z "`zcat $USER_PATH/zip`" ]]; then
+				Fatal 400 Invalid shipping address 
+			fi
+
 			ORDERS_PATH=$SHOP_PATH/.orders
 			ORDER_ID_PATH=$SHOP_PATH/.orders/.count
 			ORDER_ID="`counter_inc $ORDER_ID_PATH`"
@@ -69,6 +91,9 @@ case "$REQUEST_METHOD" in
 			fwrite $ORDER_PATH/raw cat $CART_PATH
 			fwrite $ORDER_PATH/owner echo $REMOTE_USER
 			fwrite $ORDER_PATH/state echo Pending_payment
+			fwrite $ORDER_PATH/address_line_1 cat $USER_PATH/address_line_1
+			fwrite $ORDER_PATH/address_line_2 cat $USER_PATH/address_line_2
+			fwrite $ORDER_PATH/zip cat $USER_PATH/zip
 
 			cat $ORDER_PATH/raw | while read product_id quantity; do
 				counter_dec $SHOP_PATH/$product_id/stock $quantity
@@ -139,6 +164,7 @@ case "$REQUEST_METHOD" in
 		export TOTAL="`echo "$TOTAL_EXP" | bc -l`"
 		export PRODUCTS="`ProductsFromCart  $ORDER_PATH/raw`"
 		ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
+		export ADDRESS_INFO="`AddressInfo`"
 		export ORDER_STATE="`OrderState -rorder "$ORDER_STATE_TEXT" $order_id`"
 		if [[ "$REMOTE_USER" == "$ORDER_OWNER" ]]; then
 			case "$ORDER_STATE_TEXT" in
@@ -148,8 +174,7 @@ case "$REQUEST_METHOD" in
 					;;
 			esac
 		fi
-		Normal 200 order ?shop_id=$shop_id
-		Cat order
+		NormalCat ?shop_id=$shop_id
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

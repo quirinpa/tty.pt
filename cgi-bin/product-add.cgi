@@ -39,8 +39,7 @@ case "$REQUEST_METHOD" in
 		export _PRICE="`_ Price`"
 		export _SUBMIT="`_ Submit`"
 
-		Normal 200 product-add ?shop_id=$shop_id
-		Cat product-add
+		NormalCat ?shop_id=$shop_id
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

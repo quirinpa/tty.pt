@@ -4,3 +4,4 @@
 /usr/local/bin/xxd
 /usr/bin/openssl
 /bin/sh
+/usr/bin/basename

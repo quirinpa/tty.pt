@@ -28,8 +28,7 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ "Programmer's poem"`"
 		export _FLAG_ICON="`_ flag`"
 
-		Normal 200 poem
-		Cat poem
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

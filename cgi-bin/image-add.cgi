@@ -23,8 +23,7 @@ case "$REQUEST_METHOD" in
 		export _FILE="`_ File`"
 		export _SUBMIT="`_ Submit`"
 
-		Normal 200 image-add
-		Cat image-add
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

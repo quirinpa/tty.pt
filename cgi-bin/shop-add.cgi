@@ -19,6 +19,7 @@ case "$REQUEST_METHOD" in
 
 		fmkdir $SHOP_PATH
 		fwrite $SHOP_PATH/.owner echo $REMOTE_USER
+		fmkdir $SHOP_PATH/.orders
 
 		see_other shop ?shop_id=$shop_id
 		;;
@@ -28,8 +29,7 @@ case "$REQUEST_METHOD" in
 		export _SHOP_ID="`_ "Shop ID"`"
 		export _SUBMIT="`_ Submit`"
 
-		Normal 200 shop-add
-		Cat shop-add
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

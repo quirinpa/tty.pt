@@ -19,8 +19,7 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ $shop_id` - `_ Product` #$product_id"
 
 		export PRODUCT="`Product -rproduct $CART_PATH $product_id`"
-		Normal 200 product ?shop_id=$shop_id\&product_id=$product_id
-		Cat product
+		NormalCat ?shop_id=$shop_id\&product_id=$product_id
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

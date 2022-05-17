@@ -11,8 +11,7 @@ case "$REQUEST_METHOD" in
 		export _SHOPS="`_ "Shops"`"
 		export _SEM="`_ "Shared Expenses Manager"`"
 		export _TERMINAL="`_ "Terminal"`"
-		Normal 200 index
-		Cat index
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

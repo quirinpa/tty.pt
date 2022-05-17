@@ -46,7 +46,7 @@ pre { font-family: monospace; }
 .ofc { object-fit: cover; }
 .tdn { text-decoration: none; }
 .ch00:hover { background: black; }
-.s_k256 { max-width: 256px; }
+// .s_k9 { max-width: 256px; }
 .s_5 { width: 64px; }
 .s_4_5 { width: 48px; }
 .wn { white-space: nowrap; }
@@ -62,4 +62,13 @@ button, .btn {
 }
 button:hover, .btn:hover {
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+}
+pre {
+	overflow: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	max-width: 100%;
+}
+form {
+	width: 100%;
 }

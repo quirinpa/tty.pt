@@ -74,15 +74,25 @@ _() {
 }
 
 counter_inc() {
-	current="`[[ -f $1 ]] && cat $1 || echo 0`"
-	next="`echo $current + 1 | bc`"
-	echo $next | tee $1
+	if [[ -f $1 ]]; then
+		current="`cat $1`"
+		next="`echo $current + 1 | bc`"
+		echo $next | tee $1
+	else
+		touch $1
+		echo 1 | tee $1
+	fi
 }
 
 counter_dec() {
-	current="`[[ -f $1 ]] && cat $1 || echo 0`"
-	next="`echo $current - $2 | bc`"
-	echo $next | tee $1
+	if [[ -f $1 ]]; then
+		current="`cat $1`"
+		next="`echo $current - $2 | bc`"
+		echo $next | tee $1
+	else
+		touch $1
+		echo -1 | tee $1
+	fi
 }
 
 sum_lines_exp() {
@@ -259,7 +269,7 @@ Normal() {
 	export STATUS_CODE=$1
 	echo "Status: $1 $STATUS_TEXT"
 	echo 'Content-Type: text/html; charset=utf-8'
-	echo "Link: <https://tty.pt/cgi-bin/$1.cgi$2>; rel=\"alternate\"; hreflang=\"x-default\""
+	echo "Link: <https://tty.pt/cgi-bin/$2.cgi$3>; rel=\"alternate\"; hreflang=\"x-default\""
 	echo
 	Head
 
@@ -276,6 +286,11 @@ Cat() {
 	echo "</html>"
 }
 
+NormalCat() {
+	Normal 200 $SCRIPT $1
+	Cat $SCRIPT
+}
+
 Fatal() {
 	SC=$1
 	shift
@@ -288,3 +303,4 @@ Fatal() {
 }
 
 DF_USER=$REMOTE_USER
+SCRIPT="`basename $SCRIPT_NAME | cut -f1 -d'.'`"

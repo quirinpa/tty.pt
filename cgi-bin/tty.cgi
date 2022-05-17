@@ -63,5 +63,4 @@ esac
 export OUTPUT="`cat $OUTPUT_PATH | no_html`"
 export _TITLE="`_ "Terminal"`"
 
-Normal 200 tty
-Cat tty
+NormalCat

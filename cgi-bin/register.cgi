@@ -69,8 +69,7 @@ https://tty.pt/cgi-bin/registration-confirm.cgi?username=$username&rcode=$rand_s
 
 		export ERROR
 
-		Normal 200 register
-		Cat register
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

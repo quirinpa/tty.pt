@@ -50,8 +50,7 @@ case "$REQUEST_METHOD" in
 		export iban="`zcat $USER_PATH/iban`"
 		export bicswift="`zcat $USER_PATH/bicswift`"
 
-		Normal 200 user
-		Cat user
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

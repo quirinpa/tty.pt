@@ -37,8 +37,7 @@ case "$REQUEST_METHOD" in
 
 		export ERROR
 
-		Normal 200 login
-		Cat login
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

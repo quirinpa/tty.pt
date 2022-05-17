@@ -85,8 +85,7 @@ case "$REQUEST_METHOD" in
 
 		export _TITLE="`_ $shop_id` - `_ Cart`"
 
-		Normal 200 cart
-		Cat cart
+		NormalCat
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"
