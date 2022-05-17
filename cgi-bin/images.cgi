@@ -4,7 +4,7 @@
 
 Image() {
 	cat <<!
-<img height="128" class="ofc s_k256 b0" src="/img/$1" />
+<img height="128" class="ofc s_k256 b0" src="https://tty.pt/img/$1" />
 !
 }
 
@@ -15,7 +15,7 @@ Images() {
 }
 
 find_images() {
-	 find $1 -type f | sed "s|$1||"
+	 find $1 -type f | sed "s|$1/||"
 }
 
 case "$REQUEST_METHOD" in

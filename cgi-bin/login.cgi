@@ -13,6 +13,7 @@ case "$REQUEST_METHOD" in
 	POST)
 
 		grep -q "^$username:" $ROOT/.htpasswd || error nouser
+		[[ ! -f $ROOT/users/$username/rcode ]] || error notactive
 		echo 'Status: 303 See Other'
 		echo "Location: https://$username:$password@tty.pt/cgi-bin/user.cgi"
 		echo
@@ -27,6 +28,7 @@ case "$REQUEST_METHOD" in
 
 		case "$error" in
 			nouser) ERROR="`_ "No such user"`" ;;
+			notactive) ERROR="`_ "The account was not activated"`"
 		esac
 
 		if [[ ! -z "$ERROR" ]]; then

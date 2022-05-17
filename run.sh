@@ -1,6 +1,7 @@
 #!/bin/sh
 
 export HTTP_ACCEPT_LANGUAGE="pt,en-US;q=0.9,en;q=0.8,es;q=0.7"
+export CONTENT_TYPE=application/x-www-form-urlencoded
 REMOTE_USER=quirinpa4
 shop_id=loja_dos_sonhos
 order_id=9
@@ -13,7 +14,7 @@ get() {
 	QUERY_STRING=$1 REQUEST_METHOD=GET ROOT=$ROOT REMOTE_USER=$REMOTE_USER $2
 }
 
-query_string=lang=$lang\&shop_id=$shop_id\&order_id=$order_id
+query_string=shop_id=$shop_id\&order_id=$order_id
 
 case "$1" in
 	post-login)
@@ -22,6 +23,15 @@ case "$1" in
 		;;
 	get-user)
 		get "" $ROOT/cgi-bin/user.cgi
+		;;
+	get-register)
+		get "" $ROOT/cgi-bin/register.cgi
+		;;
+	post-register)
+		username=quirinpa6
+		password=testy123
+		email=quirinpa%40gmail.com
+		post username=$username\&password=$password\&password2=$password\&email=$email $ROOT/cgi-bin/register.cgi
 		;;
 	get-poem)
 		get "" $ROOT/cgi-bin/poem.cgi
@@ -51,5 +61,10 @@ case "$1" in
 	post-image-add)
 		content="`cat $ROOT/image-add-content.txt`"
 		post "$content" $ROOT/cgi-bin/image-add.cgi
+		;;
+	get-registration-confirm)
+		username="quirinpa3"
+		rcode="rbWOMF3G4K3Nr_8LDFg_3-eCBVI5GhJQbSK5a5m_yek"
+		get username=$username\&rcode=$rcode $ROOT/cgi-bin/registration-confirm.cgi
 		;;
 esac

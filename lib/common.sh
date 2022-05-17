@@ -111,6 +111,9 @@ format_df() {
 }
 
 df_dir() {
+	if [[ ! -f $ROOT/$1 ]]; then
+		return
+	fi
 	du_user="`du -c $ROOT/$1 | tail -1 | awk '{print $1}'`"
 	format_df $1 `calcround "$du_user \* 1024"`
 }
@@ -120,13 +123,16 @@ shops_df() {
 		while read line; do
 			SHOP_PATH=$ROOT/shops/$line
 			OWNER="`cat $SHOP_PATH/.owner`"
-			[[ "$OWNER" == "$DF_USER" ]] && df_dir $SHOP_PATH
+			[[ "$OWNER" == "$DF_USER" ]] && df_dir shops/$line
 		done
 }
 
 comments_df() {
-	COMMENTS_PATH=/public/comments-$1.txt
-	COMMENTS_SIZE="`sed -n "/^$DF_USER:/p" $COMMENTS_PATH | wc | awk '{ print $3 }'`"
+	COMMENTS_PATH=public/comments-$1.txt
+	if [[ ! -f $ROOT/$COMMENTS_PATH ]]; then
+		return
+	fi
+	COMMENTS_SIZE="`sed -n "/^$DF_USER:/p" $ROOT/$COMMENTS_PATH | wc | awk '{ print $3 }'`"
 	format_df $COMMENTS_PATH $COMMENTS_SIZE
 }
 
@@ -134,7 +140,7 @@ df() {
 	df_dir users/$DF_USER
 	df_dir htdocs/img/$DF_USER
 	comments_df pt_PT
-	comments_df en_US
+	comments_df en
 	comments_df fa_IR
 	comments_df fr_FR
 	shops_df
@@ -196,6 +202,12 @@ fappend() {
 	count="`$@ | wc | awk '{print $3}'`"
 	_fbytes $count
 	$@ >> $TARGET
+}
+
+rand_str_1() {
+	# TODO maybe remove lowercase conversion
+	xxd -l32 -ps $ROOT/dev/urandom | xxd -r -ps | openssl base64 \
+		    | tr -d = | tr + - | tr / _ | tr '[A-Z]' '[a-z]'
 }
 
 LoginLogout() {

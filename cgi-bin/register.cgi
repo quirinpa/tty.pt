@@ -7,19 +7,38 @@ error() {
 	exit
 }
 
+registration_email() {
+}
+
 case "$REQUEST_METHOD" in
 	POST)
 		if [[ "$password" == "$password2" ]];  then
-			if grep -q "^$username" $ROOT/.htpasswd; then
+			if grep -q "^$username:" $ROOT/.htpasswd; then
 				error match
 			fi
 
-			DF_USER=$username
 			USER_DIR=$ROOT/users/$username
+			DF_USER=$username
 			fmkdir $USER_DIR
-			fwrite $USER_DIR/email urldecode $email
-			echo `urldecode $username`:`urldecode $password` | htpasswd -I $ROOT/.htpasswd
-			see_other login
+			email="`urldecode $email`"
+			fwrite $USER_DIR/email echo $email
+			username="`urldecode $username`"
+			echo $username:`urldecode $password` | htpasswd -I $ROOT/.htpasswd
+			rand_str="`rand_str_1`"
+			fwrite $USER_DIR/rcode echo "$rand_str"
+			femail -f noreply@tty.pt $email <<!
+Subject: `_ "Registration on tty.pt"`
+
+`_ "Welcome to tty.pt!"`
+
+`_ "To confirm that this e-mail address belongs to you, go to the page at:"`
+https://tty.pt/cgi-bin/registration-confirm.cgi?username=$username&rcode=$rand_str
+
+`_ "You will then be able to use your account."`
+
+`_ "Thank you!"`
+!
+			see_other registration-complete
 		else
 			error nomatch
 		fi
@@ -31,6 +50,7 @@ case "$REQUEST_METHOD" in
 		export _REPEAT_PASSWORD="`_ "Repeat password"`"
 		export _EMAIL="`_ "Email"`"
 		export _SUBMIT="`_ "Submit"`"
+		export _LOGIN="`_ Login`"
 
 		case "$error" in
 			nomatch)
@@ -42,6 +62,10 @@ case "$REQUEST_METHOD" in
 			*)
 				;;
 		esac
+
+		if [[ ! -z "$ERROR" ]]; then
+			ERROR="<p class=\"c9\">$ERROR</p>"
+		fi
 
 		export ERROR
 

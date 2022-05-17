@@ -50,7 +50,7 @@ pre { font-family: monospace; }
 .s_5 { width: 64px; }
 .s_4_5 { width: 48px; }
 .wn { white-space: nowrap; }
-button {
+button, .btn {
 	font-size: inherit;
 	padding: var(--S);
 	background-color: var(--C0);
@@ -58,7 +58,8 @@ button {
 	border: none;
 	//border: solid thin black;
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
+	text-decoration: none;
 }
-button:hover {
+button:hover, .btn:hover {
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 }

@@ -50,3 +50,11 @@ Checking bytes of unknown user|A verificar bytes de um utilizador desconhecido
 Please refer to the order number in the credit description.|Por favor faça referência ao número da encomenda no descritivo do crédito.
 You can send an e-mail to|Pode enviar um email a
 to speed up shipment.|para acelerar o envio.
+Welcome to tty.pt!|Bem vindo ao tty.pt!
+To confirm that this e-mail address belongs to you, go to the page at:|Para confirmar que este endereço de e-mail lhe pertence, vá á pagina:
+You will then be able to use your account.|Poderá usar a sua conta depois disso.
+Thank you!|Obrigado!
+Registration complete|Registo completo
+Please click the link sent to your e-mail to activate your account.|Por favor clique no link enviado para o seu e-mail para activar a sua conta.
+The account was not activated|A conta não foi activada
+No such user|Esse utilizador não existe
