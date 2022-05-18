@@ -223,8 +223,8 @@ rand_str_1() {
 LoginLogout() {
 	_LOGINLOGOUT="`_ "Login / Logout"`"
 	cat <<!
-<div class="tac txl mkn">
-	<a href="/cgi-bin/login.cgi" class="txl">$_LOGINLOGOUT 🔑</a>
+<div class="tac tsxl">
+	<a href="/cgi-bin/login.cgi">$_LOGINLOGOUT 🔑</a>
 </div>
 !
 }
@@ -232,8 +232,8 @@ LoginLogout() {
 ## COMPONENTS
 Menu() {
 	if [[ ! -z "$REMOTE_USER" ]]; then
-		USER_NAME="<span class=\"t\">$REMOTE_USER</span>"
-		USER_ICON="<a class=\"txl f _ fic\" href=\"/cgi-bin/user.cgi\"><span>🔑 </span><span> $USER_NAME</span></a>"
+		USER_NAME="<span class=\"ts\">$REMOTE_USER</span>"
+		USER_ICON="<a class=\"tsxl f _ fic\" href=\"/cgi-bin/user.cgi\"><span>🔑 </span><span> $USER_NAME</span></a>"
 	fi
 	export USER_ICON
 	cat $ROOT/components/menu.html | envsubst
@@ -253,9 +253,13 @@ Head() {
 
 Whisper() {
 	WHISPER_PATH=$ROOT/users/$REMOTE_USER/.whisper
-	echo "<pre>"
-	[[ -f $WHISPER_PATH ]] && cat $WHISPER_PATH | no_html && rm $WHISPER_PATH
-	echo "</pre>"
+	WHISPER="`zcat $WHISPER_PATH | no_html`"
+	if [[ -z "$WHISPER" ]]; then
+		return
+	fi
+
+	echo "<pre>$WHISPER</pre>"
+	rm $WHISPER_PATH
 }
 
 Normal() {
@@ -304,3 +308,6 @@ Fatal() {
 
 DF_USER=$REMOTE_USER
 SCRIPT="`basename $SCRIPT_NAME | cut -f1 -d'.'`"
+#echo Status: 500 Internal Server Error
+#echo
+#echo SCRIPT="$SCRIPT"

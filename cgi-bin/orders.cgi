@@ -57,6 +57,10 @@ case "$REQUEST_METHOD" in
 			ORDERS="`UserOrders`"
 		fi
 
+		if [[ ! -z "$ORDERS" ]]; then
+			ORDERS="<div class=\"_ f fw v fcc fic\">$ORDERS</div>"
+		fi
+
 		export ORDERS
 		NormalCat ?shop_id=$shop_id
 		;;

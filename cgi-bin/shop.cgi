@@ -55,10 +55,14 @@ case "$REQUEST_METHOD" in
 		export _TITLE="`_ $shop_id`"
 
 		export SHOP_CATEGORIES="`lsshown $SHOP_PATH/.categories/ | while read line; do Category $line; done`"
-		export PRODUCTS="`lsshown $SHOP_PATH/ | Products`"
+		PRODUCTS="`lsshown $SHOP_PATH/ | Products`"
+		if [[ ! -z "$PRODUCTS" ]]; then
+			PRODUCTS="<div class=\"_ v f fw fcc fic\">$PRODUCTS</div>"
+		fi
+		export PRODUCTS
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
-			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"txl round ps btn\" href=\"/cgi-bin/product-add.cgi?shop_id=$shop_id\">+</a></div>"
+			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/cgi-bin/product-add.cgi?shop_id=$shop_id\">+</a></div>"
 		fi
 		export ADD_PRODUCT_BUTTON
 

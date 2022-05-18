@@ -11,10 +11,10 @@ pre {
 </style>
 
 <body class="cf cb v f fic p">
-	<header class="_ f fic mkn">
-		<a href="#comments" class="round btn ps txl">💬</a>
+	<header class="_ f fic">
+		<a href="#comments" class="round btn ps tsxl">💬</a>
 		$MENU
-		<div class="cf15 txl">$COUNTER</div>
+		<div class="cf15 tsxl">$COUNTER</div>
 	</header>
 	<h1 class="tac">$_TITLE</h1>
 
@@ -22,7 +22,8 @@ pre {
 $_POEM
 	</pre>
 
-	<form action="./poem.cgi#comments" method="post" class="_ f fic">
+	<form action="./poem.cgi#comments" method="post" class="_ f fic s_f">
+		<input type="hidden" name="poem_id" value="$poem_id"></input>
 		<input class="fg" name="comment"></input>
 	</form>
 

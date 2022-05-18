@@ -69,6 +69,6 @@ pre {
 	word-wrap: break-word;
 	max-width: 100%;
 }
-form {
+/*form {
 	width: 100%;
-}
+}*/

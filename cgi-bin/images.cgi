@@ -21,7 +21,11 @@ find_images() {
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Images`"
-		export IMAGES="`find_images $ROOT/htdocs/img | Images`"
+		IMAGES="`find_images $ROOT/htdocs/img | Images`"
+		if [[ ! -z "$IMAGES" ]]; then
+			IMAGES="<div class=\"_ f fw v fcc fic\">$IMAGES</div>"
+		fi
+		export IMAGES
 		NormalCat
 		;;
 	*)

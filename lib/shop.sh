@@ -4,7 +4,7 @@ get_product_path() {
 
 ProductSummary() {
 	cat <<!
-	<div class="tl tar">
+	<div class="tsl tar">
 		$product_price€ x $quantity
 	</div>
 !
@@ -13,14 +13,14 @@ ProductSummary() {
 ProductForm() {
 	PRODUCT_STOCK="`cat $PRODUCT_PATH/stock`"
 	cat <<!
-<div class="tl">$product_price€</div>
+<div class="tsl">$product_price€</div>
 <div class="_ f fic">
 	<form action="./cart.cgi" method="post" class="_ f fic wn">
 		<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 		<input name="shop_id" type="hidden" value="$shop_id"></input>
 		<input name="quantity" type="number" min="0" max="$PRODUCT_STOCK" value="$quantity" class="s_4_5"></input>
 		$return_str
-		<button class="tl round ps">🛒</button>
+		<button class="tsl round ps">🛒</button>
 	</form>
 	$delete_form
 </div>
@@ -33,7 +33,7 @@ DeleteProductForm() {
 	<input name="action" type="hidden" value="delete"></input>
 	<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 	<input name="shop_id" type="hidden" value="$shop_id"></input>
-	<button class="tl round ps">×</button>
+	<button class="tsl round ps">×</button>
 </form>
 !
 }
@@ -90,6 +90,9 @@ Product() {
 		PRODUCT_IMAGES="`echo "$PRODUCT_IMAGES_CONTENT" | head -n 1 | while read image_path; do ProductImage $image_path; done`"
 	else
 		PRODUCT_IMAGES="`echo "$PRODUCT_IMAGES_CONTENT" | while read image_path; do ProductImage $image_path; done`"
+		if [[ ! -z $PRODUCT_IMAGES ]]; then
+			PRODUCT_IMAGES="<div class=\"f fw _ v fic fcc\">$PRODUCT_IMAGES</div>"
+		fi
 	fi
 
 	PRODUCT_TITLE="`cat $PRODUCT_PATH/title`"
@@ -111,7 +114,7 @@ Product() {
 	cat <<!
 <div class="f v b0 fic p">
 	$PRODUCT_IMAGES
-	<a class="txl" href="/cgi-bin/product.cgi?shop_id=$shop_id&product_id=$PRODUCT_ID">
+	<a class="tsxl" href="/cgi-bin/product.cgi?shop_id=$shop_id&product_id=$PRODUCT_ID">
 		$PRODUCT_TITLE
 	</a>
 	$PRODUCT_DESCRIPTION

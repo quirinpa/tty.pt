@@ -5,7 +5,7 @@
 
 EmptyContents() {
 	_EMPTY="`_ "Empty"`"
-	echo "<div class=\"txl tac\">$_EMPTY</div>"
+	echo "<div class=\"tsxl tac\">$_EMPTY</div>"
 }
 
 Contents() {
@@ -19,7 +19,7 @@ Contents() {
 	$PRODUCTS
 </div>
 <div class="tcv fic v">
-	<div class="txl">$TOTAL€</div>
+	<div class="tsxl">$TOTAL€</div>
 	<form action="/cgi-bin/order.cgi" method="POST">
 		<input type="hidden" name="shop_id" value="$shop_id"></input>
 		<button>$_SUBMIT</Button>
