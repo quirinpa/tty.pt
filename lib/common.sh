@@ -294,11 +294,14 @@ Fatal() {
 	exit 1
 }
 
+debug() {
+	echo Status 500 Internal Error
+	echo
+	echo Sorry, I\'m currently debugging. Please wait.
+}
+
 DF_USER=$REMOTE_USER
 SCRIPT="`basename $SCRIPT_NAME | cut -f1 -d'.'`"
-#echo Status: 500 Internal Server Error
-#echo
-#echo SCRIPT="$SCRIPT"
 export RB="btn round ps tsxl"
 export SRB="btn round ps tsl"
 Wrap() {
