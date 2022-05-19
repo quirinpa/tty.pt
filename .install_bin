@@ -1,7 +1,10 @@
-/bin/cp
-/usr/bin/file
-/usr/bin/stat
-/usr/local/bin/xxd
-/usr/bin/openssl
-/bin/sh
-/usr/bin/basename
+cp
+file
+stat
+xxd
+openssl
+sh
+basename
+ksh
+tr
+awk

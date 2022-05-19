@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ksh
 
 export HTTP_ACCEPT_LANGUAGE="pt,en-US;q=0.9,en;q=0.8,es;q=0.7"
 export CONTENT_TYPE=application/x-www-form-urlencoded

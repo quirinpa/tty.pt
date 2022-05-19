@@ -12,6 +12,7 @@ urldecode() {
 url2vars() {
 	# lowercase keys
 	exp="`echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1'`"
+	#exp="`echo $1 | tr '[A-Z]' '[a-z]'| tr '&' '\n'`"
 	eval "$exp"
 }
 
@@ -49,7 +50,6 @@ get_lang() {
 			fi
 		done
 }
-
 
 lang="`get_lang`"
 #debug
