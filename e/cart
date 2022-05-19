@@ -13,6 +13,7 @@ Contents() {
 	TOTAL="`echo "$TOTAL_CART_EXP" | bc -l`"
 	_SUBMIT="`_ Submit`"
 	PRODUCTS="`ProductsFromCart -rcart $CART_PATH`"
+	PRODUCTS="`Wrap "$PRODUCTS"`"
 
 	cat <<!
 <div class="v">
@@ -20,7 +21,7 @@ Contents() {
 </div>
 <div class="tcv fic v">
 	<div class="tsxl">$TOTAL€</div>
-	<form action="/cgi-bin/order.cgi" method="POST">
+	<form action="/e/order" method="POST">
 		<input type="hidden" name="shop_id" value="$shop_id"></input>
 		<button>$_SUBMIT</Button>
 	</form>
@@ -53,9 +54,9 @@ case "$REQUEST_METHOD" in
 		[[ "$AVAILABLE" == "0" ]] && Fatal 400 No available stock
 
 		if [[ "$quantity" == "0" ]]; then
-			sed -n "/^$product_id /,/^[^+]/{x;/^$/!p;}" $CART_PATH > $CART_PATH
+			sed -i "/^$product_id /d" $CART_PATH
 		else
-			fwrite $CART_PATH echo $product_id $quantity
+			fappend $CART_PATH echo $product_id $quantity
 			cat $CART_PATH | awk \
 				'{a[$1]=$2} END{for (i in a) print i FS a[i]}' \
 				> $CART_PATH

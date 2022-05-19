@@ -20,7 +20,7 @@ OrderStateVendor() {
 	done
 
 	cat <<!
-<form action="/cgi-bin/order.cgi" method="POST" class="tac">
+<form action="/e/order" method="POST" class="tac">
 	<input type="hidden" name="shop_id" value="$shop_id"></input>
 	<input type="hidden" name="order_id" value="$1"></input>
 	$return_str

@@ -15,12 +15,12 @@ ProductForm() {
 	cat <<!
 <div class="tsl">$product_price€</div>
 <div class="_ f fic">
-	<form action="./cart.cgi" method="post" class="_ f fic wn">
+	<form action="./cart" method="post" class="_ f fic wn">
 		<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 		<input name="shop_id" type="hidden" value="$shop_id"></input>
 		<input name="quantity" type="number" min="0" max="$PRODUCT_STOCK" value="$quantity" class="s_4_5"></input>
 		$return_str
-		<button class="tsl round ps">🛒</button>
+		<button class="$SRB">🛒</button>
 	</form>
 	$delete_form
 </div>
@@ -29,11 +29,11 @@ ProductForm() {
 
 DeleteProductForm() {
 	cat <<!
-<form action="./shop.cgi" method="post">
+<form action="./shop" method="post">
 	<input name="action" type="hidden" value="delete"></input>
 	<input name="product_id" type="hidden" value="$PRODUCT_ID"></input>
 	<input name="shop_id" type="hidden" value="$shop_id"></input>
-	<button class="tsl round ps">×</button>
+	<button class="$SRB">×</button>
 </form>
 !
 }
@@ -103,7 +103,15 @@ Product() {
 
 	product_price="`cat $PRODUCT_PATH/price`"
 
-	quantity="`[[ -f $CART_PATH ]] && cat $CART_PATH | grep $PRODUCT_ID | awk '{print $2}' || echo 0`"
+	if [[ -f $CART_PATH ]]; then
+		quantity="`cat $CART_PATH | grep $PRODUCT_ID | awk '{print $2}'`"
+		if [[ -z "$quantity" ]]; then
+			quantity=0
+		fi
+	else
+		quantity=0
+	fi
+
 
 	if [[ -z "$return_str" ]]; then
 		summary="`ProductSummary`"
@@ -112,9 +120,9 @@ Product() {
 	fi
 
 	cat <<!
-<div class="f v b0 fic p">
+<div class="card f v b0 fic p">
 	$PRODUCT_IMAGES
-	<a class="tsxl" href="/cgi-bin/product.cgi?shop_id=$shop_id&product_id=$PRODUCT_ID">
+	<a class="tsxl" href="/e/product?shop_id=$shop_id&product_id=$PRODUCT_ID">
 		$PRODUCT_TITLE
 	</a>
 	$PRODUCT_DESCRIPTION

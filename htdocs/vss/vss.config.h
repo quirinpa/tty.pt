@@ -24,7 +24,12 @@ ROUND_PADDING( s, xl)
 
 .cf { background: #3c403c; }
 .cb { color: #c1c3da; }
-body { caret-color: #9589c5; }
+body {
+	color: #c1c3da;
+	background-color: #3c403c;
+	caret-color: #9589c5;
+	padding: var(--S);
+}
 h1,h2,h3,h4,h5,h6 { color: #f5f5f5; }
 img { color: #c1c3da; };
 .modal a { color: #9589c5; }
@@ -60,7 +65,7 @@ button, .btn {
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 	text-decoration: none;
 }
-button:hover, .btn:hover {
+button:hover, .btn:hover, .card:hover {
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 }
 pre {
@@ -72,3 +77,13 @@ pre {
 /*form {
 	width: 100%;
 }*/
+.card {
+	text-decoration: none;
+	background-color: #4c504c;
+	//background-color: var(--C15);
+	//color: var(--C0);
+	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
+}
+.card a {
+	//color: var(--C0);
+}

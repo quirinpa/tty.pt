@@ -1,7 +1,7 @@
-<body class="cf cb f fic v p">
+<body class="f fic v">
 	$MENU
 	<h1 class="tac">$_REGISTER</h1>
-	<form action="./register.cgi" method="post" class="v f fic">
+	<form action="./register" method="post" class="v f fic">
 		<label>
 			$_USERNAME: <input required name="username"></input>
 		</label>
@@ -20,7 +20,11 @@
 		<button>$_SUBMIT</button>
 	</form>
 
-	<a class="btn" href="/cgi-bin/login.cgi">
+	<a class="btn" href="/e/login">
 		$_LOGIN
+	</a>
+
+	<a class="btn" href="https://anonymous:anonymous@tty.pt/e/user">
+		$_ANONYMOUS_LOGIN
 	</a>
 </body>

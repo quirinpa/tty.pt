@@ -107,7 +107,7 @@ revlines() {
 
 see_other() {
 	echo 'Status: 303 See Other'
-	echo "Location: /cgi-bin/$1.cgi$2"
+	echo "Location: /e/$1$2"
 	echo
 }
 
@@ -121,7 +121,7 @@ format_df() {
 }
 
 df_dir() {
-	if [[ ! -f $ROOT/$1 ]]; then
+	if [[ ! -d $ROOT/$1 ]]; then
 		return
 	fi
 	du_user="`du -c $ROOT/$1 | tail -1 | awk '{print $1}'`"
@@ -137,22 +137,9 @@ shops_df() {
 		done
 }
 
-comments_df() {
-	COMMENTS_PATH=public/comments-$1.txt
-	if [[ ! -f $ROOT/$COMMENTS_PATH ]]; then
-		return
-	fi
-	COMMENTS_SIZE="`sed -n "/^$DF_USER:/p" $ROOT/$COMMENTS_PATH | wc | awk '{ print $3 }'`"
-	format_df $COMMENTS_PATH $COMMENTS_SIZE
-}
-
 df() {
 	df_dir users/$DF_USER
 	df_dir htdocs/img/$DF_USER
-	comments_df pt_PT
-	comments_df en
-	comments_df fa_IR
-	comments_df fr_FR
 	shops_df
 }
 
@@ -223,8 +210,8 @@ rand_str_1() {
 LoginLogout() {
 	_LOGINLOGOUT="`_ "Login / Logout"`"
 	cat <<!
-<div class="tac tsxl">
-	<a href="/cgi-bin/login.cgi">$_LOGINLOGOUT 🔑</a>
+<div class="tac tsxl f">
+	<a class="btn" href="/e/login">$_LOGINLOGOUT 🔑</a>
 </div>
 !
 }
@@ -233,7 +220,7 @@ LoginLogout() {
 Menu() {
 	if [[ ! -z "$REMOTE_USER" ]]; then
 		USER_NAME="<span class=\"ts\">$REMOTE_USER</span>"
-		USER_ICON="<a class=\"tsxl f _ fic\" href=\"/cgi-bin/user.cgi\"><span>🔑 </span><span> $USER_NAME</span></a>"
+		USER_ICON="<a class=\"tsxl f _ fic btn ps\" href=\"/e/user\"><span>🔑 </span><span> $USER_NAME</span></a>"
 	fi
 	export USER_ICON
 	cat $ROOT/components/menu.html | envsubst
@@ -273,7 +260,7 @@ Normal() {
 	export STATUS_CODE=$1
 	echo "Status: $1 $STATUS_TEXT"
 	echo 'Content-Type: text/html; charset=utf-8'
-	echo "Link: <https://tty.pt/cgi-bin/$2.cgi$3>; rel=\"alternate\"; hreflang=\"x-default\""
+	echo "Link: <https://tty.pt/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
 	echo
 	Head
 
@@ -311,3 +298,10 @@ SCRIPT="`basename $SCRIPT_NAME | cut -f1 -d'.'`"
 #echo Status: 500 Internal Server Error
 #echo
 #echo SCRIPT="$SCRIPT"
+export RB="btn round ps tsxl"
+export SRB="btn round ps tsl"
+Wrap() {
+	if [[ ! -z "$@" ]]; then
+		echo "<div class=\"_ v f fw fcc fic\">$@</div>"
+	fi
+}

@@ -3,7 +3,7 @@
 export HTTP_ACCEPT_LANGUAGE="pt,en-US;q=0.9,en;q=0.8,es;q=0.7"
 export CONTENT_TYPE=application/x-www-form-urlencoded
 REMOTE_USER=quirinpa
-shop_id=dyad
+shop_id=loja_dos_sonhos
 order_id=9
 
 post() {
@@ -69,6 +69,7 @@ case "$1" in
 	get-image-add) get $query_string cgi-bin/image-add.cgi ;;
 	post-image-add)
 		content="`cat $ROOT/image-add-content.txt`"
+		export CONTENT_TYPE="multipart/form-data; boundary=----WebKitFormBoundaryHWi9UJlsyPtomSAF"
 		post "$content" cgi-bin/image-add.cgi
 		;;
 	get-registration-confirm)

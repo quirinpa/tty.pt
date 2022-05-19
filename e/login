@@ -4,7 +4,7 @@
 
 error() {
 	echo 'Status: 303 See Other'
-	echo "Location: login.cgi?error=$1"
+	echo "Location: login?error=$1"
 	echo
 	exit
 }
@@ -15,7 +15,7 @@ case "$REQUEST_METHOD" in
 		grep -q "^$username:" $ROOT/.htpasswd || error nouser
 		[[ ! -f $ROOT/users/$username/rcode ]] || error notactive
 		echo 'Status: 303 See Other'
-		echo "Location: https://$username:$password@tty.pt/cgi-bin/user.cgi"
+		echo "Location: https://$username:$password@tty.pt/e/user"
 		echo
 		;;
 	GET)

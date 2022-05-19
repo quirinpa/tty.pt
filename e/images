@@ -22,9 +22,7 @@ case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Images`"
 		IMAGES="`find_images $ROOT/htdocs/img | Images`"
-		if [[ ! -z "$IMAGES" ]]; then
-			IMAGES="<div class=\"_ f fw v fcc fic\">$IMAGES</div>"
-		fi
+		IMAGES="`Wrap $IMAGES`"
 		export IMAGES
 		NormalCat
 		;;

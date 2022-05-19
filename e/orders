@@ -13,7 +13,7 @@ Order() {
 	ORDER_STATE="`OrderState -rorders "$ORDER_STATE_TEXT" $1`"
 
 	cat <<!
-<a href="/cgi-bin/order.cgi?shop_id=$shop_id&order_id=$1" class="b0 p v">
+<a href="/e/order?shop_id=$shop_id&order_id=$1" class="b0 p v">
 	<span>
 		$_ORDER #$1 - $ORDER_OWNER $TOTAL€
 	</span>
@@ -33,7 +33,7 @@ UserOrders() {
 	ls $SHOP_PATH/.orders | while read line; do
 		ORDER_PATH=$SHOP_PATH/.orders/$line
 		ORDER_OWNER="`cat $ORDER_PATH/owner`"
-		[[ "$ORDER_OWNER" == "$REMOTE_USER" ]] && Order $line
+		[[ "$ORDER_OWNER" == "$REMOTE_USER" ]] && Order $line || true
 	done
 }
 
@@ -57,9 +57,7 @@ case "$REQUEST_METHOD" in
 			ORDERS="`UserOrders`"
 		fi
 
-		if [[ ! -z "$ORDERS" ]]; then
-			ORDERS="<div class=\"_ f fw v fcc fic\">$ORDERS</div>"
-		fi
+		ORDERS="`Wrap $ORDERS`"
 
 		export ORDERS
 		NormalCat ?shop_id=$shop_id

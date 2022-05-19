@@ -32,7 +32,7 @@ Subject: `_ "Registration on tty.pt"`
 `_ "Welcome to tty.pt!"`
 
 `_ "To confirm that this e-mail address belongs to you, go to the page at:"`
-https://tty.pt/cgi-bin/registration-confirm.cgi?username=$username&rcode=$rand_str
+https://tty.pt/e/registration-confirm?username=$username&rcode=$rand_str
 
 `_ "You will then be able to use your account."`
 
@@ -51,6 +51,7 @@ https://tty.pt/cgi-bin/registration-confirm.cgi?username=$username&rcode=$rand_s
 		export _EMAIL="`_ "Email"`"
 		export _SUBMIT="`_ "Submit"`"
 		export _LOGIN="`_ Login`"
+		export _ANONYMOUS_LOGIN="`_ Login` - `_ Anonymous`"
 
 		case "$error" in
 			nomatch)
