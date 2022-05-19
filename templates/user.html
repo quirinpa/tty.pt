@@ -10,43 +10,45 @@ pre { display: inline-block; }
 
 	$LOGINLOGOUT
 
-	<form method="POST" class="v f fic">
-		<input type="hidden" name="action" value="personal_data"></input>
-		<p>
+	<div class="f _ fw v fic fcc">
+		<form method="POST" class="v f fic">
+			<input type="hidden" name="action" value="personal_data"></input>
+			<p>
 			$_CHANGE_PERSONAL_DATA
-		</p>
-		<label>
-			$_ADDRESS_LINE_1
-			<input type="text" name="address_line_1" value="$address_line_1" autocomplete="address-line1"></input>
-		</label>
-		<label>
-			$_ADDRESS_LINE_2
-			<input type="text" name="address_line_2" value="$address_line_2" autocomplete="address-line2"></input>
-		</label>
-		<label>
-			$_ZIP_CODE
-			<input name="zip" type="text" value="$zip" autocomplete="postal-code">
-		</label>
-		<label>
-			$_PHONE_NUMBER
-			<input name="phone_number" type="tel" value="$phone_number">
-		</label>
-		<button>$_SUBMIT</button>
-	</form>
+			</p>
+			<label>
+				$_ADDRESS_LINE_1
+				<input type="text" name="address_line_1" value="$address_line_1" autocomplete="address-line1"></input>
+			</label>
+			<label>
+				$_ADDRESS_LINE_2
+				<input type="text" name="address_line_2" value="$address_line_2" autocomplete="address-line2"></input>
+			</label>
+			<label>
+				$_ZIP_CODE
+				<input name="zip" type="text" value="$zip" autocomplete="postal-code">
+			</label>
+			<label>
+				$_PHONE_NUMBER
+				<input name="phone_number" type="tel" value="$phone_number">
+			</label>
+			<button>$_SUBMIT</button>
+		</form>
 
-	<form method="POST" class="v f fic">
-		<input type="hidden" name="action" value="vendor_data"></input>
-		<p>
+		<form method="POST" class="v f fic">
+			<input type="hidden" name="action" value="vendor_data"></input>
+			<p>
 			$_CHANGE_VENDOR_DATA
-		</p>
-		<label>
-			$_ACCOUNT_IBAN
-			<input type="text" name="iban" value="$iban"></input>
-		</label>
-		<label>
-			$_ACCOUNT_BICSWIFT
-			<input type="text" name="bicswift" value="$bicswift"></input>
-		</label>
-		<button>$_SUBMIT</button>
-	</form>
+			</p>
+			<label>
+				$_ACCOUNT_IBAN
+				<input type="text" name="iban" value="$iban"></input>
+			</label>
+			<label>
+				$_ACCOUNT_BICSWIFT
+				<input type="text" name="bicswift" value="$bicswift"></input>
+			</label>
+			<button>$_SUBMIT</button>
+		</form>
+	</div>
 </body>

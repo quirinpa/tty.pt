@@ -10,8 +10,9 @@ urldecode() {
 }
 
 url2vars() {
-	# always lowercase to prevent overwriting REMOTE_USER
-	eval "`echo $1 | tr '[A-Z]' '[a-z]'| tr '&' '\n'`"
+	# lowercase keys
+	exp="`echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1'`"
+	eval "$exp"
 }
 
 zcat() {

@@ -22,59 +22,59 @@ query_string=shop_id=$shop_id
 case "$1" in
 	post-login)
 		username="quirinpa"
-		post "" cgi-bin/login.cgi
+		post "" e/login
 		;;
 	get-user)
-		get "" cgi-bin/user.cgi
+		get "" e/user
 		;;
 	get-register)
-		get "" cgi-bin/register.cgi
+		get "" e/register
 		;;
 	post-register)
 		username=quirinpa6
 		password=testy123
 		email=quirinpa%40gmail.com
-		post username=$username\&password=$password\&password2=$password\&email=$email cgi-bin/register.cgi
+		post username=$username\&password=$password\&password2=$password\&email=$email e/register
 		;;
 	get-poem)
 		poem_id=1
-		get "poem_id=$poem_id" cgi-bin/poem.cgi
+		get "poem_id=$poem_id" e/poem
 		;;
 	post-poem)
 		poem_id=1
 		comment="teste run.sh"
-		post "poem_id=$poem_id&comment=$comment" cgi-bin/poem.cgi
+		post "poem_id=$poem_id&comment=$comment" e/poem
 		;;
 	post-cart)
 		query_string=$query_string\&product_id=produto0\&quantity=5
-		post $query_string cgi-bin/cart.cgi
+		post $query_string e/cart
 		;;
 	post-checkout)
 		query_string=$query_string\&action=checkout
-		post $query_string cgi-bin/cart.cgi
+		post $query_string e/cart
 		;;
-	get-cart) get $query_string cgi-bin/cart.cgi ;;
-	get-shop) get $query_string cgi-bin/shop.cgi ;;
-	get-index) get $query_string cgi-bin/index.cgi ;;
-	get-tty) get $query_string cgi-bin/tty.cgi ;;
+	get-cart) get $query_string e/cart ;;
+	get-shop) get $query_string e/shop ;;
+	get-index) get $query_string e/index ;;
+	get-tty) get $query_string e/tty ;;
 	post-tty)
 		query_string=$query_string\&cmd=whisper%20quirinpa%20teste
-		post $query_string cgi-bin/tty.cgi
+		post $query_string e/tty
 		;;
 	post-order)
-		post $query_string cgi-bin/order.cgi
+		post $query_string e/order
 		;;
-	get-order) get $query_string cgi-bin/order.cgi ;;
-	get-orders) get $query_string cgi-bin/orders.cgi ;;
-	get-image-add) get $query_string cgi-bin/image-add.cgi ;;
+	get-order) get $query_string e/order ;;
+	get-orders) get $query_string e/orders ;;
+	get-image-add) get $query_string e/image-add ;;
 	post-image-add)
 		content="`cat $ROOT/image-add-content.txt`"
 		export CONTENT_TYPE="multipart/form-data; boundary=----WebKitFormBoundaryHWi9UJlsyPtomSAF"
-		post "$content" cgi-bin/image-add.cgi
+		post "$content" e/image-add
 		;;
 	get-registration-confirm)
 		username="quirinpa3"
 		rcode="rbWOMF3G4K3Nr_8LDFg_3-eCBVI5GhJQbSK5a5m_yek"
-		get username=$username\&rcode=$rcode cgi-bin/registration-confirm.cgi
+		get username=$username\&rcode=$rcode e/registration-confirm
 		;;
 esac
