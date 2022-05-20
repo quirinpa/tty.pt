@@ -1,0 +1,20 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+
+case "$REQUEST_METHOD" in
+	GET)
+		rm $ROOT/sessions/$cookie
+
+		echo 'Status: 303 See Other'
+		echo "Set-Cookie: QSESSION=; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+		echo "Location: /e/index"
+		exit
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac
+
