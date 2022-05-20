@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/optional-auth.sh
 . $ROOT/lib/common.sh
 
 error() {
@@ -12,6 +13,7 @@ error() {
 case "$REQUEST_METHOD" in
 	POST)
 		hash="`grep "^$username:" $ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
+		[[ -z "$REMOTE_USER" ]] || rm $ROOT/sessions/$cookie
 		[[ ! -z $hash ]] || error nouser
 		if crypt_checkpass "$password" "$hash"; then
 			error unauthorized
@@ -28,7 +30,6 @@ case "$REQUEST_METHOD" in
 		;;
 	GET)
 		export _TITLE="`_ Login`"
-		export _ANONYMOUS_LOGIN="`_ Login` - `_ Anonymous`"
 		export _REGISTER="`_ "Register"`"
 		export _USERNAME="`_ "Username"`"
 		export _PASSWORD="`_ "Password"`"

@@ -51,7 +51,6 @@ https://tty.pt/e/registration-confirm?username=$username&rcode=$rand_str
 		export _EMAIL="`_ "Email"`"
 		export _SUBMIT="`_ "Submit"`"
 		export _LOGIN="`_ Login`"
-		export _ANONYMOUS_LOGIN="`_ Login` - `_ Anonymous`"
 
 		case "$error" in
 			nomatch)
