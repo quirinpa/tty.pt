@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/optional-auth.sh
 . $ROOT/lib/common.sh
 
 noslash() {
@@ -11,6 +12,7 @@ COMMENTS_PATH="$POEM_PATH/comments.txt"
 
 case "$REQUEST_METHOD" in
 	POST)
+		[[ ! -z "$REMOTE_USER" ]] || Unauthorized
 		fappend $COMMENTS_PATH echo $REMOTE_USER: "`urldecode "$comment"`" 
 		see_other poem ?poem_id=$poem_id
 		;;

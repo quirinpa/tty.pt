@@ -2,27 +2,34 @@
 
 export HTTP_ACCEPT_LANGUAGE="pt,en-US;q=0.9,en;q=0.8,es;q=0.7"
 export CONTENT_TYPE=application/x-www-form-urlencoded
-REMOTE_USER=quirinpa
-shop_id=loja_dos_sonhos
+export HTTP_HOST=localhost
+# export HTTP_COOKIE=QSESSION=w6r5iro6aepw-x3lkmph_7aj59lhrzllbn2xzbw59uu
+shop_id=Dyad
 order_id=9
 
 post() {
 	export SCRIPT_NAME=$2
-	echo "$1" | REQUEST_METHOD=POST ROOT=$ROOT REMOTE_USER=$REMOTE_USER $ROOT/$2
+	echo "$1" | REQUEST_METHOD=POST ROOT=$ROOT $ROOT/$2
 }
 
 get() {
 	export SCRIPT_NAME=$2
-	QUERY_STRING=$1 REQUEST_METHOD=GET ROOT=$ROOT REMOTE_USER=$REMOTE_USER $ROOT/$2
+	QUERY_STRING=$1 REQUEST_METHOD=GET ROOT=$ROOT $ROOT/$2
 }
 
 query_string=shop_id=$shop_id
 #\&order_id=$order_id
 
 case "$1" in
+	get-shop-add) get "" e/shop-add ;;
+	post-shop-add) post "shop_id=Dyad" e/shop-add ;;
+	get-login) get "" e/login ;;
+	get-images) get "" e/images ;;
+	get-logout) get "" e/logout ;;
 	post-login)
 		username="quirinpa"
-		post "" e/login
+		password=""
+		post "username=$username&password=$password" e/login
 		;;
 	get-user)
 		get "" e/user
@@ -46,7 +53,7 @@ case "$1" in
 		post "poem_id=$poem_id&comment=$comment" e/poem
 		;;
 	post-cart)
-		query_string=$query_string\&product_id=produto0\&quantity=5
+		query_string=$query_string\&product_id=1\&quantity=2
 		post $query_string e/cart
 		;;
 	post-checkout)

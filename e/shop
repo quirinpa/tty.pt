@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/optional-auth.sh
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
 
@@ -21,6 +22,15 @@ Products() {
 			Product -rshop $CART_PATH $line;
 		fi
 	done
+}
+
+ShopButtons() {
+	[[ ! -z "$REMOTE_USER" ]] || return
+
+	cat <<!
+<a class="$RB" href="/e/orders?shop_id=$shop_id">🚚</a>
+<a class="$RB" href="/e/cart?shop_id=$shop_id">🛒</a>
+!
 }
 
 if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
@@ -56,9 +66,9 @@ case "$REQUEST_METHOD" in
 
 		export SHOP_CATEGORIES="`lsshown $SHOP_PATH/.categories/ | while read line; do Category $line; done`"
 		PRODUCTS="`lsshown $SHOP_PATH/ | Products`"
-		PRODUCTS="`Wrap $PRODUCTS`"
-		export PRODUCTS
+		export PRODUCTS="`Wrap $PRODUCTS`"
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+		export SHOP_BUTTONS="`ShopButtons`"
 		if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
 			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/e/product-add?shop_id=$shop_id\">+</a></div>"
 		fi

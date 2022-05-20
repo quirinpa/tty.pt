@@ -11,11 +11,19 @@ error() {
 
 case "$REQUEST_METHOD" in
 	POST)
-
-		grep -q "^$username:" $ROOT/.htpasswd || error nouser
+		hash="`grep "^$username:" $ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
+		[[ ! -z $hash ]] || error nouser
+		if crypt_checkpass "$password" "$hash"; then
+			error unauthorized
+		fi
 		[[ ! -f $ROOT/users/$username/rcode ]] || error notactive
+		TOKEN="`rand_str_1`"
+		#[[ -d $ROOT/sessions ]] || mkdir $ROOT/sessions
+		echo $username > $ROOT/sessions/$TOKEN
 		echo 'Status: 303 See Other'
-		echo "Location: https://$username:$password@tty.pt/e/user"
+		echo "Set-Cookie: QSESSION=$TOKEN; SameSite=Lax"
+		echo "Location: /e/user"
+		#echo "Location: http://$username:$password@$HTTP_HOST/e/user"
 		echo
 		;;
 	GET)
@@ -28,7 +36,8 @@ case "$REQUEST_METHOD" in
 
 		case "$error" in
 			nouser) ERROR="`_ "No such user"`" ;;
-			notactive) ERROR="`_ "The account was not activated"`"
+			notactive) ERROR="`_ "The account was not activated"`";;
+			unauthorized) ERROR="`_ "Invalid credentials"`"
 		esac
 
 		if [[ ! -z "$ERROR" ]]; then

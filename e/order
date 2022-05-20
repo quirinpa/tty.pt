@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
 . $ROOT/lib/order.sh

@@ -1,9 +1,22 @@
 #!/bin/ksh
 
-umask 002
-set -e
+. $ROOT/lib/very-common.sh
 
-. $ROOT/lib/more-common.sh
+Forbidden() {
+	NormalHead 403
+	_TITLE="`_ Forbidden`"
+	echo
+	Head
+	export MENU="`Menu`"
+	Cat fatal
+	exit
+}
+
+bc() {
+	read exp
+	#echo "BC='$exp'" >&2
+	echo "$exp" | $ROOT/usr/bin/bc "$@"
+}
 
 urldecode() {
 	echo $@ | sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
@@ -41,25 +54,6 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
-get_lang() {
-	IFS=";"
-	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr '-' '_' | \
-		while read alang qlang; do \
-			if grep "$alang" $ROOT/locale/langs; then
-				break
-			fi
-		done
-}
-
-lang="`get_lang`"
-#debug
-export lang
-export LANG=$lang
-if [[ -z "$LANG" ]]; then
-	LANG=pt_PT
-fi
-ILANG=$LANG
-#LANG=$LANG.UTF-8
 
 # export $lang
 
@@ -67,16 +61,9 @@ ILANG=$LANG
 
 #alias _=eval_gettext
 
-_() {
-	IFS='$'
-	TEXTDOMAIN=site
-	value="`cat $ROOT/locale/$TEXTDOMAIN-$lang.txt | sed -n "s|^$@\|||p"`"
-	[[ -z "$value" ]] && echo $@ || echo $value
-}
-
 counter_inc() {
-	if [[ -f $1 ]]; then
-		current="`cat $1`"
+	current="`zcat $1`"
+	if [[ ! -z "$current" ]]; then
 		next="`echo $current + 1 | bc`"
 		echo $next | tee $1
 	else
@@ -126,7 +113,7 @@ df_dir() {
 		return
 	fi
 	du_user="`du -c $ROOT/$1 | tail -1 | awk '{print $1}'`"
-	format_df $1 `calcround "$du_user \* 1024"`
+	format_df $1 `calcround "$du_user * 1024"`
 }
 
 shops_df() {
@@ -149,25 +136,30 @@ df_total_exp() {
 }
 
 df_total() {
+	# echo DF_TOTAL_EXP="`df_total_exp`" >&2
 	echo "`df_total_exp`" | bc
 }
 
 calcround() {
-	echo $@ | bc -l | xargs printf "%.0f"
+	exp="`echo "$@" | tr -d '\'`"
+	#echo "CALCROUND=$exp" >&2
+	echo "$exp" | bc -l | xargs printf "%.0f"
 }
 
 free_space() {
 	N_USERS="`cat $ROOT/.htpasswd | wc -l | sed 's/ //g'`"
 	FREE_SPACE_EXP="(20000000000 / $N_USERS)"
-	calcround $FREE_SPACE_EXP
+	calcround "$FREE_SPACE_EXP"
 }
 
 FREE_SPACE="`free_space`"
 
 _fbytes() {
 	[[ -z "$DF_USER" ]] && Fatal 400 Checking bytes of unknown user
+	# echo exp="`df_total_exp`" >&2
 	OCCUPIED_SPACE="`df_total`"
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
+	# echo CAN_EXP="$CAN_EXP" >&2
 	CAN="`echo $CAN_EXP | bc -l`"
 	if [[ "$CAN" == "0" ]]; then
 		Fatal 400 No available space
@@ -208,36 +200,7 @@ rand_str_1() {
 		    | tr -d = | tr + - | tr / _ | tr '[A-Z]' '[a-z]'
 }
 
-LoginLogout() {
-	_LOGINLOGOUT="`_ "Login / Logout"`"
-	cat <<!
-<div class="tac tsxl f">
-	<a class="btn" href="/e/login">$_LOGINLOGOUT 🔑</a>
-</div>
-!
-}
-
 ## COMPONENTS
-Menu() {
-	if [[ ! -z "$REMOTE_USER" ]]; then
-		USER_NAME="<span class=\"ts\">$REMOTE_USER</span>"
-		USER_ICON="<a class=\"tsxl f _ fic btn ps\" href=\"/e/user\"><span>🔑 </span><span> $USER_NAME</span></a>"
-	fi
-	export USER_ICON
-	cat $ROOT/components/menu.html | envsubst
-}
-
-Head() {
-	cat<<!
-<html>
-	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-		<link rel="stylesheet" href="/vim.css" />
-		<title>$_TITLE</title>
-	</head>
-!
-}
 
 Whisper() {
 	WHISPER_PATH=$ROOT/users/$REMOTE_USER/.whisper
@@ -251,31 +214,13 @@ Whisper() {
 }
 
 Normal() {
-	case "$1" in
-		200) STATUS_TEXT="OK";;
-		400) STATUS_TEXT="Bad Request";;
-		401) STATUS_TEXT="Unauthorized";;
-		404) STATUS_TEXT="Not Found";;
-	esac
-	export STATUS_TEXT
-	export STATUS_CODE=$1
-	echo "Status: $1 $STATUS_TEXT"
-	echo 'Content-Type: text/html; charset=utf-8'
-	echo "Link: <https://tty.pt/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
+	NormalHead "$1"
+	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
 	echo
 	Head
 
 	Whisper
 	export MENU="`Menu`"
-}
-
-Cat() {
-	if [[ $# -lt 1 ]]; then
-		envsubst
-	else
-		cat $ROOT/templates/$1.html | envsubst
-	fi
-	echo "</html>"
 }
 
 NormalCat() {
@@ -294,16 +239,8 @@ Fatal() {
 	exit 1
 }
 
-debug() {
-	echo Status 500 Internal Error
-	echo
-	echo Sorry, I\'m currently debugging. Please wait.
-}
-
 DF_USER=$REMOTE_USER
 SCRIPT="`basename $SCRIPT_NAME | cut -f1 -d'.'`"
-export RB="btn round ps tsxl"
-export SRB="btn round ps tsl"
 Wrap() {
 	if [[ ! -z "$@" ]]; then
 		echo "<div class=\"_ v f fw fcc fic\">$@</div>"

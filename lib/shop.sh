@@ -3,10 +3,11 @@ get_product_path() {
 }
 
 ProductSummary() {
+	if [[ ! -z "$REMOTE_USER" ]]; then
+		qntstr=" x $quantity"
+	fi
 	cat <<!
-	<div class="tsl tar">
-		$product_price€ x $quantity
-	</div>
+<div class="tsl">$product_price€$qntstr</div>
 !
 }
 
@@ -53,6 +54,10 @@ Product() {
 	while [ $# -ne 0 ]; do
 		case "$1" in
 			-r)
+				if [[ -z "$REMOTE_USER" ]]; then
+					shift 2	
+					continue
+				fi
 				return_str="<input name=\"return\" type=\"hidden\" value=\"$2\"></input>"
 				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 				if [[ "$2" == "shop" ]] && [[ "$SHOP_OWNER" == "$REMOTE_USER" ]]; then

@@ -1,11 +1,12 @@
 #!/bin/ksh
 
+. $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 
 case "$REQUEST_METHOD" in
 	POST)
-		grep "^$REMOTE_USER$" $ROOT/.uploaders \
-			|| Fatal 401 "You can not do that"
+		grep -q "^$REMOTE_USER$" $ROOT/.uploaders \
+			|| Forbidden "You can not do that"
 
 		USER_IMAGES_PATH=$ROOT/htdocs/img/$REMOTE_USER
 

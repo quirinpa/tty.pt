@@ -8,7 +8,7 @@ case "$REQUEST_METHOD" in
 			1)
 				echo 'Status: 303 See Other'
 				#echo "Location: https://anonymous:anounymous@tty.pt/e/shop?shop_id=loja_dos_sonhos"
-				echo "Location: https://tty.pt/e/register"
+				echo "Location: http://$HTTP_HOST.pt/e/register"
 				echo
 				;;
 		esac

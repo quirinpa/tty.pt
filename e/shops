@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/optional-auth.sh
 . $ROOT/lib/common.sh
 
 Shop() {
@@ -19,6 +20,9 @@ Shops() {
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Shops`"
+		if [[ ! -z "$REMOTE_USER" ]]; then
+			export SHOP_ADD="<a class=\"$RB\" href=\"/e/shop-add\">+</a>"
+		fi
 
 		export SHOPS="`ls $ROOT/shops | Shops`"
 		NormalCat

@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 
 ibeg() {
@@ -60,7 +61,7 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
-export OUTPUT="`cat $OUTPUT_PATH | no_html`"
+export OUTPUT="`zcat $OUTPUT_PATH | no_html`"
 export _TITLE="`_ "Terminal"`"
 
 NormalCat

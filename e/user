@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 
 USER_PATH=$ROOT/users/$REMOTE_USER
@@ -31,7 +32,7 @@ case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ User` - $REMOTE_USER"
 		export _WELCOME="`_ Welcome`"
-		export LOGINLOGOUT="`LoginLogout`"
+		export _LOGOUT="`_ Logout`"
 		export _CHANGE_PERSONAL_DATA="`_ change_personal_data`"
 		export _ADDRESS_LINE_1="`_ "Address line 1"`"
 		export _ADDRESS_LINE_2="`_ "Address line 2"`"
@@ -57,5 +58,3 @@ case "$REQUEST_METHOD" in
 		echo
 		;;
 esac
-
-

@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+. $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 . $ROOT/lib/shop.sh
 
@@ -47,11 +48,15 @@ case "$REQUEST_METHOD" in
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		fmkdir $USER_SHOP_PATH
 		STOCK="`cat $PRODUCT_PATH/stock`"
-		OLD_QUANTITY="`cat $CART_PATH | grep $product_id | awk '{ print $2 }'`"
-		AVAILABLE_EXP="$STOCK - ($quantity - $OLD_QUANTITY) > 0"
+		if [[ -f $CART_PATH ]] && cat $CART_PATH | grep -q $product_id; then
+			OLD_QUANTITY="`cat $CART_PATH | grep $product_id | awk '{ print $2 }'`"
+		else
+			OLD_QUANTITY=0
+		fi
+		AVAILABLE_EXP="$STOCK - ($quantity - $OLD_QUANTITY) >= 0"
 		AVAILABLE="`echo $AVAILABLE_EXP | bc`"
 
-		[[ "$AVAILABLE" == "0" ]] && Fatal 400 No available stock
+		[[ "$AVAILABLE" != "0" ]] || Fatal 400 Not enough stock
 
 		if [[ "$quantity" == "0" ]]; then
 			sed -i "/^$product_id /d" $CART_PATH
@@ -59,7 +64,8 @@ case "$REQUEST_METHOD" in
 			fappend $CART_PATH echo $product_id $quantity
 			cat $CART_PATH | awk \
 				'{a[$1]=$2} END{for (i in a) print i FS a[i]}' \
-				> $CART_PATH
+				> $ROOT/tmp/cart
+			mv $ROOT/tmp/cart $CART_PATH
 		fi
 
 		case "$return" in
@@ -71,6 +77,9 @@ case "$REQUEST_METHOD" in
 				;;
 			product)
 				see_other product ?shop_id=$shop_id\&product_id=$product_id
+				;;
+			*)
+				Fatal 400 "Invalid return"
 				;;
 		esac
 

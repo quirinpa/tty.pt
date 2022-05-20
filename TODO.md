@@ -1,2 +1,3 @@
 - Bearer authentication - disallow sharing credentials with urls
 - Maybe not make query params and their values lowercase
+- Fix Link header
