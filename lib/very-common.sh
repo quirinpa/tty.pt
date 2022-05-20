@@ -98,3 +98,4 @@ Unauthorized() {
 
 cookie=$HTTP_COOKIE
 cookie="`echo $cookie | tr ' ' '\n' | head -n 1`"
+cookie="`echo $cookie | awk 'BEGIN { FS = "=" } { print $2 }'`"

@@ -2,9 +2,7 @@
 
 . $ROOT/lib/very-common.sh
 
-if [[ ! -z "$cookie" ]]; then
-	cookie="`echo $cookie | awk 'BEGIN { FS = "=" } { print $2 }'`"
-	user="`cat $ROOT/sessions/$cookie || true`"
+if [[ -f "$ROOT/sessions/$cookie" ]]; then
+	user="`cat $ROOT/sessions/$cookie`"
 	REMOTE_USER=$user
 fi
-
