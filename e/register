@@ -23,7 +23,7 @@ case "$REQUEST_METHOD" in
 			email="`urldecode $email`"
 			fwrite $USER_DIR/email echo $email
 			username="`urldecode $username`"
-			echo $username:`urldecode $password` | htpasswd -I $ROOT/.htpasswd
+			echo $username:`urldecode "$password"` | htpasswd -I $ROOT/.htpasswd
 			rand_str="`rand_str_1`"
 			fwrite $USER_DIR/rcode echo "$rand_str"
 			femail -f noreply@tty.pt $email <<!

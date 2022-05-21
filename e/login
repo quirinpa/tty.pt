@@ -15,6 +15,7 @@ case "$REQUEST_METHOD" in
 		hash="`grep "^$username:" $ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
 		[[ -z "$REMOTE_USER" ]] || rm $ROOT/sessions/$cookie
 		[[ ! -z $hash ]] || error nouser
+		password="`urldecode $password`"
 		if crypt_checkpass "$password" "$hash"; then
 			error unauthorized
 		fi
