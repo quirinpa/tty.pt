@@ -1,0 +1,6 @@
+doas vim /etc/fstab
+# change /var or /var/www to dev
+doas reboot
+doas mknod dev/urandom c 45 0
+cd /var/www
+mkdir /empty /shops
