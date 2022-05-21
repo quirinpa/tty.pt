@@ -5,11 +5,15 @@
 /users
 /bin
 /poems
+/sessions
 /usr
-/htdocs/vim.css
+/dev
+/tmp
+/var
+/htdocs/*
+!/htdocs/vss
 /htdocs/vss/c.h
 /htdocs/vss/t.h
-/htdocs/img
 /src/mpfd
 /src/crypt_checkpass
 /etc
