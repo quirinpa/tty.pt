@@ -3,4 +3,5 @@ doas vim /etc/fstab
 doas reboot
 doas mknod dev/urandom c 45 0
 cd /var/www
-mkdir /empty /shops
+mkdir /empty /shops /poems /users
+chmod g+w /poems /users
