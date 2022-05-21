@@ -21,6 +21,9 @@ case "$REQUEST_METHOD" in
 			fbytes $FILE_PATH
 			filename="`cat $FILE_PATH-name`"
 			file_lang="`echo $filename | sed 's/\.[^.]*$//'`"
+			if not_valid_lang "$file_lang"; then
+				Fatal 400 Not a valid locale
+			fi
 			mv $FILE_PATH $POEM_PATH/$file_lang.html
 		done
 

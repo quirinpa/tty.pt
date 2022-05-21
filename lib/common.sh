@@ -256,6 +256,11 @@ not_valid_password() {
 	[[ "$count" -le 8 ]]
 }
 
+not_valid_lang() {
+	lang="$@"
+	! grep -q "$lang" $ROOT/locale/langs
+}
+
 BigButton() {
 	ID="$1"
 	_TITLE="`_ $1`"
