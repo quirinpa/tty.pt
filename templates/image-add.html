@@ -9,7 +9,7 @@
 	<form action="/e/image-add" method="POST" class="v f fic" enctype="multipart/form-data">
 		<label>
 			$_FILE
-			<input required type="file" name="file" accept="png"></input>
+			<input required type="file" name="file[]" accept="png" multiple></input>
 		</label>
 		<button>$_SUBMIT</button>
 	</form>

@@ -11,11 +11,16 @@ case "$REQUEST_METHOD" in
 		USER_IMAGES_PATH=$ROOT/htdocs/img/$REMOTE_USER
 
 		fmkdir $USER_IMAGES_PATH
-		fbytes $ROOT/tmp/mpfd/file
 
-		IMAGE_ID="`counter_inc $ROOT/public/img-counter`"
-		ext="`file -i $ROOT/tmp/mpfd/file | awk '{print $2}' | tr '/' ' ' | awk '{print $2}'`"
-		mv $ROOT/tmp/mpfd/file $USER_IMAGES_PATH/$IMAGE_ID.$ext
+		file_count="`cat $ROOT/tmp/mpfd/file-count`"
+		for i in `seq 0 $file_count`; do
+			FILE_PATH=$ROOT/tmp/mpfd/file$i
+			fbytes $FILE_PATH
+			IMAGE_ID="`counter_inc $ROOT/public/img-counter`"
+			ext="`file -i $FILE_PATH | awk '{print $2}' | tr '/' ' ' | awk '{print $2}'`"
+			mv $FILE_PATH $USER_IMAGES_PATH/$IMAGE_ID.$ext
+		done
+
 		see_other images
 
 		;;
