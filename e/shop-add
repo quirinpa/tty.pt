@@ -3,11 +3,6 @@
 . $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 
-not_valid_id() {
-	valid="`echo $@ | tr -cd '[a-zA-Z0-9]_'`"
-	[[ "$valid" != "$@" ]]
-}
-
 case "$REQUEST_METHOD" in
 	POST)
 		shop_id="`urldecode $shop_id`"

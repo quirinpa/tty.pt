@@ -246,3 +246,13 @@ Wrap() {
 		echo "<div class=\"_ v f fw fcc fic\">$@</div>"
 	fi
 }
+
+not_valid_id() {
+	valid="`echo $@ | tr -cd '[a-zA-Z0-9]_'`"
+	[[ "$valid" != "$@" ]]
+}
+
+not_valid_password() {
+	count="`echo $@ | wc -c`"
+	[[ "$count" -le 8 ]]
+}

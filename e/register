@@ -7,26 +7,33 @@ error() {
 	exit
 }
 
-registration_email() {
-}
-
 case "$REQUEST_METHOD" in
 	POST)
-		if [[ "$password" == "$password2" ]];  then
-			if grep -q "^$username:" $ROOT/.htpasswd; then
-				error match
-			fi
+		username="`urldecode $username`"
+		password="`urldecode $password`"
+		password2="`urldecode $password2`"
+		email="`urldecode $email`"
 
-			USER_DIR=$ROOT/users/$username
-			DF_USER=$username
-			fmkdir $USER_DIR
-			email="`urldecode $email`"
-			fwrite $USER_DIR/email echo $email
-			username="`urldecode $username`"
-			echo $username:`urldecode "$password"` | htpasswd -I $ROOT/.htpasswd
-			rand_str="`rand_str_1`"
-			fwrite $USER_DIR/rcode echo "$rand_str"
-			femail -f noreply@tty.pt $email <<!
+		if not_valid_password $password; then
+			Fatal 400 Not a valid password
+		fi
+
+		if [[ "$password" != "$password2" ]]; then
+			Fatal 400 The passwords don\'t match
+		fi
+
+		if grep -q "^$username:" $ROOT/.htpasswd; then
+			Fatal 400 User already exists
+		fi
+
+		USER_DIR=$ROOT/users/$username
+		DF_USER=$username
+		fmkdir $USER_DIR
+		fwrite $USER_DIR/email echo $email
+		echo $username:$password | htpasswd -I $ROOT/.htpasswd
+		rand_str="`rand_str_1`"
+		fwrite $USER_DIR/rcode echo "$rand_str"
+		femail -f noreply@tty.pt $email <<!
 Subject: `_ "Registration on tty.pt"`
 
 `_ "Welcome to tty.pt!"`
@@ -38,10 +45,7 @@ https://tty.pt/e/registration-confirm?username=$username&rcode=$rand_str
 
 `_ "Thank you!"`
 !
-			see_other registration-complete
-		else
-			error nomatch
-		fi
+		see_other registration-complete
 		;;
 	GET)
 		export _REGISTER="`_ "Register"`"
@@ -51,23 +55,6 @@ https://tty.pt/e/registration-confirm?username=$username&rcode=$rand_str
 		export _EMAIL="`_ "Email"`"
 		export _SUBMIT="`_ "Submit"`"
 		export _LOGIN="`_ Login`"
-
-		case "$error" in
-			nomatch)
-				ERROR="`_ "Passwords don't match"`"
-				;;
-			match)
-				ERROR="`_ "User already exists"`"
-				;;
-			*)
-				;;
-		esac
-
-		if [[ ! -z "$ERROR" ]]; then
-			ERROR="<p class=\"c9\">$ERROR</p>"
-		fi
-
-		export ERROR
 
 		NormalCat
 		;;

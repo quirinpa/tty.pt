@@ -37,6 +37,7 @@ fi
 case "$REQUEST_METHOD" in
 	POST)
 		PRODUCT_PATH=$SHOP_PATH/$product_id
+
 		if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
 			Fatal 404 Product not found
 		fi
