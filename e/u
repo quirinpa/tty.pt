@@ -5,6 +5,11 @@
 case "$REQUEST_METHOD" in
 	GET)
 		case "$k" in
+			0)
+				echo 'Status: 303 See Other'
+				echo "Location: http://$HTTP_HOST/e/poem?poem_id=programmers_poem"
+				echo
+				;;
 			1)
 				echo 'Status: 303 See Other'
 				echo "Location: http://$HTTP_HOST/e/shop?shop_id=loja_dos_sonhos"

@@ -38,8 +38,7 @@ case "$REQUEST_METHOD" in
 		case "$CONTENT_TYPE" in
 			multipart/form-data*)
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
-
-				mpfd "$boundary"
+				mpfd "$boundary" 2>&1
 				;;
 			application/x-www-form-urlencoded*)
 				read line1 || true
@@ -255,4 +254,19 @@ not_valid_id() {
 not_valid_password() {
 	count="`echo $@ | wc -c`"
 	[[ "$count" -le 8 ]]
+}
+
+BigButton() {
+	ID="$1"
+	_TITLE="`_ $1`"
+	WHERE="$2"
+	cat <<!
+<a class="btn tsxl" href="/e/$WHERE?${WHERE}_id=$ID">
+	$_TITLE
+</a>
+!
+}
+
+BigButtons() {
+	while read line; do BigButton $line $1; done
 }

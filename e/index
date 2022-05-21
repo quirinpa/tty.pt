@@ -6,7 +6,7 @@
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="tty.pt"
-		export _POEM="`_ "Programmer's poem"`"
+		export _POEMS="`_ Poems`"
 		export _NEVERDARK="`_ "Never Dark"`"
 		export _SHOPS="`_ "Shops"`"
 		export _SEM="`_ "Shared Expenses Manager"`"

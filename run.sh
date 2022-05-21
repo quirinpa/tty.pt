@@ -3,8 +3,8 @@
 export HTTP_ACCEPT_LANGUAGE="pt,en-US;q=0.9,en;q=0.8,es;q=0.7"
 export CONTENT_TYPE=application/x-www-form-urlencoded
 export HTTP_HOST=localhost
-# export HTTP_COOKIE=QSESSION=w6r5iro6aepw-x3lkmph_7aj59lhrzllbn2xzbw59uu
-shop_id=Dyad
+export HTTP_COOKIE=QSESSION=r6jfa0xeko3zfg4ncxlcawrwoer_jnknshxmwva1rq8
+hop_id=Dyad
 order_id=9
 
 post() {
@@ -78,6 +78,11 @@ case "$1" in
 		content="`cat $ROOT/image-add-content.txt`"
 		export CONTENT_TYPE="multipart/form-data; boundary=----WebKitFormBoundaryHWi9UJlsyPtomSAF"
 		post "$content" e/image-add
+		;;
+	post-poem-add)
+		content="`cat $ROOT/poem-add-content.txt`"
+		export CONTENT_TYPE="multipart/form-data; boundary=----WebKitFormBoundaryIOyK8yKGOlfFIG1u"
+		post "$content" e/poem-add
 		;;
 	get-registration-confirm)
 		username="quirinpa3"

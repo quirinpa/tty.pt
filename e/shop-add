@@ -11,7 +11,7 @@ case "$REQUEST_METHOD" in
 			Fatal 400 Not a valid ID
 		fi
 
-		SHOP_PATH="$ROOT/shops/`urldecode $shop_id`"
+		SHOP_PATH="$ROOT/shops/$shop_id"
 
 		fmkdir $SHOP_PATH
 		fwrite $SHOP_PATH/.owner echo $REMOTE_USER

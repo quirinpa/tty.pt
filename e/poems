@@ -5,12 +5,13 @@
 
 case "$REQUEST_METHOD" in
 	GET)
-		export _TITLE="`_ Shops`"
+		export _TITLE="`_ Poems`"
+
 		if [[ ! -z "$REMOTE_USER" ]]; then
-			export SHOP_ADD="<a class=\"$RB\" href=\"/e/shop-add\">+</a>"
+			export POEM_ADD="<a class=\"$RB\" href=\"/e/poem-add\">+</p>"
 		fi
 
-		export SHOPS="`ls $ROOT/shops | BigButtons shop`"
+		export POEMS="`ls $ROOT/poems | BigButtons poem`"
 		NormalCat
 		;;
 	*)

@@ -1,0 +1,44 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+
+case "$REQUEST_METHOD" in
+	POST)
+		poem_id="`cat $ROOT/tmp/mpfd/poem_id`"
+
+		if not_valid_id $poem_id; then
+			Fatal 400 Not a valid ID
+		fi
+
+		POEM_PATH="$ROOT/poems/$poem_id"
+
+		fmkdir $POEM_PATH
+		fwrite $POEM_PATH/.owner echo $REMOTE_USER
+		file_count="`cat $ROOT/tmp/mpfd/file-count`"
+		for i in `seq 0 $file_count`; do
+			FILE_PATH=$ROOT/tmp/mpfd/file$i
+			fbytes $FILE_PATH
+			filename="`cat $FILE_PATH-name`"
+			file_lang="`echo $filename | sed 's/\.[^.]*$//'`"
+			mv $FILE_PATH $POEM_PATH/$file_lang.html
+		done
+
+		see_other poem ?poem_id=$poem_id
+		;;
+
+	GET)
+		export _TITLE="`_ "Add poem"`"
+		export _POEM_ID="`_ "Poem ID"`"
+		export _POEM_FILES="`_ "Poem files"`"
+		export _SUBMIT="`_ Submit`"
+
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac
+
+

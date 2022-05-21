@@ -13,7 +13,7 @@ COMMENTS_PATH="$POEM_PATH/comments.txt"
 case "$REQUEST_METHOD" in
 	POST)
 		[[ ! -z "$REMOTE_USER" ]] || Unauthorized
-		fappend $COMMENTS_PATH echo $REMOTE_USER: "`urldecode "$comment"`" 
+		fappend $COMMENTS_PATH echo $REMOTE_USER: "`urldecode "$comment"`" 2>&1
 		see_other poem ?poem_id=$poem_id
 		;;
 	GET)
@@ -40,8 +40,7 @@ case "$REQUEST_METHOD" in
 		COUNTER_PATH=$POEM_PATH/counter.txt
 		export COUNTER="`counter_inc $COUNTER_PATH`"
 
-		POEM_TITLE="`cat $POEM_PATH/title.txt`"
-		export _TITLE="`_ "$POEM_TITLE"`"
+		export _TITLE="`_ "$poem_id"`"
 
 		NormalCat
 		;;

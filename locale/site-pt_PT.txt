@@ -1,5 +1,4 @@
 
-Programmer's poem|O poema do programador
 Never Dark|Nunca Sombrio
 Shops|Lojas
 Shared Expenses Manager|Gestor de Despesas Partilhadas
@@ -58,3 +57,5 @@ Registration complete|Registo completo
 Please click the link sent to your e-mail to activate your account.|Por favor clique no link enviado para o seu e-mail para activar a sua conta.
 The account was not activated|A conta não foi activada
 No such user|Esse utilizador não existe
+Poems|Poemas
+programmers_poem|O poema do programador

@@ -29,3 +29,5 @@ find
 getopt
 head
 rm
+seq
+rev
