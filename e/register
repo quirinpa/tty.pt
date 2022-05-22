@@ -55,6 +55,7 @@ https://tty.pt/e/registration-confirm?username=$username&rcode=$rand_str
 		export _EMAIL="`_ "Email"`"
 		export _SUBMIT="`_ "Submit"`"
 		export _LOGIN="`_ Login`"
+		export _COOKIE_POLICY="`_ "Cookie policy"`"
 
 		NormalCat
 		;;

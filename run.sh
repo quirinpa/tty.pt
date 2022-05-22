@@ -3,7 +3,7 @@
 export HTTP_ACCEPT_LANGUAGE="pt,en-US;q=0.9,en;q=0.8,es;q=0.7"
 export CONTENT_TYPE=application/x-www-form-urlencoded
 export HTTP_HOST=localhost
-export HTTP_COOKIE=QSESSION=r6jfa0xeko3zfg4ncxlcawrwoer_jnknshxmwva1rq8
+export HTTP_COOKIE=QSESSION=uwgi6ynv4lgnjcd12_xze4nf49gjrxnigroeo_q0bi0
 hop_id=Dyad
 order_id=9
 
@@ -65,7 +65,7 @@ case "$1" in
 	get-index) get $query_string e/index ;;
 	get-tty) get $query_string e/tty ;;
 	post-tty)
-		query_string=$query_string\&cmd=whisper%20quirinpa%20teste
+		query_string=$query_string\&cmd=df
 		post $query_string e/tty
 		;;
 	post-order)

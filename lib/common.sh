@@ -115,19 +115,20 @@ df_dir() {
 	format_df $1 `calcround "$du_user * 1024"`
 }
 
-shops_df() {
-	ls $ROOT/shops | \
+dir_df() {
+	ls $ROOT/$1 | \
 		while read line; do
-			SHOP_PATH=$ROOT/shops/$line
-			OWNER="`cat $SHOP_PATH/.owner`"
-			[[ "$OWNER" == "$DF_USER" ]] && df_dir shops/$line
+			path=$ROOT/$1/$line
+			OWNER="`cat $path/.owner`"
+			[[ "$OWNER" != "$DF_USER" ]] || df_dir $1/$line
 		done
 }
 
 df() {
 	df_dir users/$DF_USER
 	df_dir htdocs/img/$DF_USER
-	shops_df
+	dir_df shops
+	dir_df poems
 }
 
 df_total_exp() {

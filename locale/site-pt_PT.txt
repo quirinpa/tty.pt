@@ -59,3 +59,4 @@ The account was not activated|A conta não foi activada
 No such user|Esse utilizador não existe
 Poems|Poemas
 programmers_poem|O poema do programador
+Cookie policy|Política de cookies

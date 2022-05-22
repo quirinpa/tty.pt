@@ -48,8 +48,7 @@ Cat() {
 
 
 get_lang() {
-	IFS=";"
-	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr '-' '_' | \
+	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr '-' '_' | tr ';' ' ' | \
 		while read alang qlang; do \
 			if grep "$alang" $ROOT/locale/langs; then
 				break
@@ -64,6 +63,9 @@ if [[ -z "$LANG" ]]; then
 	LANG=pt_PT
 fi
 ILANG=$LANG
+# debug
+# echo $HTTP_ACCEPT_LANGUAGE
+# echo lang=$lang
 
 _() {
 	IFS='$'

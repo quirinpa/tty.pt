@@ -2,3 +2,4 @@ loja_dos_sonhos|Dream's Shop
 Pending_payment|Pending payment
 Pending_shipment|Pending shipment
 change_shipping_address|Change shipping address
+programmers_poem|Programmer's poem

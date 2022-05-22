@@ -3,35 +3,25 @@
 . $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 
-ibeg() {
-	cat - $1 > $ROOT/tmp/ibeg && mv $ROOT/tmp/ibeg $1
-	#fwrite $ROOT/tmp/ibeg "cat - $1" && mv $ROOT/tmp/ibeg $1
-}
-
-USER_DIR="$ROOT/users/$REMOTE_USER"
-fmkdir $USER_DIR
-OUTPUT_PATH="$USER_DIR/.tty"
+USER_PATH="$ROOT/users/$REMOTE_USER"
+WHISPER_PATH="$USER_PATH/.whisper"
 
 case "$REQUEST_METHOD" in
 	POST)
-		CMD="`urldecode $cmd`"
-		[[ -f $OUTPUT_PATH ]] || touch $OUTPUT_PATH
-		echo "$REMOTE_USER$ $CMD" | ibeg $OUTPUT_PATH
+		cmd="`urldecode $cmd`"
+		echo "$REMOTE_USER$ $cmd" >> $WHISPER_PATH
 
-		case "$CMD" in
+		case "$cmd" in
 			help) 
 				echo Welcome to the terminal
 				echo Beware - the values might not be correct
-				echo commands: df quota clear whisper
+				echo commands: df quota whisper
 				;;
 			df)
 				df
 				;;
 			quota)
 				echo "`df_total`/`free_space`"
-				;;
-			clear)
-				echo -n "" > $OUTPUT_PATH
 				;;
 			whisper*)
 				set -- $CMD
@@ -40,7 +30,7 @@ case "$REQUEST_METHOD" in
 				shift
 				message=$@
 
-				[[ -d $ROOT/users/$username ]] || fatal 400
+				[[ -d $ROOT/users/$username ]] || Fatal 400 No such user
 
 				DF_USER=$username
 				fappend $ROOT/users/$username/.whisper \
@@ -49,7 +39,7 @@ case "$REQUEST_METHOD" in
 				;;
 			*)
 				;;
-		esac | ibeg $OUTPUT_PATH
+		esac >> $WHISPER_PATH
 
 		;;
 	GET)
@@ -61,7 +51,6 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
-export OUTPUT="`zcat $OUTPUT_PATH | no_html`"
 export _TITLE="`_ "Terminal"`"
 
 NormalCat
