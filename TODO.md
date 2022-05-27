@@ -1,1 +1,5 @@
 - Fix Link header
+- Transaction system
+- Make more general languages
+- Make images occupy less space (ImageMagick)
+- Currency exchange api https://www.xe.com/xecurrencydata/

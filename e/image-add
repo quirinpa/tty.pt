@@ -26,7 +26,7 @@ case "$REQUEST_METHOD" in
 		;;
 	GET)
 		export _TITLE="`_ "Upload image"`"
-		export _FILE="`_ File`"
+		export _FILES="`_ Files`"
 		export _SUBMIT="`_ Submit`"
 
 		NormalCat

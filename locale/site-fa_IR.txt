@@ -37,7 +37,7 @@ Description|شرح
 Images|تصاویر
 Price|قیمت
 Upload image|آپلود تصویر
-File|فایل
+Files|فایل ها
 Product|تولید - محصول
 Address line 1|خط اول آدرس
 Address line 2|خط آدرس دوم

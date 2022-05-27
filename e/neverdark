@@ -1,0 +1,8 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+
+NormalHead 200
+echo
+cat $ROOT/htdocs/neverdark/index.html

@@ -37,7 +37,7 @@ Description|La description
 
 Price|Prix
 Upload image|Télécharger une image
-File|Fichier
+Files|Fichiers
 Product|Produit
 Address line 1|Première ligne d'adresse
 Address line 2|Deuxième ligne d'adresse

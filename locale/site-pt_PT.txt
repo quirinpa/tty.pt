@@ -35,7 +35,7 @@ Description|Descrição
 Images|Imagens
 Price|Preço
 Upload image|Fazer upload de uma imagem
-File|Ficheiro
+Files|Ficheiros
 Product|Produto
 change_personal_data|Mudar dados pessoais
 Address line 1|Primeira linha da morada
@@ -60,3 +60,6 @@ No such user|Esse utilizador não existe
 Poems|Poemas
 programmers_poem|O poema do programador
 Cookie policy|Política de cookies
+Add poem|Adicionar poema
+Poem ID|ID do poema
+add_poem_note|Os nomes dos ficheiros devem corresponder aos locales suportados. Exemplo:

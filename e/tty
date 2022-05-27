@@ -24,7 +24,7 @@ case "$REQUEST_METHOD" in
 				echo "`df_total`/`free_space`"
 				;;
 			whisper*)
-				set -- $CMD
+				set -- $cmd
 				shift
 				username=$1
 				shift

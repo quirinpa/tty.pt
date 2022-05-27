@@ -33,7 +33,8 @@ case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ "Add poem"`"
 		export _POEM_ID="`_ "Poem ID"`"
-		export _POEM_FILES="`_ "Poem files"`"
+		export _FILES="`_ Files`"
+		export _ADD_POEM_NOTE="`_ add_poem_note` $lang.html"
 		export _SUBMIT="`_ Submit`"
 
 		NormalCat
