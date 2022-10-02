@@ -1,0 +1,45 @@
+<body class="v f fic rel">
+	<header class="_ f fic">
+		$SEM_MENU
+		<a class="$RB" href="/e/sem?sem_id=$sem_id">👁</a>
+		$MENU
+	</header>
+	<h1 class="tac">$_TITLE</h1>
+	<form action="/e/sem-pay" method="POST" class="v f">
+		<label>
+			Date/Time
+			<input required name="ts" type="datetime-local" value="$NOW"></input>
+		</label>
+
+		<label>
+			Id
+			<select required name="id">
+				$ID_OPTIONS
+			</select>
+		</label>
+
+		<label>
+			Value
+			<input required name="value" pattern="^\d+(\.\d+)?$" placeholder="33.33"></input>
+		<label>
+			Start of billing period
+			<input required name="from" type="datetime-local" value="$DNOW"></input>
+		</label>
+
+		<label>
+			End of billing period
+			<input required name="to" type="datetime-local" value="$DNOW"></input>
+		</label>
+
+		<label>
+			Rest of the line
+			<textarea name="rest" placeholder="[type] [entity] [reference]"></textarea>
+		</label>
+
+		<input type="hidden" name="sem_id" value="$sem_id"></input>
+
+		<button>Submit</button>
+	</form>
+</body>
+
+$SEM_SCRIPT

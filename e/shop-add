@@ -32,4 +32,3 @@ case "$REQUEST_METHOD" in
 		echo
 		;;
 esac
-

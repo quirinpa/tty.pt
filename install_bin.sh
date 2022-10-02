@@ -6,7 +6,10 @@ install_extra() {
 	line=$1
 	target_path="`dirname $line`"
 	[[ -d "$ROOT$target_path" ]] || mkdir -p $ROOT$target_path
-	[[ -f "$ROOT$line" ]] || cp $line $ROOT$line
+	if [[ ! -f "$ROOT$line" ]]; then
+		cp $line $ROOT$line
+		echo cp $line $ROOT$line
+	fi
 }
 
 install_bin() {

@@ -31,3 +31,10 @@ head
 rm
 seq
 rev
+basename
+dirname
+curl
+jq
+ldd
+htpasswd
+femail

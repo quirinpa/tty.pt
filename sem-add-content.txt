@@ -1,0 +1,86 @@
+------WebKitFormBoundaryIOyK8yKGOlfFIG1u
+Content-Disposition: form-data; name="sem_id"
+
+test
+------WebKitFormBoundaryIOyK8yKGOlfFIG1u
+Content-Disposition: form-data; name="file"; filename="data.txt"
+Content-Type: text/plain
+
+# L: This document contains the movement of the apartment's people in relation to time (no bills were added). I left some bill payments that were there already in the document, though.
+# L: Bill payments will be registered in a later revision. However, to me it seems for the bills we only need to register the amount excluding delay fees, type of bill (water, light, etc), period of time it refers to and who paid it. Date of payment and entity is not needed I imagine.
+START 2020-10-15 elias +351967145017
+START 2020-10-15 quirinpa +351962324757 quirinpa@gmail.com Paulo Andre Azevedo Quirino
+START 2020-10-15 vitor
+START 2021-10-01 leon +351919499560 festerdam@posteo.net Leon Noel Deml
+STOP 2021-12-01 vitor
+TRANSFER 2022-01-01 quirinpa vitor 101.95 # Adjustments until leaving
+TRANSFER 2022-01-01 quirinpa vitor 177 # Additional debt
+PAUSE 2022-01-28 leon
+RESUME 2022-03-06 leon
+# TRANSFER 2022-03-01 quirinpa leon 107.29 # Adjustments 2021-10-01 until 2022-03-01 (not including 2022-02)
+TRANSFER 2022-03-01 quirinpa leon 69.09 # Adjustments 2021-10-01 until 2022-03-01 (not including 2022-02)
+STOP 2022-03-01 elias
+START 2022-03-09T16:00:00 emad +351968873232 ezstup@gmail.com Emad Zaman
+PAY 1970-01-01 leon 31.38 2022-01-27 2022-02-26 light 21818 614762844 # actually paid 80.82 the next month
+PAUSE 2022-03-18 leon
+RESUME 2022-03-20 leon
+# L: He was only there for half the month in april, and in May he was gone for the weekends.
+# L: Since it was my duty to register his movements or to inform him that he is supposed to register them, I'll register him as being present in those days in april where more people were present so that he may not suffer from my mistakes. Too tired to tell if that actually has any impact in the amount he owes.
+PAUSE 2022-04-02T10:00:00 quirinpa
+START 2022-04-04 tomas +351938278629
+PAUSE 2022-04-06 tomas
+PAUSE 2022-04-13 leon
+PAY 1970-01-01 leon 14.60 2022-02-20 2022-03-20 gas 21094 280475482 # late payment
+PAY 1970-01-01 leon 34.49 2022-02-23 2022-03-22 comms 21579 124657231 # actually not paid but part of next bill
+PAY 1970-01-01 leon 49.44 2022-02-27 2022-03-26 light 21818 776348333 # actually 80.82 776348332
+RESUME 2022-04-18 leon
+RESUME 2022-04-18 tomas
+PAUSE 2022-04-29 tomas
+RESUME 2022-05-02 tomas
+PAUSE 2022-05-06 tomas
+RESUME 2022-05-09 tomas
+PAUSE 2022-05-13 tomas
+PAUSE 2022-05-13 leon
+RESUME 2022-05-15 leon
+RESUME 2022-05-16 tomas
+# CREDIT 25.91 18.53 6.26 2022-03-08 2022-04-07 water
+PAY 1970-01-01 leon 31.49 2022-03-23 2022-04-22 comms 21579 21579 # see previous of the same type
+PAY 1970-01-01 leon 47.65 2022-03-27 2022-04-26 light 21818 349142713 # actually not paid but part of next bill
+PAY 1970-01-01 leon 12.48 2022-03-20 2022-04-20 gas 21094 282292582 # late payment
+PAUSE 2022-05-20 tomas
+RESUME 2022-05-23 tomas
+STOP 2022-05-27 tomas
+PAUSE 2022-06-17 leon
+PAY 1970-01-01 leon 14.27 2022-04-08 2022-05-06 water 21557 095141846
+PAY 1970-01-01 leon 34.59 2022-04-27 2022-05-26 light 21818 805074884 # actually 82.24 805074884
+PAY 1970-01-01 leon 31.49 2022-04-23 2022-05-22 comms 21579 124657231
+PAY 1970-01-01 leon 18.70 2022-04-20 2022-05-20 gas 21094 284076082 # late payment
+RESUME 2022-06-19 leon
+STOP 2022-05-22 emad
+# CREDIT 122.60 18.69 15.39 2022-05-08 2022-06-07 water
+RESUME 2022-06-29 quirinpa
+PAY 2022-07-13 leon 30.57 2022-05-27 2022-06-26 light 21818 349153512
+PAY 2022-07-13 leon 19.80 2022-05-20 2022-06-20 gas 21094 285794082
+PAUSE 2022-07-15 leon
+PAY 2022-07-18 quirinpa 31.49 2022-05-23 2022-06-22 comms 21579 124657231
+# CREDIT 121.48 18.33 18.69 2022-06-08 2022-07-07 water
+PAY 2022-08-10 quirinpa 7.03 2022-06-20 2022-07-20 gas 21094 287612182
+PAY 2022-08-10 quirinpa 40.20 2022-06-27 2022-07-26 light 21818 011681241
+PAY 2022-08-18 quirinpa 31.49 2022-06-23 2022-07-22 comms 21579 124657231
+PAY 2022-09-02 quirinpa 8.33 2022-07-20 2022-08-20 gas 21094 289285582
+PAY 2022-09-02 quirinpa 41.36 2022-07-27 2022-08-26 light 21818 834898483
+BUY 2022-09-06 quirinpa 8.53 sonasol, lixivia, sonasol wc, sacos do lixo
+RESUME 2022-09-11 leon
+PAY 2022-09-18 quirinpa 31.49 2022-07-23 2022-08-22 comms 21579 124657231
+START 2022-09-18T19:41:00 tomas7 +351932159679 tomas.miguel.neves.7@gmail.com Tomas Neves
+START 2022-09-19T18:00:00 rafael +351960455083 rafa.custodio.marques2004@gmail.com Rafael Marquês
+PAUSE 2022-09-23T17:58:00 leon
+PAUSE 2022-09-23T16:10:00 rafael # unconfirmed date/time
+#START 2022-09-24 ?
+BUY 2022-09-24T10:00:00 leon 17.00 water filterer # actually bought earlier, but it makes more sense to split the price with everyone that will be living here
+PAUSE 2022-09-24T15:41:00 tomas7
+#PAUSE 2022-09-24T15:41:00 ?
+RESUME 2022-09-25T20:30:00 rafael
+RESUME 2022-09-25T22:00:00 tomas7
+RESUME 2022-09-25T22:03:00 leon
+------WebKitFormBoundaryIOyK8yKGOlfFIG1u--

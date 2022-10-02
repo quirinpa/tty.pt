@@ -38,7 +38,7 @@ case "$REQUEST_METHOD" in
 		case "$CONTENT_TYPE" in
 			multipart/form-data*)
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
-				mpfd "$boundary" 2>&1
+				$ROOT/usr/bin/mpfd "$boundary" 2>&1
 				;;
 			application/x-www-form-urlencoded*)
 				read line1 || true
@@ -129,6 +129,7 @@ df() {
 	df_dir htdocs/img/$DF_USER
 	dir_df shops
 	dir_df poems
+	dir_df sems
 }
 
 df_total_exp() {
@@ -173,7 +174,7 @@ fbytes() {
 
 fmkdir() {
 	if [[ ! -d "$1" ]]; then
-		fbytes /empty
+		fbytes $ROOT/empty
 		mkdir -p "$1"
 	fi
 }

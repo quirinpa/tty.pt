@@ -1,0 +1,49 @@
+<style>
+pre { display: inline-block; }
+</style>
+
+<body class="v f fic">
+	<header class="_ f fic">
+		$SEM_MENU
+		$MENU
+	</header>
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<pre>$SEM</pre>
+
+	<form action="/e/sem" method="GET" class="v tac">
+		<div class="fw f _">
+			<label class="_">
+				<input type="checkbox" name="graph" $graph_checked></input>
+				Graph
+			</label>
+
+			<label class="_">
+				<input type="checkbox" name="debug" $debug_checked></input>
+				Debug
+			</label>
+
+			<label class="_">
+				<input type="checkbox" name="human" $human_checked></input>
+				Human
+			</label>
+
+			<label class="_">
+				<input type="checkbox" name="machine" $machine_checked></input>
+				Machine
+			</label>
+
+			<label class="_">
+				<input type="checkbox" name="present" $present_checked></input>
+				Present
+			</label>
+		</div>
+
+		<input type="hidden" name="sem_id" value="$sem_id"></input>
+
+		<button>Submit</button>
+	</form>
+</body>
+
+$SEM_SCRIPT

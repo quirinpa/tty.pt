@@ -40,8 +40,10 @@ DeleteProductForm() {
 }
 
 ProductImage() {
+	dname="`dirname $1`"
+	bname="`basename $1`"
 	cat <<!
-<a href="$1"><img height="128" class="ofc" src="$1" /></a>
+<a href="$1"><img height="128" class="ofc" src="$dname/small-$bname" /></a>
 !
 }
 

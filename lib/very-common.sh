@@ -18,6 +18,7 @@ NormalHead() {
 		400) STATUS_TEXT="Bad Request";;
 		401) STATUS_TEXT="Unauthorized";;
 		404) STATUS_TEXT="Not Found";;
+		409) STATUS_TEXT="Conflict";;
 	esac
 	export STATUS_TEXT
 	export STATUS_CODE=$1

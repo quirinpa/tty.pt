@@ -1,0 +1,37 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/sem.sh
+
+transfer_from_options() {
+	if [[ "$REMOTE_USER" == "$SEM_OWNER" ]]; then
+		$SEM -p < $SEM_FILE | awk '{ print $2 }'
+	else
+		echo $REMOTE_USER
+	fi
+}
+
+transfer_to_options() {
+	$SEM -p < $SEM_FILE | awk '{ print $2 }'
+}
+
+case "$REQUEST_METHOD" in
+	POST)
+		sem_op TRANSFER `urldecode $ts` $id `urldecode $to` `urldecode $value` `urldecode $rest`
+
+		;;
+	GET)
+		export _TITLE="`_ Transfer`"
+		export SEM_MENU="`SemMenu transfer`"
+		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
+		export FROM_ID_OPTIONS="`transfer_from_options | IdOptions`"
+		export TO_ID_OPTIONS="`transfer_to_options | IdOptions`"
+		NormalCat ?sem_id=$sem_id
+
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

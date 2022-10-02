@@ -1,22 +1,56 @@
 #!/bin/ksh
 
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/sem.sh
+
+if [[ -z "$sem_id" ]] || [[ ! -d "$SEM_PATH" ]]; then
+	Fatal 404 Sem not found
+fi
+
 case "$REQUEST_METHOD" in
-	POST)
-		echo 'Status: 200 OK'
-		echo 'Content-Type: text/plain; charset=utf-8'
-		echo
-		(
-			read && read && read && read &&
-			read line1 &&
-			read line2 &&
-			while read nextline ; do
-				echo "$line1"
-				line1="$line2"
-				line2="$nextline"
-			done
-		) | sem
+	GET)
+		export _TITLE="`_ $sem_id`"
+		options=""
+
+		export SEM_MENU="`SemMenu`"
+
+		if [[ "$graph" == "on" ]]; then
+			export graph_checked=checked
+			options=$options"g"
+		fi
+
+		if [[ "$debug" == "on" ]]; then
+			export debug_checked=checked
+			options=$options"d"
+		fi
+
+		if [[ "$human" == "on" ]]; then
+			export human_checked=checked
+			options=$options"h"
+		fi
+
+		if [[ "$machine" == "on" ]]; then
+			export machine_checked=checked
+			options=$options"m"
+		fi
+
+		if [[ "$present" == "on" ]]; then
+			export present_checked=checked
+			options=$options"p"
+		fi
+
+		if [[ ! -z "$options" ]]; then
+			options="-$options"
+		fi
+
+		export SEM="`$SEM $options 2>&1 < $SEM_FILE`"
+
+		NormalCat ?sem_id=$sem_id
+
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"
 		echo
+		;;
 esac

@@ -87,3 +87,9 @@ pre {
 .card a {
 	//color: var(--C0);
 }
+
+.menu:not(.js) > div { display: none; }
+.menu input[type="checkbox"] { display: none; }
+.menu :checked + div { display: block; }
+.menu a { text-decoration: none; }
+.menu a:hover { color: white; }
