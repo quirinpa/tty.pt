@@ -2,26 +2,31 @@
 #define CONFIG_ROUND
 #define CONFIG_VARS
 #include "vss/vss.h"
+#define CF #c1c3da
+#define CM VAL(COLOR, 13)
 
-CALL(TEXT_SIZE, TS)
-CALL(BG_COLOR, CS)
-CALL(COLOR, CS)
-CALL(BO_COLOR, CS)
+ROUND
+ALL_FLEX
+CALL(TEXT_SIZE, ALL_TEXT_SIZES)
+CALL(BACKGROUND_COLOR, ALL_COLORS)
+CALL(COLOR, ALL_COLORS)
+CALL(BORDER, ALL_COLORS)
 CALL(SIZE, SS)
-CALL(PADDING, SS)
-CALL(DIR_PADDING, SS)
-CALL(ABS_PADDING, SS)
-CALL(CENTER_ABS_V, SS)
-CALL(HORIZONTAL, SS)
-CALL(VERTICAL, SS)
-CALL(MARGIN, SS)
-CALL(FLEX_VERTICAL, SS)
-CALL(ROUND_T, TS)
-CALL(ROUND_EDGE, SS)
-ROUND_PADDING( , l)
-ROUND_PADDING( s, l)
-ROUND_PADDING( s, xl)
+CALL(SIZE, ALL_SIZES)
+CALL(PADDING, ALL_SIZES)
+CALL(AXIS_horizontal, ALL_SIZES)
+CALL(AXIS_vertical, ALL_SIZES)
+AXIS_0
+FULL_SIZE
+/* CALL(FLEX_VERTICAL, SS) */
+CALL(ROUND_T, ALL_TEXT_SIZES)
+CALL(ROUND_EDGE, ALL_SIZES)
+ROUND_PADDING( 4, 14)
+ROUND_PADDING( 8, 17)
+ROUND_PADDING( 8, 20)
+ROUND_PADDING( 8, 26)
 
+.dn { display: none; }
 .cf { background: #3c403c; }
 .cb { color: #c1c3da; }
 body {
@@ -42,6 +47,8 @@ input:focus {
         border: solid thin #9589c5;
         outline: #9589c5;
 }
+.abs { position: absolute; }
+.rel { position: relative; }
 a { color: #c1c3da; }
 style { display: none !important; }
 .oav { overflow: auto; }
@@ -57,14 +64,20 @@ pre { font-family: monospace; }
 .wn { white-space: nowrap; }
 button, .btn {
 	font-size: inherit;
-	padding: var(--S);
-	background-color: var(--C0);
+	padding: VAL(SIZE, );
+	background-color: VAL(COLOR, 0);
 	color: var(--C15);
 	border: none;
 	//border: solid thin black;
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 	text-decoration: none;
 }
+
+button > a, .btn > a, a.btn {
+	display: block;
+	text-decoration: none;
+}
+
 button:hover, .btn:hover, .card:hover {
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 }
@@ -86,4 +99,24 @@ pre {
 }
 .card a {
 	//color: var(--C0);
+}
+
+.menu:not(.js) > div { display: none; }
+.menu input[type="checkbox"] { display: none; }
+.menu :checked + div { display: block; }
+.menu a { text-decoration: none; }
+.menu a:hover { color: white; }
+
+.pn { padding: 0; }
+.fix { position: fixed; }
+
+.j { bottom: var(--S); }
+.l { right: var(--S); }
+.cp { cursor: pointer; }
+.ttc { text-transform: capitalize; }
+
+input.c0 { border: solid thin VAL(COLOR, 0); color: CF; }
+input.c0:focus {
+        border: solid thin CM;
+        outline: CM;
 }

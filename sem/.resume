@@ -1,0 +1,29 @@
+#!/bin/ksh
+
+resume_options() {
+	if im $SEM_OWNER; then
+		$SEM -p < $SEM_FILE | grep '^A ' | awk '{ print $2 }'
+	elif [[ "$PRESENT" == "A $REMOTE_USER" ]]; then
+		echo $REMOTE_USER
+	fi
+}
+
+case "$REQUEST_METHOD" in
+	POST)
+		sem_op RESUME `urldecode $ts` $id `urldecode $rest`
+
+		;;
+	GET)
+		export _TITLE="`_ resume`"
+		export _DATE_TIME="`_ "Date / Time"`"
+		export _MORE_INFO="`_ "More information"`"
+		export _SUBMIT="`_ Submit`"
+		export SEM_MENU="`SemMenu resume`"
+		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
+		export ID_OPTIONS="`resume_options | IdOptions`"
+		Normal 200 resume
+		Scat .template/resume
+
+		;;
+	*) NotAllowed ;;
+esac

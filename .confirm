@@ -1,0 +1,13 @@
+#!/bin/ksh
+
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+
+USER_PATH=$ROOT/users/$username
+USER_RCODE="`cat $USER_PATH/rcode`"
+
+if [[ "$rcode" != "$USER_RCODE" ]]; then
+	Fatal 401 "You can not do that"
+fi
+
+rm $USER_PATH/rcode
+_see_other login

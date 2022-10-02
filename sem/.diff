@@ -1,0 +1,4 @@
+#!/bin/ksh
+
+. $DOCUMENT_ROOT/lib/command.sh
+git -C $DOCUMENT_ROOT/sem/$sem_id diff | Command sem diff

@@ -1,0 +1,38 @@
+<style>
+pre { display: inline-block; }
+</style>
+
+<body class="v f fic rel">
+	<header class="h f fic">
+		$SEM_MENU
+		<a class="$RB" href="/sem/$sem_id">👁</a>
+		$MENU
+	</header>
+	<h1 class="tac ttc">$_TITLE</h1>
+	<form action="./pause" method="POST" class="v f">
+		<label>
+			$_DATE_TIME
+			<input required name="ts" type="datetime-local" value="$NOW" step="1"></input>
+		</label>
+
+		<label>
+			Id
+			<select required name="id">
+				$ID_OPTIONS
+			</select>
+		</label>
+
+		<label>
+			$_MORE_INFO
+			<textarea name="rest"></textarea>
+		</label>
+
+		<input type="hidden" name="sem_id" value="$sem_id"></input>
+
+		<button>Submit</button>
+	</form>
+</body>
+
+<script>
+$JS
+</script>

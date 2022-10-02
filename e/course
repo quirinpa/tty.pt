@@ -1,0 +1,50 @@
+#!/bin/ksh
+
+. $ROOT/lib/optional-auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+COURSE_PATH=$SCHOOL_PATH/courses/$course_id
+
+Classes() {
+	{
+		cat $COURSE_PATH/classes | SmallButtons class \&school_id=$school_id
+		if im $SCHOOL_OWNER; then
+			echo "<a class=\"$RBS\" href=\"/e/course-class-associate?school_id=$school_id&course_id=$course_id\">+</a>"
+		fi
+	} | cond || {
+		echo "<h2>`_ Classes`</h2>"
+		cat $contents | fw 8
+	}
+}
+
+Students() {
+	for_each_in "$SCHOOL_PATH/students" courses "$course_id" \
+		| SmallButtons student \&school_id=$school_id | cond || {
+		echo "<h2>`_ Students`</h2>"
+		cat $contents | fw 8
+	}
+}
+
+Regent() {
+	teacher_id="`cat $COURSE_PATH/.teacher`"
+	_REGENT="`_ Regent`"
+	LabeledIDEdit "$_REGENT" teacher $teacher_id course $course_id \&school_id=$school_id
+}
+
+case "$REQUEST_METHOD" in
+	GET)
+		export course_id
+		export course_title="`cat $COURSE_PATH/title`"
+		export CLASSES="`Classes`"
+		export STUDENTS="`Students`"
+		export REGENT="`Regent`"
+
+		NormalCat ?school_id=$school_id\&course_id=$course_id
+
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

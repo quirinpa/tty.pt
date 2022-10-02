@@ -1,0 +1,7 @@
+#!/bin/ksh
+
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+export _TITLE="Winbuntu"
+
+Normal 200 winbuntu
+Scat .template/index

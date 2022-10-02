@@ -1,0 +1,88 @@
+<script src="/qr-scanner.umd.min.js"></script>
+<!-- <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script> -->
+
+<body class="v f fic rel">
+	<header class="h f fic">
+		$SEM_MENU
+		<a class="$RB" href="/sem/$sem_id">👁</a>
+		$MENU
+	</header>
+	<h1 class="tac ttc">$_TITLE</h1>
+	<form action="./pay" method="POST" class="v f fic">
+		<label>
+			$_DATE_TIME
+			<input required name="ts" type="datetime-local" value="$NOW" step="1"></input>
+		</label>
+
+		<label>
+			Id
+			<select required name="id">
+				$ID_OPTIONS
+			</select>
+		</label>
+
+		<label>
+			$_VALUE
+			<input required type="number" name="value" placeholder="33.33" step="0.01" value="$VALUE"></input>
+		</label>
+
+		<label>
+			$_BP_START
+			<input required name="from" type="datetime-local" value="$START" step="1"></input>
+		</label>
+
+		<label>
+			$_BP_END
+			<input required name="to" type="datetime-local" value="$END" step="1"></input>
+		</label>
+
+		<label>
+			$_TYPE
+			<select name="type">
+				$TYPE_OPTIONS
+			</select>
+		</label>
+
+		<label>
+			$_ENTITY
+			<input required name="entity" pattern="[0-9]{5}" value="$ENTITY"></input>
+		</label>
+
+
+		<label>
+			$_REFERENCE
+			<input required name="reference" pattern="[0-9]{9}"></input>
+		</label>
+
+		<input type="hidden" name="sem_id" value="$sem_id"></input>
+
+		<button>$_SUBMIT</button>
+
+		<!-- <div id="reader" class="s_f"></div> -->
+		<video class="s_f"></video>
+	</form>
+</body>
+
+<script>
+$JS
+
+const video = document.querySelector("video");
+const entity = document.querySelector("input[name=entity]");
+
+function fill(data) {
+	alert(data.split("*").join("\n"));
+}
+
+const qrScanner = new QrScanner(
+	video,
+	result => fill(
+		result.data,
+	),
+	{
+		highlightScanRegion: true,
+		returnDetailedScanResult: true,
+	}
+);
+// qrScanner.start();
+console.log(entity);
+</script>

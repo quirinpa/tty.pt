@@ -1,0 +1,23 @@
+#!/bin/ksh
+
+. $ROOT/lib/optional-auth.sh
+. $ROOT/lib/common.sh
+
+case "$REQUEST_METHOD" in
+	GET)
+		export _TITLE="`_ Schools`"
+
+		if [[ ! -z "$REMOTE_USER" ]]; then
+			export SCHOOL_ADD="<a class=\"$RB\" href=\"/e/school-add\">+</a>"
+		fi
+
+		export SCHOOLS="`ls $ROOT/schools | BigButtons school`"
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac
+
+

@@ -8,9 +8,12 @@ case "$REQUEST_METHOD" in
 		export _TITLE="tty.pt"
 		export _POEMS="`_ Poems`"
 		export _NEVERDARK="`_ "Never Dark"`"
+		export _SCHOOLS="`_ "Schools"`"
 		export _SHOPS="`_ "Shops"`"
 		export _SEM="`_ "Shared Expenses Manager"`"
+		export _SOURCE_CODE="`_ "Source Code"`"
 		export _TERMINAL="`_ "Terminal"`"
+		export _COMMANDS="`_ "Commands"`"
 		NormalCat
 		;;
 	*)

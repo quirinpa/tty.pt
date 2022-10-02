@@ -1,0 +1,34 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+im $SCHOOL_OWNER || Forbidden
+
+case "$REQUEST_METHOD" in
+	POST)
+		COURSE_PATH="$SCHOOL_PATH/courses/$course_id"
+
+		if invalid_s teachers $teacher_id; then
+			Fatal 400 Not a valid ID
+		fi
+
+		echo $teacher_id | fwrite $COURSE_PATH/.teacher
+
+		see_other course ?school_id=$school_id\&course_id=$course_id
+		;;
+
+	GET)
+		export _TITLE="`_ "Assign teacher to course"`"
+		export _TEACHER_ID="`_ "Teacher ID"`"
+		export _SUBMIT="`_ Submit`"
+		export course_id
+
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

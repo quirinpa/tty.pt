@@ -1,0 +1,46 @@
+<style>
+pre { display: inline-block; }
+</style>
+<body class="f fic v">
+	<div class="f h">
+		<a class="$RB" href="/shop/$shop_id">💰</a>
+		$MENU
+	</div>
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<form action="edit" method="POST" class="v f fic">
+		<input type="hidden" name="shop_id" value="$shop_id" />
+		<input type="hidden" name="product_id" value="$product_id" />
+		<label>
+			$__TITLE
+			<input required name="title" value="$product_title"></input>
+		</label>
+		<label>
+			$_DESCRIPTION
+			<textarea name="description">$product_description</textarea>
+		</label>
+		<label>
+			$_IMAGES
+			<div id="images" class="h f fic">
+				<textarea type="url" name="images">$product_images</textarea>
+				<a class="$RB" href="/e/images" target="_blank">🔍</a>
+			</div>
+		</label>
+		<label>
+			$_ADD_TO_STOCK
+			<input required type="number" name="stock" value="0"></input>
+		</label>
+		<label>
+			$_PRICE
+			<input required type="number" name="price" min="0" step="0.01" value="$product_price"></input>
+		</label>
+		<button id="submit">$_SUBMIT</button>
+	</form>
+</body>
+
+<script>
+$JS
+</script>
+
+

@@ -1,0 +1,16 @@
+<style>
+	pre { display: inline-block; }
+</style>
+<body class="f fic v">
+	$MENU
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<form action="/e/image-add" method="POST" class="v f fic" enctype="multipart/form-data">
+		<label>
+			$_FILES
+			<input required type="file" name="file[]" accept="png" multiple></input>
+		</label>
+		<button>$_SUBMIT</button>
+	</form>
+</body>

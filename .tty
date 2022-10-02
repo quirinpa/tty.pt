@@ -1,0 +1,51 @@
+#!/bin/ksh
+
+[[ ! -z "$REMOTE_USER" ]] || NotAllowed
+
+USER_PATH="$DOCUMENT_ROOT/users/$REMOTE_USER"
+WHISPER_PATH="$USER_PATH/.whisper"
+
+case "$REQUEST_METHOD" in
+	POST)
+		cmd="`urldecode $cmd`"
+		echo "$REMOTE_USER$ $cmd" >> $WHISPER_PATH
+
+		case "$cmd" in
+			help) 
+				echo Welcome to the terminal
+				echo Beware - the values might not be correct
+				echo commands: df quota whisper
+				;;
+			df)
+				df
+				;;
+			quota)
+				echo "`df_total`/`free_space`"
+				;;
+			whisper*)
+				set -- $cmd
+				shift
+				username=$1
+				shift
+				message=$@
+
+				[[ -d $DOCUMENT_ROOT/users/$username ]] || Fatal 400 No such user
+
+				DF_USER=$username
+				echo "$REMOTE_USER": "$message" | fappend $DOCUMENT_ROOT/users/$username/.whisper
+				echo "Sent whisper."
+				;;
+			*)
+				;;
+		esac >> $WHISPER_PATH
+
+		;;
+	GET)
+		;;
+	*) NotAllowed ;;
+esac
+
+export _TITLE="`_ "Terminal"`"
+
+Normal 200 tty
+Scat template/tty

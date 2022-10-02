@@ -1,0 +1,97 @@
+#!/bin/ksh
+
+[[ ! -z "$REMOTE_USER" ]] || Unauthorized
+
+IsAllowedItemFound $@
+sem_source
+
+case "$2" in
+	download) . ./.download ; exit;;
+	buy) . ./.buy ; exit;;
+	pause) . ./.pause ; exit;;
+	pay) . ./.pay ; exit;;
+	resume) . ./.resume ; exit;;
+	start) . ./.start ; exit;;
+	stop) . ./.stop ; exit;;
+	transfer) . ./.transfer ; exit;;
+	diff) . ./.diff ; exit;;
+	.git) git_backend; exit;;
+esac
+
+_TITLE="`_ $iid`"
+options=""
+
+FUNCTIONS="`SemMenu`"
+
+if [[ "$graph" == "on" ]]; then
+	graph_checked=checked
+	options=$options"g"
+fi
+
+if [[ "$debug" == "on" ]]; then
+	debug_checked=checked
+	options=$options"d"
+fi
+
+if [[ "$human" == "on" ]]; then
+	human_checked=checked
+	options=$options"h"
+fi
+
+if [[ "$machine" == "on" ]]; then
+	machine_checked=checked
+	options=$options"m"
+fi
+
+if [[ "$present" == "on" ]]; then
+	present_checked=checked
+	options=$options"p"
+fi
+
+if [[ ! -z "$options" ]]; then
+	options="-$options"
+fi
+
+content() {
+	cat <<!
+	<pre>`$SEM $options 2>&1 < $SEM_FILE`</pre>
+
+
+	<form action="./$iid" method="GET" class="v tac">
+<div class="fw f h jcc">
+	<label class="h">
+		<input type="checkbox" name="graph" $graph_checked></input>
+		`_ Graph`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="debug" $debug_checked></input>
+		`_ Debug`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="human" $human_checked></input>
+		`_ Human`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="machine" $machine_checked></input>
+		`_ Machine`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="present" $present_checked></input>
+		`_ Present`
+	</label>
+</div>
+<span class="h f fcc">
+	<button>`_ Submit`</button>
+	<a class="btn" href="./download">`_ Download`</a>
+</span>
+</form>
+!
+}
+
+BOTTOM_CONTENT="<div class=\"tac\">git clone https://tty.pt/sem/$iid/.git</div>"
+
+SubIndex

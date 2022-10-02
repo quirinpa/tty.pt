@@ -1,0 +1,43 @@
+#!/bin/ksh
+
+iid=$1
+poem_path=$ROOT/poem/$iid
+comments_path="$poem_path/comments.txt"
+
+if test "$REQUEST_METHOD" == "POST"; then
+	[[ ! -z "$REMOTE_USER" ]] || Unauthorized
+	echo $REMOTE_USER: "`urldecode "$comment"`" | fappend $comments_path
+	_see_other $iid\#comments
+	exit 0
+fi
+
+test "$REQUEST_METHOD" == "GET" || NotAllowed
+
+ITEM_PATH="$poem_path/pt_PT.html"
+
+IsAllowedItemFound $@
+
+new_item_path="$poem_path/$lang.html"
+test ! -f $new_item_path || ITEM_PATH=$new_item_path
+
+cat > /tmp/comments-$iid <<EOF
+<form action="$iid" method="post" class="h f fic">
+	<input type="hidden" name="iid" value="$iid"></input>
+	<input class="fg" name="comment"></input>
+</form>
+<pre id="comments">`cat $comments_path | revlines | no_html`</pre>
+EOF
+
+BOTTOM_CONTENT="`cat /tmp/comments-$iid`"
+
+content() {
+	echo "<pre class='v f'>`cat $ITEM_PATH`</pre>"
+}
+
+fun() {
+	echo "<div class='width tac cf15 tsxl'>`counter_inc $poem_path/counter.txt`</div>"
+	echo "<a href=\"#comments\" class=\"$RB\">💬</a>"
+}
+
+SubIndex $@
+NotAllowed

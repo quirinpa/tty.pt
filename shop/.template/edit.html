@@ -1,0 +1,22 @@
+<style>
+pre { display: inline-block; }
+//.card input[type="checkbox"] { display: none; }
+.card:has(:checked) {
+	background-color: var(--C1);
+}
+</style>
+
+<body class="v f fic">
+	<header class="h f fic">
+		<a class="$RB" href="/e/shop?shop_id=$shop_id">💰</a>
+		$MENU
+	</header>
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<form action="/e/shop-edit" method="POST" class="v f fic">
+		$PRODUCTS
+		<button>$_DELETE_PRODUCTS</button>
+		<input type="hidden" name="shop_id" value="$shop_id"></input>
+	</form>
+</body>

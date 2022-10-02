@@ -1,0 +1,75 @@
+#!/bin/ksh
+
+. $ROOT/lib/optional-auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+teacher_things() {
+	for_each_in "$SCHOOL_PATH/$1" .teacher "$teacher_id"
+}
+
+Classes() {
+	teacher_things classes | SmallButtons class \&school_id=$school_id | cond || {
+		echo "<h2>`_ Classes`</h2>"
+		cat $contents | fw 8
+	}
+}
+
+Courses() {
+	teacher_things courses | SmallButtons course \&school_id=$school_id | cond || {
+		echo "<h2>`_ Courses` (`_ Regent`)</h2>"
+		cat $contents | fw 8
+	}
+}
+
+salary_exp() {
+	pay_per_class=750
+	pay_per_course=2500
+
+	teacher_things classes | while read ignored; do
+		echo $pay_per_class
+	done | sum_lines_exp
+
+	echo -n " + "
+
+	teacher_things courses | while read ignored; do
+		echo $pay_per_course
+	done | sum_lines_exp
+}
+
+NameField() {
+	Field "`_ Name`" "`cat $TEACHER_PATH/name`"
+}
+
+DobField() {
+	Field "`_ "Date of birth"`" "`cat $TEACHER_PATH/dob`"
+}
+
+SalaryField() {
+	salary_exp="`salary_exp`"
+	Field "`_ Salary`" "`echo "$salary_exp" | bc`€"
+}
+
+case "$REQUEST_METHOD" in
+	GET)
+		export teacher_id
+		export _TEACHER="`_ Teacher`"
+		export CLASSES="`Classes`"
+		export COURSES="`Courses`"
+		TEACHER_PATH=$SCHOOL_PATH/teachers/$teacher_id
+		export NAME="`NameField`"
+		export DOB="`DobField`"
+		export SALARY="`SalaryField`"
+
+		if im $SCHOOL_OWNER $teacher_id; then
+			export EDIT_BTN="`EditBtn "/e/teacher-edit?school_id=$school_id&teacher_id=$teacher_id"`"
+		fi
+
+		NormalCat ?school_id=$school_id\&teacher_id=$teacher_id
+
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

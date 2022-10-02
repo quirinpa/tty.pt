@@ -1,0 +1,25 @@
+#!/bin/ksh
+
+case "$REQUEST_METHOD" in
+	POST) ;;
+	GET)	export _TITLE="`_ "Add shop"`"
+		export _SHOP_ID="`_ "Shop ID"`"
+		export _SUBMIT="`_ Submit`"
+
+		Normal 200 shop/add
+		Scat .template/add
+		;;
+	*) NotAllowed ;;
+esac
+
+shop_id="`urldecode $shop_id`"
+
+invalid_id $shop_id && Fatal 400 Not a valid ID || true
+
+SHOP_PATH="$ROOT/shop/$shop_id"
+
+fmkdir $SHOP_PATH
+echo $REMOTE_USER | fwrite $SHOP_PATH/.owner
+fmkdir $SHOP_PATH/.orders
+
+_see_other /shop/$shop_id

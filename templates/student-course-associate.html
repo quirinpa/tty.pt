@@ -1,0 +1,19 @@
+<body class="f fic v">
+	<div class="f fic h">
+		$SCHOOL_BTN
+		$MENU
+	</div>
+
+	<h1 class="tac">$_TITLE ($student_id)</h1>
+
+	<form action="/e/student-course-associate" method="POST" class="v f fic">
+		<label>
+			$_COURSE_ID
+			<input required name="course_id"></input>
+		</label>
+		<button>$_SUBMIT</button>
+		<input type="hidden" name="school_id" value="$school_id"></input>
+		<input type="hidden" name="student_id" value="$student_id"></input>
+	</form>
+</body>
+

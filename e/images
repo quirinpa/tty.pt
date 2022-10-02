@@ -5,7 +5,7 @@
 
 Image() {
 	cat <<!
-<img height="128" class="ofc s_k256 b0" src="http://$HTTP_HOST/img/$1" />
+<img height="128" class="ofc s_k256 b0" src="http://$HTTP_HOST/img/$REMOTE_USER/small-$1" />
 !
 }
 
@@ -15,16 +15,14 @@ Images() {
 	done
 }
 
-find_images() {
-	find $1 -type f | sed "s|$1/||"
+ls_images() {
+	ls $ROOT/htdocs/img/$REMOTE_USER | sed '/^small-.*$/d'
 }
 
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Images`"
-		IMAGES="`find_images $ROOT/htdocs/img | Images`"
-		IMAGES="`Wrap $IMAGES`"
-		export IMAGES
+		export IMAGES="`ls_images | Images | fw`"
 		NormalCat
 		;;
 	*)

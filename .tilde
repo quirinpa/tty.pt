@@ -1,0 +1,54 @@
+#!/bin/ksh
+export user="`echo $1 | sed 's/^~//'`"
+shift
+path=$DOCUMENT_ROOT/home/$user
+
+if [[ ! -f "$path/.index" ]]; then
+	test "$REMOTE_USER" == "$user" || NotFound
+	mkdir -p $path || true
+	cat - > $path/.index <<!
+#!/bin/ksh
+user=\$1
+shift
+
+if test "\$1" == ".git"; then
+	im \$user || Unauthorized
+	git_backend
+fi
+export CONTENT="\$user's page"
+if im \$user; then
+	CONTENT="\$CONTENT<br />git clone https://tty.pt/~\$user/.git"
+fi
+UserNormal 200 ~\$user
+Scat index
+!
+	cat - > $path/index.html <<!
+\$HEAD
+\$WHISPER
+<body class="v f fic">
+	\$MENU
+	<pre>\$CONTENT</pre>
+</body>
+!
+	created=1
+fi
+
+cd $path
+
+if test $created; then
+	mkdir .git
+	git -C .git init --bare
+	git --git-dir=.git --work-tree=. add .index index.html
+	git --git-dir=.git --work-tree=. commit -m "First commit"
+	cat - >> .git/config <<!
+[http]
+	receivepack = true
+!
+	mkdir .git/hooks
+	cp $DOCUMENT_ROOT/etc/skel/hooks/user-update .git/hooks/update
+	cp $DOCUMENT_ROOT/etc/skel/hooks/user-post-update .git/hooks/post-update
+	chmod +x .git/hooks/update
+	chmod +x .git/hooks/post-update
+fi >/dev/null
+
+. ./.index $user $@

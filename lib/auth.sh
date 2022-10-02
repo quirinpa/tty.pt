@@ -1,10 +1,10 @@
 #!/bin/ksh
 
-. $ROOT/lib/very-common.sh
+. $DOCUMENT_ROOT/lib/very-common.sh
 
-if [[ -z "$cookie" ]] || [[ ! -f "$ROOT/sessions/$cookie" ]]; then
+if [[ -z "$cookie" ]] || [[ ! -f "$DOCUMENT_ROOT/sessions/$cookie" ]]; then
 	Unauthorized
 fi
 
-user="`cat $ROOT/sessions/$cookie`"
+user="`cat $DOCUMENT_ROOT/sessions/$cookie`"
 REMOTE_USER=$user

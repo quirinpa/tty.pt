@@ -1,0 +1,5 @@
+#!/bin/ksh
+. $ROOT/lib/command.sh
+
+# git -C $ROOT/ fetch origin/main
+git -C $ROOT/ diff origin/main | Command

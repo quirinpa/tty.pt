@@ -1,0 +1,22 @@
+#!/bin/ksh
+
+. $ROOT/lib/optional-auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+case "$REQUEST_METHOD" in
+	GET)
+		export _TITLE="`_ Teachers`"
+
+		if im $SCHOOL_OWNER; then
+			export TEACHER_ADD="<a class=\"$RB\" href=\"/e/teacher-add?school_id=$school_id\">+</a>"
+		fi
+
+		export TEACHERS="`ls $SCHOOL_PATH/teachers | BigButtons teacher \&school_id=$school_id`"
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

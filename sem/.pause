@@ -1,0 +1,27 @@
+#!/bin/ksh
+
+pause_options() {
+	if im $SEM_OWNER; then
+		$SEM -p < $SEM_FILE | grep '^P ' | awk '{ print $2 }'
+	elif [[ "$PRESENT" == "P $REMOTE_USER" ]]; then
+		echo $REMOTE_USER
+	fi
+}
+
+case "$REQUEST_METHOD" in
+	POST)
+		sem_op PAUSE `urldecode $ts` $id `urldecode $rest`
+
+		;;
+	GET)
+		export _TITLE="`_ pause`"
+		export _DATE_TIME="`_ "Date / Time"`"
+		export _MORE_INFO="`_ "More information"`"
+		export SEM_MENU="`SemMenu pause`"
+		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
+		export ID_OPTIONS="`pause_options | IdOptions`"
+		Normal 200 pause
+		Scat .template/pause
+		;;
+	*) NotAllowed ;;
+esac

@@ -1,0 +1,45 @@
+<body class="f fic v">
+	$MENU
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<form action="/e/user-edit" method="POST" class="f v fic">
+		<div class="h f fw v fic fcc">
+			<div class="f v fic">
+				<label>
+					$_NAME
+					<input type="text" name="name" value="$name"></input>
+				</label>
+				<label>
+					$_ADDRESS_LINE_1
+					<input type="text" name="address_line_1" value="$address_line_1" autocomplete="address-line1"></input>
+				</label>
+				<label>
+					$_ADDRESS_LINE_2
+					<input type="text" name="address_line_2" value="$address_line_2" autocomplete="address-line2"></input>
+				</label>
+				<label>
+					$_ZIP_CODE
+					<input name="zip" type="text" value="$zip" autocomplete="postal-code">
+				</label>
+			</div>
+			<div class="f v fic">
+				<label>
+					$_PHONE_NUMBER
+					<input name="phone_number" type="tel" value="$phone_number">
+				</label>
+				<label>
+					$_ACCOUNT_IBAN
+					<input type="text" name="iban" value="$iban"></input>
+				</label>
+				<label>
+					$_ACCOUNT_BICSWIFT
+					<input type="text" name="bicswift" value="$bicswift"></input>
+				</label>
+			</div>
+		</div>
+
+		<button>$_SUBMIT</button>
+	</form>
+</body>
+

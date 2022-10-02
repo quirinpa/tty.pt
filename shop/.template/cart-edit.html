@@ -1,0 +1,16 @@
+<body class="v f fic">
+	<header class="h f fic">
+		<a class="$RB" href="/shop/$shop_id">💰</a>
+		$MENU
+	</header>
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<form action="/shop/$shop_id/cart/edit" method="POST" class="v f fic">
+		$PRODUCTS
+
+		<input type="hidden" name="shop_id" value="$shop_id"></input>
+
+		<button>$_SUBMIT</Button>
+	</form>
+</body>

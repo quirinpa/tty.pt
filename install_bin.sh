@@ -6,14 +6,26 @@ install_extra() {
 	line=$1
 	target_path="`dirname $line`"
 	[[ -d "$ROOT$target_path" ]] || mkdir -p $ROOT$target_path
-	[[ -f "$ROOT$line" ]] || cp $line $ROOT$line
+	if [[ ! -f "$ROOT$line" ]]; then
+		cp $line $ROOT$line
+		echo cp $line $ROOT$line
+	fi
+}
+
+ecp() {
+	mkdir -p `dirname $2` 2>/dev/null || true
+	cp $1 $2
 }
 
 install_bin() {
 	path=$1
-	ldd $path | awk '{ print $7 }' | tail -n +3 | while read line; do
+	tmp=/tmp/$path
+	ecp $path /tmp/$path
+	ldd /tmp/$path | awk '{ print $7 }' | tail -n +4 | while read line; do
 		install_extra "$line"
 	done
+	install_extra $path
+	rm /tmp/$path
 }
 
 if [[ $# -lt 1 ]]; then

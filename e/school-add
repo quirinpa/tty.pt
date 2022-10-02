@@ -1,0 +1,35 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+
+case "$REQUEST_METHOD" in
+	POST)
+		school_id="`urldecode $school_id`"
+
+		if invalid_id $school_id; then
+			Fatal 400 Not a valid ID
+		fi
+
+		SCHOOL_PATH="$ROOT/schools/$school_id"
+
+		fmkdir $SCHOOL_PATH
+		echo $REMOTE_USER | fwrite $SCHOOL_PATH/.owner
+		echo $school_title | fwrite $SCHOOL_PATH/title
+
+		see_other school ?school_id=$school_id
+		;;
+
+	GET)
+		export _TITLE="`_ "Add school"`"
+		export _SCHOOL_ID="`_ "School ID"`"
+		export _SCHOOL_TITLE="`_ "School Title"`"
+		export _SUBMIT="`_ Submit`"
+
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

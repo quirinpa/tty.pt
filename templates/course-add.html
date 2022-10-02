@@ -1,0 +1,25 @@
+<body class="f fic v">
+	<div class="f fic h">
+		$SCHOOL_BTN
+		$MENU
+	</div>
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<form action="/e/course-add" method="POST" class="v f fic">
+		<label>
+			$_COURSE_ID
+			<input required name="course_id"></input>
+		</label>
+		<label>
+			$_COURSE_TITLE
+			<input required name="course_title"></input>
+		</label>
+		<label>
+			$_REGENT
+			<input required name="teacher_id"></input>
+		</label>
+		<button>$_SUBMIT</button>
+		<input type="hidden" name="school_id" value="$school_id"></input>
+	</form>
+</body>

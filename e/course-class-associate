@@ -1,0 +1,40 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+COURSE_PATH="$SCHOOL_PATH/courses/$course_id"
+COURSE_REGENT="`cat $COURSE_PATH/.teacher`"
+
+im $SCHOOL_OWNER $COURSE_REGENT || Forbidden
+
+case "$REQUEST_METHOD" in
+	POST)
+		if invalid_s classes $class_id; then
+			Fatal 400 That class does not exist
+		fi
+
+		if grep -q "$class_id" $COURSE_PATH/classes; then
+			Fatal 400 That class is already assigned to this course
+		fi
+
+		echo $class_id | fappend $COURSE_PATH/classes
+
+		see_other course ?school_id=$school_id\&course_id=$course_id
+		;;
+
+	GET)
+		export _TITLE="`_ "Assign class to course"`"
+		export _COURSE_ID="`_ "Course ID"`"
+		export _CLASS_ID="`_ "Class ID"`"
+		export _SUBMIT="`_ Submit`"
+		export course_id
+
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

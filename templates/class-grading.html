@@ -1,0 +1,20 @@
+<body class="f fic v">
+	<div class="f fic h">
+		$SCHOOL_BTN
+		$MENU
+	</div>
+
+	<h1 class="tac">$_TITLE ($class_id $student_id)</h1>
+
+	<form action="/e/class-grading" method="POST" class="v f fic">
+		<label>
+			$_GRADE
+			<input required name="grade" type="number" min="0" max="20" step="0.01"></input>
+		</label>
+
+		<button>$_SUBMIT</button>
+		<input type="hidden" name="school_id" value="$school_id"></input>
+		<input type="hidden" name="class_id" value="$class_id"></input>
+		<input type="hidden" name="student_id" value="$student_id"></input>
+	</form>
+</body>

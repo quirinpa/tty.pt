@@ -3,17 +3,13 @@
 . $ROOT/lib/optional-auth.sh
 . $ROOT/lib/common.sh
 
-noslash() {
-	sed -e 's:/:\\/:g' $1
-}
-
 POEM_PATH=$ROOT/poems/$poem_id
 COMMENTS_PATH="$POEM_PATH/comments.txt"
 
 case "$REQUEST_METHOD" in
 	POST)
 		[[ ! -z "$REMOTE_USER" ]] || Unauthorized
-		fappend $COMMENTS_PATH echo $REMOTE_USER: "`urldecode "$comment"`" 2>&1
+		echo $REMOTE_USER: "`urldecode "$comment"`" | fappend $COMMENTS_PATH
 		see_other poem ?poem_id=$poem_id
 		;;
 	GET)

@@ -1,0 +1,4 @@
+#!/bin/ksh
+. $DOCUMENT_ROOT/lib/command.sh
+
+df | Command

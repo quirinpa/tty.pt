@@ -1,28 +1,12 @@
 #!/bin/ksh
 
 OrderStateVendor() {
-	TEMP="`getopt r: $*`"
-	if [ $? -ne 0 ]; then
-		exit 1;
-	fi
-	set -- $TEMP
-	while [ $# -ne 0 ]; do
-		case "$1" in
-			-r)
-				return_str="<input name=\"return\" type=\"hidden\" value=\"$2\"></input>"
-				shift 2
-				;;
-			--)
-				shift
-				break;
-				;;
-		esac
-	done
+	return_str="<input name=\"return\" type=\"hidden\" value=\"$1\"></input>"
 
 	cat <<!
-<form action="/e/order" method="POST" class="tac">
+<form action="/shop/$shop_id/order/$2" method="POST" class="tac">
 	<input type="hidden" name="shop_id" value="$shop_id"></input>
-	<input type="hidden" name="order_id" value="$1"></input>
+	<input type="hidden" name="order_id" value="$2"></input>
 	$return_str
 	<button class="dib ps c$ORDER_STATE_COLOR">
 		$_ORDER_STATE
@@ -59,29 +43,11 @@ order_state_color() {
 }
 
 OrderState() {
-	TEMP="`getopt r: $*`"
-	if [ $? -ne 0 ]; then
-		exit 1;
-	fi
-	set -- $TEMP
-	while [ $# -ne 0 ]; do
-		case "$1" in
-			-r)
-				ret=$1$2
-				shift 2
-				;;
-			--)
-				shift
-				break;
-				;;
-		esac
-	done
+	_ORDER_STATE="`_ "$2"`"
+	ORDER_STATE_COLOR="`order_state_color "$2"`"
 
-	_ORDER_STATE="`_ "$1"`"
-	ORDER_STATE_COLOR="`order_state_color "$1"`"
-
-	if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
-		OrderStateVendor $ret $2
+	if im $SHOP_OWNER; then
+		OrderStateVendor $1 $3
 	else
 		OrderStateUser
 	fi

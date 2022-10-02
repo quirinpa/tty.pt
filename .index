@@ -1,0 +1,61 @@
+#!/bin/ksh
+
+. $DOCUMENT_ROOT/lib/optional-auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
+
+if [[ ! -z "$1" ]]; then
+	INDEX_ICON="🏠"
+	case "$1" in
+		login) shift; . ./.login; exit;;
+		logout) shift; . ./.logout; exit;;
+		register) shift; . ./.register; exit;;
+		welcome) shift; . ./.welcome; exit;;
+		confirm) shift; . ./.confirm; exit;;
+		cookie) shift; . ./.cookie; exit;;
+		commands) shift; . ./.commands; exit;;
+		df) shift; . ./.df; exit;;
+		diff) shift; . ./.diff; exit;;
+		nd) shift; cd $DOCUMENT_ROOT/nd ; . ./.index $@; exit;;
+		nd-diff) shift; . ./.nd-diff; exit;;
+		quota) shift; . ./.quota; exit;;
+		tty) shift; . ./.tty; exit;;
+		user) shift; cd $DOCUMENT_ROOT/user ; . ./.index $@; exit;;
+		poem) shift; cd $DOCUMENT_ROOT/poem ; . ./.index $@; exit;;
+		chords) shift; cd $DOCUMENT_ROOT/chords ; . ./.index $@; exit;;
+		songbook) shift; cd $DOCUMENT_ROOT/songbook ; . ./.index $@; exit;;
+		shop) shift; cd $DOCUMENT_ROOT/shop ; . ./.index $@; exit;;
+		sem) shift; cd $DOCUMENT_ROOT/sem ; . ./.index $@; exit;;
+		winbuntu) shift; cd $DOCUMENT_ROOT/winbuntu ; . ./.index $@; exit;;
+		e) shift; . ./.exec $@; exit;;
+		~*) . ./.tilde $@; exit;;
+		*)
+			path=$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI
+			if [[ ! -f $path ]]; then
+				[[ ! -z "$REMOTE_USER" ]] || NotFound
+				path=$DOCUMENT_ROOT/home/$REMOTE_USER/$DOCUMENT_URI
+				# check perms (not applicable, for now)
+				# ls -al $path  | awk '{print $1}' | tail -c 4 | grep -q r
+				[[ -f $path ]] || NotFound
+			fi
+			echo Status 200: Ok
+			echo
+			cat $path
+			exit;;
+	esac
+fi
+
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+
+export _TITLE="tty.pt"
+export _POEMS="`_ Poems`"
+export _CHORDS="`_ Chords`"
+export _SONGBOOKS="`_ Songbooks`"
+export _NEVERDARK="`_ "Never Dark"`"
+export _SCHOOLS="`_ "Schools"`"
+export _SHOPS="`_ "Shops"`"
+export _SEM="`_ "Shared Expenses Manager"`"
+export _SOURCE_CODE="`_ "Source Code"`"
+export _TERMINAL="`_ "Terminal"`"
+export _COMMANDS="`_ "Commands"`"
+NotNormal 200 
+Scat template/index
