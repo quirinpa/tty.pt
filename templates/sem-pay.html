@@ -8,7 +8,7 @@
 	<form action="/e/sem-pay" method="POST" class="v f">
 		<label>
 			Date/Time
-			<input required name="ts" type="datetime-local" value="$NOW"></input>
+			<input required name="ts" type="datetime-local" value="$NOW" step="1"></input>
 		</label>
 
 		<label>
@@ -23,12 +23,12 @@
 			<input required name="value" pattern="^\d+(\.\d+)?$" placeholder="33.33"></input>
 		<label>
 			Start of billing period
-			<input required name="from" type="datetime-local" value="$DNOW"></input>
+			<input required name="from" type="datetime-local" value="$DNOW" step="1"></input>
 		</label>
 
 		<label>
 			End of billing period
-			<input required name="to" type="datetime-local" value="$DNOW"></input>
+			<input required name="to" type="datetime-local" value="$DNOW" step="1"></input>
 		</label>
 
 		<label>

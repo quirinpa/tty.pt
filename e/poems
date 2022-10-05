@@ -3,6 +3,14 @@
 . $ROOT/lib/optional-auth.sh
 . $ROOT/lib/common.sh
 
+poems_list() {
+	ls $ROOT/poems | while read line; do
+		if [[ ! -f "$ROOT/poems/$line/.hidden" ]]; then
+			echo $line
+		fi
+	done
+}
+
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Poems`"
@@ -11,7 +19,7 @@ case "$REQUEST_METHOD" in
 			export POEM_ADD="<a class=\"$RB\" href=\"/e/poem-add\">+</p>"
 		fi
 
-		export POEMS="`ls $ROOT/poems | BigButtons poem`"
+		export POEMS="`poems_list | BigButtons poem`"
 		NormalCat
 		;;
 	*)

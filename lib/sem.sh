@@ -113,13 +113,12 @@ SourceIdOptions() {
 }
 
 sem_op() {
-	cat $SEM_FILE > $ROOT/tmp/data.txt
-	echo $@ >> $ROOT/tmp/data.txt
+	$ROOT/usr/bin/sem-echo "`echo $@`" < $SEM_FILE > $ROOT/tmp/data.txt
 
 	if $SEM -q < $ROOT/tmp/data.txt; then
-		rm $ROOT/tmp/data.txt
 		DF_USER=$SEM_OWNER
-		fappend $SEM_FILE echo $@
+		fwrite $SEM_FILE cat $ROOT/tmp/data.txt
+		rm $ROOT/tmp/data.txt
 		see_other sem ?sem_id=$sem_id
 	else
 		rm $ROOT/tmp/data.txt
