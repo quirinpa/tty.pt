@@ -4,10 +4,6 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/sem.sh
 
-if [[ -z "$sem_id" ]] || [[ ! -d "$SEM_PATH" ]]; then
-	Fatal 404 Sem not found
-fi
-
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ $sem_id`"
