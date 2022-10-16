@@ -63,3 +63,28 @@ Cookie policy|Política de cookies
 Add poem|Adicionar poema
 Poem ID|ID do poema
 add_poem_note|Os nomes dos ficheiros devem corresponder aos locales suportados. Exemplo:
+Schools|Escolas
+Teacher|Professor
+Semester|Semestre
+Add class to school|Adicionar disciplina à escola
+Class ID|ID da disciplina
+Class Title|Título da disciplina
+Assign teacher to class|Associar professor à disciplina
+Teacher ID|ID do professor
+Classes|Disciplinas
+Regent|Regente
+Add course to school|Adicionar curso à escola
+Course ID|ID do curso
+Course Title|Título do curso
+Assign class to course|Associar disciplina ao curso
+Assign teacher to course|Associar professor ao curso
+Courses|Cursos
+Teachers|Professores
+Students|Alunos
+Add school|Adicionar escola
+School ID|ID da escola
+School Title|Título da escola
+Student|Estudante
+Add student to school|Matricular estudante
+Student ID|ID do estudante
+Assign course to student|Associar curso ao estudante
