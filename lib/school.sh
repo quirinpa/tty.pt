@@ -6,6 +6,7 @@ fi
 
 SCHOOL_OWNER="`cat $SCHOOL_PATH/.owner`"
 SCHOOL_BTN="<a class=\"$RB\" href=\"/e/school?school_id=$school_id\">🏫</a>"
+DF_USER="$SCHOOL_OWNER"
 
 export school_id
 export SCHOOL_BTN

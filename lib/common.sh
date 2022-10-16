@@ -130,6 +130,7 @@ df() {
 	dir_df shops
 	dir_df poems
 	dir_df sems
+	dir_df schools
 }
 
 df_total_exp() {
