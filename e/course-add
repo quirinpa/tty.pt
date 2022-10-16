@@ -9,7 +9,7 @@ case "$REQUEST_METHOD" in
 		school_id="`urldecode $school_id`"
 		course_id="`urldecode $course_id`"
 
-		if not_valid_id $course_id; then
+		if invalid_id $course_id; then
 			Fatal 400 Not a valid ID
 		fi
 

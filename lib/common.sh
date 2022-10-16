@@ -248,17 +248,18 @@ Wrap() {
 	fi
 }
 
-not_valid_id() {
+invalid_id() {
 	valid="`echo $@ | tr -cd '[a-zA-Z0-9]_'`"
-	[[ "$valid" != "$@" ]]
+	count="`echo $@ | wc -c`"
+	[[ "$valid" != "$@" ]] || [[ "$count" -le 0 ]]
 }
 
-not_valid_password() {
+invalid_password() {
 	count="`echo $@ | wc -c`"
 	[[ "$count" -le 8 ]]
 }
 
-not_valid_lang() {
+invalid_lang() {
 	lang="$@"
 	! grep -q "$lang" $ROOT/locale/langs
 }
