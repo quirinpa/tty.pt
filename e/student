@@ -1,0 +1,38 @@
+#!/bin/ksh
+
+. $ROOT/lib/optional-auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+Courses() {
+	ls $SCHOOL_PATH/courses | while read course_id; do
+		if grep -q "$student_id" $SCHOOL_PATH/courses/$course_id/students; then
+			cat <<!
+<a class="c0 rs ps" href="/e/course?school_id=$school_id&course_id=$course_id">
+	$course_id
+</a>
+!
+		fi
+	done
+}
+
+case "$REQUEST_METHOD" in
+	GET)
+		export student_id
+		export _STUDENT="`_ Student`"
+		export _COURSES="`_ Courses`"
+		export COURSES="`Courses`"
+
+		if [[ "$REMOTE_USER" == "$SCHOOL_OWNER" ]] \
+			|| [[ "$REMOTE_USER" == "$student_id" ]]; then
+			export COURSE_ASSOCIATE="<a class=\"$RB\" href=\"/e/student-course-associate?school_id=$school_id&student_id=$student_id\">+</a>"
+		fi
+
+		NormalCat ?school_id=$school_id\&student_id=$student_id
+
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

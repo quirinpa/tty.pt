@@ -267,13 +267,14 @@ BigButton() {
 	ID="$1"
 	_TITLE="`_ $1`"
 	WHERE="$2"
+	EXTRA="$3"
 	cat <<!
-<a class="btn tsxl" href="/e/$WHERE?${WHERE}_id=$ID">
+<a class="btn tsxl" href="/e/$WHERE?${WHERE}_id=$ID$EXTRA">
 	$_TITLE
 </a>
 !
 }
 
 BigButtons() {
-	while read line; do BigButton $line $1; done
+	while read line; do BigButton $line $1 $2; done
 }

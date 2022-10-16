@@ -1,0 +1,26 @@
+#!/bin/ksh
+
+. $ROOT/lib/optional-auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+case "$REQUEST_METHOD" in
+	GET)
+		export class_id
+		CLASS_PATH=$SCHOOL_PATH/classes/$class_id
+		export class_title="`cat $CLASS_PATH/title`"
+		export _TEACHER="`_ Teacher`"
+		export _SEMESTER="`_ Semester`"
+		export teacher_id="`cat $CLASS_PATH/.teacher`"
+		export class_semester="`cat $CLASS_PATH/semester`"
+
+		NormalCat ?school_id=$school_id\&class_id=$class_id
+
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac
+
+

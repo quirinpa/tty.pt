@@ -1,0 +1,50 @@
+#!/bin/ksh
+
+. $ROOT/lib/optional-auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+teacher_things() {
+	while read id; do
+		if grep -q "$teacher_id" $SCHOOL_PATH/$1/$id/.teacher; then
+			echo $id
+		fi
+	done
+}
+
+SmallButtons() {
+	while read id; do
+		cat <<!
+<a class="c0 ps rs btn" href="/e/class?school_id=$school_id&$1_id=$id">
+$id
+</a>
+!
+	done
+}
+
+Classes() {
+	ls $SCHOOL_PATH/classes | teacher_things classes | SmallButtons class
+}
+
+Courses() {
+	ls $SCHOOL_PATH/courses | teacher_things courses | SmallButtons course
+}
+
+case "$REQUEST_METHOD" in
+	GET)
+		export teacher_id
+		export _TEACHER="`_ Teacher`"
+		export _CLASSES="`_ Classes`"
+		export CLASSES="`Classes`"
+		export _REGENT="`_ Regent`"
+		export _COURSES="`_ Courses`"
+		export COURSES="`Courses`"
+
+		NormalCat ?school_id=$school_id\&teacher_id=$teacher_id
+
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

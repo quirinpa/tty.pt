@@ -1,0 +1,39 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/school.sh
+
+case "$REQUEST_METHOD" in
+	POST)
+		school_id="`urldecode $school_id`"
+		course_id="`urldecode $course_id`"
+
+		if not_valid_id $course_id; then
+			Fatal 400 Not a valid ID
+		fi
+
+		SCHOOL_PATH="$ROOT/schools/$school_id"
+		COURSE_PATH="$SCHOOL_PATH/courses/$course_id"
+
+		fmkdir $COURSE_PATH
+		fwrite $COURSE_PATH/.teacher urldecode $teacher_id
+		fwrite $COURSE_PATH/title urldecode $course_title
+
+		see_other course ?school_id=$school_id\&course_id=$course_id
+		;;
+
+	GET)
+		export _TITLE="`_ "Add course to school"`"
+		export _COURSE_ID="`_ "Course ID"`"
+		export _COURSE_TITLE="`_ "Course Title"`"
+		export _REGENT="`_ Regent`"
+		export _SUBMIT="`_ Submit`"
+
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac
