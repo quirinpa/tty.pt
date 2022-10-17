@@ -38,3 +38,5 @@ jq
 ldd
 htpasswd
 femail
+sort
+uniq

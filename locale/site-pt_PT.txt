@@ -92,3 +92,5 @@ Date of birth|Data de nascimento
 Edit|Editar
 Name|Nome
 Add teacher to school|Adicionar professor à escola
+Assign grades|Atribuir notas
+Grades|Notas
