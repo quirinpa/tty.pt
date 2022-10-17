@@ -28,6 +28,7 @@ case "$REQUEST_METHOD" in
 		export _EDIT="`_ Edit`"
 		export _STUDENT="`_ Student`"
 		export _NAME="`_ Name`"
+		export name="`cat $STUDENT_PATH/name`"
 		export _DOB="`_ "Date of birth"`"
 		export dob="`cat $STUDENT_PATH/dob`"
 		export _SUBMIT="`_ Submit`"
