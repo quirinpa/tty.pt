@@ -40,6 +40,8 @@ case "$REQUEST_METHOD" in
 		export name="`cat $STUDENT_PATH/name`"
 		export _GRADES="`_ Grades`"
 		export GRADES="`Grades`"
+		export _REQUIRED_NUMBER="`_ "Registration number"`"
+		export required_number="`cat $STUDENT_PATH/required_number`"
 
 		if im $SCHOOL_OWNER $student_id; then
 			export EDIT_BTN="<a class=\"$RB\" href=\"/e/student-edit?school_id=$school_id&student_id=$student_id\"\">🖉</a>"
