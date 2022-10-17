@@ -34,7 +34,7 @@ UserOrders() {
 	ls $SHOP_PATH/.orders | while read line; do
 		ORDER_PATH=$SHOP_PATH/.orders/$line
 		ORDER_OWNER="`cat $ORDER_PATH/owner`"
-		[[ "$ORDER_OWNER" == "$REMOTE_USER" ]] && Order $line || true
+		im $ORDER_OWNER && Order $line || true
 	done
 }
 
@@ -52,7 +52,7 @@ case "$REQUEST_METHOD" in
 
 		_ORDER="`_ Order`"
 
-		if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
+		if im $SHOP_OWNER; then
 			ORDERS="`VendorOrders`"
 		else
 			ORDERS="`UserOrders`"

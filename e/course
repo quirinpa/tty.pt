@@ -9,7 +9,7 @@ COURSE_PATH=$SCHOOL_PATH/courses/$course_id
 Classes() {
 	{
 		cat $COURSE_PATH/classes | SmallButtons class \&school_id=$school_id
-		if [[ "$REMOTE_USER" == "$SCHOOL_OWNER" ]]; then
+		if im $SCHOOL_OWNER; then
 			echo "<a class=\"$RBS\" href=\"/e/course-class-associate?school_id=$school_id&course_id=$course_id\">+</a>"
 		fi
 	} | FWS

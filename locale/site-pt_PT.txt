@@ -84,7 +84,10 @@ Students|Alunos
 Add school|Adicionar escola
 School ID|ID da escola
 School Title|Título da escola
-Student|Estudante
-Add student to school|Matricular estudante
-Student ID|ID do estudante
-Assign course to student|Associar curso ao estudante
+Student|Aluno
+Add student to school|Matricular aluno
+Student ID|ID do aluno
+Assign course to student|Associar curso ao aluno
+Date of birth|Data de nascimento
+Edit|Editar
+Name|Nome

@@ -8,12 +8,10 @@ invalid_course() {
 	invalid_id $1 || [[ ! -d "$SCHOOL_PATH/courses/$1" ]]
 }
 
+im $SCHOOL_OWNER $student_id || Forbidden
+
 case "$REQUEST_METHOD" in
 	POST)
-		school_id="`urldecode $school_id`"
-		student_id="`urldecode $student_id`"
-		course_id="`urldecode $course_id`"
-
 		if invalid_course $course_id; then
 			Fatal 400 That course does not exist
 		fi

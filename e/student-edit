@@ -4,7 +4,7 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/school.sh
 
-im $SCHOOL_OWNER || Forbidden
+im $SCHOOL_OWNER $student_id || Forbidden
 
 case "$REQUEST_METHOD" in
 	POST)
@@ -12,9 +12,9 @@ case "$REQUEST_METHOD" in
 			Fatal 400 Not a valid ID
 		fi
 
+		SCHOOL_PATH="$ROOT/schools/$school_id"
 		STUDENT_PATH="$SCHOOL_PATH/students/$student_id"
 
-		fmkdir $STUDENT_PATH
 		fwrite $STUDENT_PATH/name urldecode $name
 		fwrite $STUDENT_PATH/dob urldecode $dob
 
@@ -22,13 +22,19 @@ case "$REQUEST_METHOD" in
 		;;
 
 	GET)
-		export _TITLE="`_ "Add student to school"`"
-		export _STUDENT_ID="`_ "Student ID"`"
+		STUDENT_PATH=$SCHOOL_PATH/students/$student_id
+
+		export student_id
+		export _EDIT="`_ Edit`"
+		export _STUDENT="`_ Student`"
 		export _NAME="`_ Name`"
 		export _DOB="`_ "Date of birth"`"
+		export dob="`cat $STUDENT_PATH/dob`"
 		export _SUBMIT="`_ Submit`"
+		export EDIT_BTN="<a class=\"$RB\" href=\"/e/student-edit?school_id=$school_id&student_id=$student_id\"\">🖉</a>"
 
-		NormalCat
+		NormalCat ?school_id=$school_id\&student_id=$student_id
+
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

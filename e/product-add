@@ -12,9 +12,7 @@ case "$REQUEST_METHOD" in
 	POST)
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
-		if [[ "$REMOTE_USER" != "$SHOP_OWNER" ]]; then
-			Fatal 401 "You cannot do that"
-		fi
+		im $SHOP_OWNER || Forbidden
 
 		PRODUCT_ID_PATH=$SHOP_PATH/.count
 		PRODUCT_ID="`counter_inc $PRODUCT_ID_PATH`"

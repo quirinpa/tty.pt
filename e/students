@@ -8,7 +8,7 @@ case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Students`"
 
-		if [[ "$REMOTE_USER" == "$SCHOOL_OWNER" ]]; then
+		if im $SCHOOL_OWNER; then
 			export STUDENT_ADD="<a class=\"$RB\" href=\"/e/student-add?school_id=$school_id\">+</a>"
 		fi
 

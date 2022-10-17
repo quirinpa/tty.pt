@@ -80,7 +80,7 @@ OrderState() {
 	_ORDER_STATE="`_ "$1"`"
 	ORDER_STATE_COLOR="`order_state_color "$1"`"
 
-	if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
+	if im $SHOP_OWNER; then
 		OrderStateVendor $ret $2
 	else
 		OrderStateUser

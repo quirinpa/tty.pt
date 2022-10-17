@@ -42,11 +42,11 @@ SemMenu() {
 	options=""
 	present="`echo $PRESENT | awk '{ print $1 }'`"
 
-	if [[ "$current" != "start" ]] && [[ "$REMOTE_USER" == "$SEM_OWNER" ]]; then
+	if [[ "$current" != "start" ]] && im $SEM_OWNER; then
 		options="$options`SemMenuOption start START`"
 	fi
 
-	if [[ "$REMOTE_USER" == "$SEM_OWNER" ]]; then
+	if im $SEM_OWNER; then
 		if [[ "$current" != "pause" ]] && $SEM -p < $SEM_FILE | grep -q '^P '; then
 			options="$options`SemMenuOption pause PAUSE`"
 		fi
@@ -105,7 +105,7 @@ IdOptions() {
 }
 
 SourceIdOptions() {
-	if [[ "$REMOTE_USER" == "$SEM_OWNER" ]]; then
+	if im $SEM_OWNER; then
 		cat $SEM_PATH/.owner $SEM_PATH/.members
 	else
 		echo $REMOTE_USER

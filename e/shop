@@ -48,8 +48,7 @@ case "$REQUEST_METHOD" in
 
 				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 
-				[[ "$SHOP_OWNER" != "$REMOTE_USER" ]] \
-					&& Fatal 401 "You can not do that"
+				im $SHOP_OWNER || Forbidden
 
 				rm -rf $SHOP_PATH/$product_id
 
@@ -69,7 +68,7 @@ case "$REQUEST_METHOD" in
 		export PRODUCTS="`Wrap $PRODUCTS`"
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		export SHOP_BUTTONS="`ShopButtons`"
-		if [[ "$REMOTE_USER" == "$SHOP_OWNER" ]]; then
+		if im $SHOP_OWNER; then
 			ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/e/product-add?shop_id=$shop_id\">+</a></div>"
 		fi
 		export ADD_PRODUCT_BUTTON

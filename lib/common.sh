@@ -4,7 +4,7 @@
 
 Forbidden() {
 	NormalHead 403
-	_TITLE="`_ Forbidden`"
+	export _TITLE="`_ Forbidden`"
 	echo
 	Head
 	export MENU="`Menu`"
@@ -302,4 +302,17 @@ FWS() {
 	echo "<div class=\"f _s vs fw fic\">"
 	cat -
 	echo "</div>"
+}
+
+im() {
+	ret=""
+	while [[ $# -ge 1 ]]; do
+		if [[ "$REMOTE_USER" == "$1" ]]; then
+			ret="1"
+			break;
+		fi
+		shift
+	done
+
+	[[ "$ret" == "1" ]]
 }

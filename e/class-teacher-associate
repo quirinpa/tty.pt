@@ -4,12 +4,10 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/school.sh
 
+im $SCHOOL_OWNER || Forbidden
+
 case "$REQUEST_METHOD" in
 	POST)
-		school_id="`urldecode $school_id`"
-		class_id="`urldecode $class_id`"
-		teacher_id="`urldecode $teacher_id`"
-
 		CLASS_PATH="$SCHOOL_PATH/classes/$class_id"
 
 		fwrite $CLASS_PATH/.teacher echo $teacher_id

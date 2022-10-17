@@ -4,12 +4,12 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/school.sh
 
+STUDENT_PATH=$SCHOOL_PATH/students/$student_id
+
 Courses() {
-	STUDENT_PATH=$SCHOOL_PATH/students/$student_id
 	{
 		cat $STUDENT_PATH/courses | SmallButtons course \&school_id=$school_id
-		if [[ "$REMOTE_USER" == "$SCHOOL_OWNER" ]] \
-			|| [[ "$REMOTE_USER" == "$student_id" ]]; then
+		if im $SCHOOL_OWNER $student_id; then
 			echo "<a class=\"$RBS\" href=\"/e/student-course-associate?school_id=$school_id&student_id=$student_id\">+</a>"
 		fi
 	} | FWS
@@ -21,6 +21,14 @@ case "$REQUEST_METHOD" in
 		export _STUDENT="`_ Student`"
 		export _COURSES="`_ Courses`"
 		export COURSES="`Courses`"
+		export _DOB="`_ "Date of birth"`"
+		export dob="`cat $STUDENT_PATH/dob`"
+		export _NAME="`_ Name`"
+		export name="`cat $STUDENT_PATH/name`"
+
+		if im $SCHOOL_OWNER $student_id; then
+			export EDIT_BTN="<a class=\"$RB\" href=\"/e/student-edit?school_id=$school_id&student_id=$student_id\"\">🖉</a>"
+		fi
 
 		NormalCat ?school_id=$school_id\&student_id=$student_id
 

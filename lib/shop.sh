@@ -62,7 +62,7 @@ Product() {
 				fi
 				return_str="<input name=\"return\" type=\"hidden\" value=\"$2\"></input>"
 				SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-				if [[ "$2" == "shop" ]] && [[ "$SHOP_OWNER" == "$REMOTE_USER" ]]; then
+				if [[ "$2" == "shop" ]] && im $SHOP_OWNER; then
 					delete_form=y
 				else
 					if [[ "$2" == "product" ]]; then

@@ -5,7 +5,7 @@
 . $ROOT/lib/sem.sh
 
 stop_options() {
-	if [[ "$REMOTE_USER" == "$SEM_OWNER" ]]; then
+	if im $SEM_OWNER; then
 		$SEM -p < $SEM_FILE | awk '{ print $2 }'
 	else
 		echo $REMOTE_USER
