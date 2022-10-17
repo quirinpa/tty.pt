@@ -29,3 +29,6 @@ LabeledIDEdit() {
 !
 }
 
+invalid_s() {
+	invalid_id $2 || [[ ! -d "$SCHOOL_PATH/$1/$2" ]]
+}

@@ -4,16 +4,15 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/school.sh
 
-ls_teachers() {
-	ls $SCHOOL_PATH/classes | while read line; do
-		cat $SCHOOL_PATH/classes/$line/.teacher
-	done
-}
-
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Teachers`"
-		export TEACHERS="`ls_teachers | BigButtons teacher \&school_id=$school_id`"
+
+		if im $SCHOOL_OWNER; then
+			export TEACHER_ADD="<a class=\"$RB\" href=\"/e/teacher-add?school_id=$school_id\">+</a>"
+		fi
+
+		export TEACHERS="`ls $SCHOOL_PATH/teachers | BigButtons teacher \&school_id=$school_id`"
 		NormalCat
 		;;
 	*)

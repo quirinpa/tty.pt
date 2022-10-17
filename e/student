@@ -15,6 +15,8 @@ Courses() {
 	} | FWS
 }
 
+invalid_s students $student_id && Fatal 400 Invalid student
+
 case "$REQUEST_METHOD" in
 	GET)
 		export student_id

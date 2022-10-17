@@ -25,6 +25,15 @@ case "$REQUEST_METHOD" in
 		export _REGENT="`_ Regent`"
 		export _COURSES="`_ Courses`"
 		export COURSES="`Courses`"
+		TEACHER_PATH=$SCHOOL_PATH/teachers/$teacher_id
+		export _DOB="`_ "Date of birth"`"
+		export dob="`cat $TEACHER_PATH/dob`"
+		export _NAME="`_ Name`"
+		export name="`cat $TEACHER_PATH/name`"
+
+		if im $SCHOOL_OWNER $teacher_id; then
+			export EDIT_BTN="<a class=\"$RB\" href=\"/e/teacher-edit?school_id=$school_id&teacher_id=$teacher_id\"\">🖉</a>"
+		fi
 
 		NormalCat ?school_id=$school_id\&teacher_id=$teacher_id
 

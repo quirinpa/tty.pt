@@ -6,14 +6,13 @@
 
 im $SCHOOL_OWNER $student_id || Forbidden
 
+STUDENT_PATH=$SCHOOL_PATH/students/$student_id
+
 case "$REQUEST_METHOD" in
 	POST)
 		if invalid_id $student_id; then
 			Fatal 400 Not a valid ID
 		fi
-
-		SCHOOL_PATH="$ROOT/schools/$school_id"
-		STUDENT_PATH="$SCHOOL_PATH/students/$student_id"
 
 		fwrite $STUDENT_PATH/name urldecode $name
 		fwrite $STUDENT_PATH/dob urldecode $dob
@@ -22,8 +21,6 @@ case "$REQUEST_METHOD" in
 		;;
 
 	GET)
-		STUDENT_PATH=$SCHOOL_PATH/students/$student_id
-
 		export student_id
 		export _EDIT="`_ Edit`"
 		export _STUDENT="`_ Student`"
@@ -32,7 +29,10 @@ case "$REQUEST_METHOD" in
 		export _DOB="`_ "Date of birth"`"
 		export dob="`cat $STUDENT_PATH/dob`"
 		export _SUBMIT="`_ Submit`"
-		export EDIT_BTN="<a class=\"$RB\" href=\"/e/student-edit?school_id=$school_id&student_id=$student_id\"\">🖉</a>"
+
+		if im $SCHOOL_OWNER $student_id; then
+			export EDIT_BTN="<a class=\"$RB\" href=\"/e/student-edit?school_id=$school_id&student_id=$student_id\"\">🖉</a>"
+		fi
 
 		NormalCat ?school_id=$school_id\&student_id=$student_id
 
