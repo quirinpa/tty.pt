@@ -83,7 +83,7 @@ counter_dec() {
 }
 
 sum_lines_exp() {
-	echo -n '('
+	echo -n '(0'
 	sed 's/$/ +/' | tr '\n' ' ' | sed 's/ + $//'
 	echo -n ')'
 }
