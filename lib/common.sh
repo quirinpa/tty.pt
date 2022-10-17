@@ -265,18 +265,41 @@ invalid_lang() {
 	! grep -q "$lang" $ROOT/locale/langs
 }
 
-BigButton() {
-	ID="$1"
-	_TITLE="`_ $1`"
-	WHERE="$2"
-	EXTRA="$3"
-	cat <<!
-<a class="btn tsxl" href="/e/$WHERE?${WHERE}_id=$ID$EXTRA">
+Buttons() {
+	while read id; do
+		_TITLE="`_ $id`"
+		where="$2"
+		extra="$3"
+		cat <<!
+<a class="btn $1" href="/e/$where?${where}_id=$id$extra">
 	$_TITLE
 </a>
 !
+	done
 }
 
 BigButtons() {
-	while read line; do BigButton $line $1 $2; done
+	Buttons "tsxl" "$1" "$2"
+}
+
+SmallButtons() {
+	Buttons "c0 ps rs" "$1" "$2"
+}
+
+for_each_in() {
+	path="$1"
+	target="$2"
+	find_id="$3"
+
+	ls $path | while read id; do
+		if grep -q "$find_id" "$path/$id/$target"; then
+			echo $id
+		fi
+	done
+}
+
+FWS() {
+	echo "<div class=\"f _s vs fw fic\">"
+	cat -
+	echo "</div>"
 }

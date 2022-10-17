@@ -5,15 +5,14 @@
 . $ROOT/lib/school.sh
 
 Courses() {
-	ls $SCHOOL_PATH/courses | while read course_id; do
-		if grep -q "$student_id" $SCHOOL_PATH/courses/$course_id/students; then
-			cat <<!
-<a class="c0 rs ps" href="/e/course?school_id=$school_id&course_id=$course_id">
-	$course_id
-</a>
-!
+	STUDENT_PATH=$SCHOOL_PATH/students/$student_id
+	{
+		cat $STUDENT_PATH/courses | SmallButtons course \&school_id=$school_id
+		if [[ "$REMOTE_USER" == "$SCHOOL_OWNER" ]] \
+			|| [[ "$REMOTE_USER" == "$student_id" ]]; then
+			echo "<a class=\"$RBS\" href=\"/e/student-course-associate?school_id=$school_id&student_id=$student_id\">+</a>"
 		fi
-	done
+	} | FWS
 }
 
 case "$REQUEST_METHOD" in
@@ -22,11 +21,6 @@ case "$REQUEST_METHOD" in
 		export _STUDENT="`_ Student`"
 		export _COURSES="`_ Courses`"
 		export COURSES="`Courses`"
-
-		if [[ "$REMOTE_USER" == "$SCHOOL_OWNER" ]] \
-			|| [[ "$REMOTE_USER" == "$student_id" ]]; then
-			export COURSE_ASSOCIATE="<a class=\"$RB\" href=\"/e/student-course-associate?school_id=$school_id&student_id=$student_id\">+</a>"
-		fi
 
 		NormalCat ?school_id=$school_id\&student_id=$student_id
 

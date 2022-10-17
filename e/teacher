@@ -5,29 +5,15 @@
 . $ROOT/lib/school.sh
 
 teacher_things() {
-	while read id; do
-		if grep -q "$teacher_id" $SCHOOL_PATH/$1/$id/.teacher; then
-			echo $id
-		fi
-	done
-}
-
-SmallButtons() {
-	while read id; do
-		cat <<!
-<a class="c0 ps rs btn" href="/e/class?school_id=$school_id&$1_id=$id">
-$id
-</a>
-!
-	done
+	for_each_in "$SCHOOL_PATH/$1" .teacher "$teacher_id"
 }
 
 Classes() {
-	ls $SCHOOL_PATH/classes | teacher_things classes | SmallButtons class
+	teacher_things classes | SmallButtons class \&school_id=$school_id | FWS
 }
 
 Courses() {
-	ls $SCHOOL_PATH/courses | teacher_things courses | SmallButtons course
+	teacher_things courses | SmallButtons course \&school_id=$school_id | FWS
 }
 
 case "$REQUEST_METHOD" in

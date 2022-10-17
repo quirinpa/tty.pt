@@ -4,14 +4,26 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/school.sh
 
+Courses() {
+	for_each_in "$SCHOOL_PATH/courses" classes "$class_id" \
+		| SmallButtons course \&school_id=$school_id | FWS
+}
+
+Teacher() {
+	teacher_id="`cat $CLASS_PATH/.teacher`"
+	_TEACHER="`_ Teacher`"
+	LabeledIDEdit "$_TEACHER" teacher $teacher_id class $class_id \&school_id=$school_id
+}
+
 case "$REQUEST_METHOD" in
 	GET)
 		export class_id
 		CLASS_PATH=$SCHOOL_PATH/classes/$class_id
 		export class_title="`cat $CLASS_PATH/title`"
-		export _TEACHER="`_ Teacher`"
 		export _SEMESTER="`_ Semester`"
-		export teacher_id="`cat $CLASS_PATH/.teacher`"
+		export _COURSES="`_ Courses`"
+		export COURSES="`Courses`"
+		export TEACHER="`Teacher`"
 		export class_semester="`cat $CLASS_PATH/semester`"
 
 		NormalCat ?school_id=$school_id\&class_id=$class_id

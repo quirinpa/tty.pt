@@ -76,6 +76,8 @@ _() {
 }
 
 export RB="btn round ps tsxl"
+export RBS="btn round ps ts"
+export RBXS="btn round pxs tss"
 export SRB="btn round ps tsl"
 
 Menu() {

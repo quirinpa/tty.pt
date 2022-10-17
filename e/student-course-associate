@@ -18,13 +18,13 @@ case "$REQUEST_METHOD" in
 			Fatal 400 That course does not exist
 		fi
 
-		COURSE_PATH="$SCHOOL_PATH/courses/$course_id"
+		STUDENT_PATH="$SCHOOL_PATH/students/$student_id"
 
-		if grep -q "$student_id" $COURSE_PATH/students; then
+		if grep -q "$course_id_id" "$STUDENT_PATH/courses"; then
 			Fatal 400 That course is already assigned to this student
 		fi
 
-		fappend $COURSE_PATH/students echo $student_id
+		fappend "$STUDENT_PATH/courses" echo $course_id
 
 		see_other student ?school_id=$school_id\&student_id=$student_id
 		;;
