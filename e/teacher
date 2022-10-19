@@ -9,11 +9,17 @@ teacher_things() {
 }
 
 Classes() {
-	teacher_things classes | SmallButtons class \&school_id=$school_id | FWS
+	teacher_things classes | SmallButtons class \&school_id=$school_id | cond || {
+		echo "<h2>`_ Classes`</h2>"
+		cat $contents | FWS
+	}
 }
 
 Courses() {
-	teacher_things courses | SmallButtons course \&school_id=$school_id | FWS
+	teacher_things courses | SmallButtons course \&school_id=$school_id | cond || {
+		echo "<h2>`_ Courses` (`_ Regent`)</h2>"
+		cat $contents | FWS
+	}
 }
 
 salary_exp() {
@@ -31,23 +37,29 @@ salary_exp() {
 	done | sum_lines_exp
 }
 
+NameField() {
+	Field "`_ Name`" "`cat $TEACHER_PATH/name`"
+}
+
+DobField() {
+	Field "`_ "Date of birth"`" "`cat $TEACHER_PATH/dob`"
+}
+
+SalaryField() {
+	salary_exp="`salary_exp`"
+	Field "`_ Salary`" "`echo "$salary_exp" | bc`€"
+}
+
 case "$REQUEST_METHOD" in
 	GET)
 		export teacher_id
 		export _TEACHER="`_ Teacher`"
-		export _CLASSES="`_ Classes`"
 		export CLASSES="`Classes`"
-		export _REGENT="`_ Regent`"
-		export _COURSES="`_ Courses`"
 		export COURSES="`Courses`"
 		TEACHER_PATH=$SCHOOL_PATH/teachers/$teacher_id
-		export _DOB="`_ "Date of birth"`"
-		export dob="`cat $TEACHER_PATH/dob`"
-		export _NAME="`_ Name`"
-		export name="`cat $TEACHER_PATH/name`"
-		export _SALARY="`_ Salary`"
-		salary_exp="`salary_exp`"
-		export salary="`echo "$salary_exp" | bc`€"
+		export NAME="`NameField`"
+		export DOB="`DobField`"
+		export SALARY="`SalaryField`"
 
 		if im $SCHOOL_OWNER $teacher_id; then
 			export EDIT_BTN="<a class=\"$RB\" href=\"/e/teacher-edit?school_id=$school_id&teacher_id=$teacher_id\"\">🖉</a>"

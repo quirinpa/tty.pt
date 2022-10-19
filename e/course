@@ -12,12 +12,18 @@ Classes() {
 		if im $SCHOOL_OWNER; then
 			echo "<a class=\"$RBS\" href=\"/e/course-class-associate?school_id=$school_id&course_id=$course_id\">+</a>"
 		fi
-	} | FWS
+	} | cond || {
+		echo "<h2>`_ Classes`</h2>"
+		cat $contents | FWS
+	}
 }
 
 Students() {
 	for_each_in "$SCHOOL_PATH/students" courses "$course_id" \
-		| SmallButtons student \&school_id=$school_id | FWS
+		| SmallButtons student \&school_id=$school_id | cond || {
+		echo "<h2>`_ Students`</h2>"
+		cat $contents | FWS
+	}
 }
 
 Regent() {
@@ -30,9 +36,7 @@ case "$REQUEST_METHOD" in
 	GET)
 		export course_id
 		export course_title="`cat $COURSE_PATH/title`"
-		export _CLASSES="`_ Classes`"
 		export CLASSES="`Classes`"
-		export _STUDENTS="`_ Students`"
 		export STUDENTS="`Students`"
 		export REGENT="`Regent`"
 

@@ -316,3 +316,19 @@ im() {
 
 	[[ "$ret" == "1" ]]
 }
+
+contents=$ROOT/tmp/contents
+
+cond() {
+	cat - > $contents
+	[[ -z "`cat $contents`" ]]
+}
+
+Field() {
+	cat <<!
+<div class="_">
+	<span class="tsxs">$1</span>
+	<span>$2</span>
+</div>
+!
+}

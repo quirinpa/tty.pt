@@ -6,7 +6,10 @@
 
 Courses() {
 	for_each_in "$SCHOOL_PATH/courses" classes "$class_id" \
-		| SmallButtons course \&school_id=$school_id | FWS
+		| SmallButtons course \&school_id=$school_id | cond || {
+		echo "<h2>`_ Courses`</h2>"
+		cat $contents | FWS
+	}
 }
 
 Teacher() {
@@ -16,8 +19,6 @@ Teacher() {
 
 AssignGrades() {
 	if im $SCHOOL_OWNER $teacher_id; then
-		echo "<h2>`_ "Assign grades"`</h2>"
-
 		ls $SCHOOL_PATH/students | while read student_id; do
 			STUDENT_PATH=$SCHOOL_PATH/students/$student_id
 
@@ -38,7 +39,10 @@ AssignGrades() {
 	$student_id
 </a>
 !
-		done | FWS
+		done | cond || {
+			echo "<h2>`_ "Assign grades"`</h2>"
+			cat $contents | FWS
+		}
 	fi
 }
 
@@ -49,7 +53,6 @@ case "$REQUEST_METHOD" in
 		teacher_id="`cat $CLASS_PATH/.teacher`"
 		export class_title="`cat $CLASS_PATH/title`"
 		export _SEMESTER="`_ Semester`"
-		export _COURSES="`_ Courses`"
 		export COURSES="`Courses`"
 		export TEACHER="`Teacher`"
 		export ASSIGN_GRADES="`AssignGrades`"

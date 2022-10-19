@@ -4,6 +4,8 @@
 . $ROOT/lib/common.sh
 . $ROOT/lib/school.sh
 
+invalid_s students $student_id && Fatal 400 Invalid student
+
 STUDENT_PATH=$SCHOOL_PATH/students/$student_id
 
 Courses() {
@@ -12,7 +14,10 @@ Courses() {
 		if im $SCHOOL_OWNER $student_id; then
 			echo "<a class=\"$RBS\" href=\"/e/student-course-associate?school_id=$school_id&student_id=$student_id\">+</a>"
 		fi
-	} | FWS
+	} | cond || {
+		echo "<h2>`_ Courses`</h2>"
+		cat $contents | FWS
+	}
 }
 
 Grades() {
@@ -23,25 +28,33 @@ Grades() {
 	<span>$grade</span>
 </div>
 !
-	done | FWS
+	done | cond || {
+		echo "<h2>`_ Grades`</h2>"
+		cat $contents | FWS
+	}
 }
 
-invalid_s students $student_id && Fatal 400 Invalid student
+RNField() {
+	Field "`_ "Registration Number"`" "`cat $STUDENT_PATH/required_number`"
+}
+
+NameField() {
+	Field "`_ Name`" "`cat $STUDENT_PATH/name`"
+}
+
+DobField() {
+	Field "`_ "Date of birth"`" "`cat $STUDENT_PATH/dob`"
+}
 
 case "$REQUEST_METHOD" in
 	GET)
 		export student_id
 		export _STUDENT="`_ Student`"
-		export _COURSES="`_ Courses`"
 		export COURSES="`Courses`"
-		export _DOB="`_ "Date of birth"`"
-		export dob="`cat $STUDENT_PATH/dob`"
-		export _NAME="`_ Name`"
-		export name="`cat $STUDENT_PATH/name`"
-		export _GRADES="`_ Grades`"
+		export RN="`RNField`"
+		export NAME="`NameField`"
+		export DOB="`DobField`"
 		export GRADES="`Grades`"
-		export _REQUIRED_NUMBER="`_ "Registration number"`"
-		export required_number="`cat $STUDENT_PATH/required_number`"
 
 		if im $SCHOOL_OWNER $student_id; then
 			export EDIT_BTN="<a class=\"$RB\" href=\"/e/student-edit?school_id=$school_id&student_id=$student_id\"\">🖉</a>"
