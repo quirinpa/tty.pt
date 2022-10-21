@@ -14,7 +14,7 @@ Classes() {
 		fi
 	} | cond || {
 		echo "<h2>`_ Classes`</h2>"
-		cat $contents | FWS
+		cat $contents | fw s
 	}
 }
 
@@ -22,7 +22,7 @@ Students() {
 	for_each_in "$SCHOOL_PATH/students" courses "$course_id" \
 		| SmallButtons student \&school_id=$school_id | cond || {
 		echo "<h2>`_ Students`</h2>"
-		cat $contents | FWS
+		cat $contents | fw s
 	}
 }
 

@@ -22,9 +22,7 @@ find_images() {
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ Images`"
-		IMAGES="`find_images $ROOT/htdocs/img | Images`"
-		IMAGES="`Wrap $IMAGES`"
-		export IMAGES
+		export IMAGES="`find_images $ROOT/htdocs/img | Images | fw`"
 		NormalCat
 		;;
 	*)

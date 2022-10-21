@@ -243,10 +243,9 @@ Fatal() {
 
 DF_USER=$REMOTE_USER
 SCRIPT="`basename $SCRIPT_NAME | cut -f1 -d'.'`"
-Wrap() {
-	if [[ ! -z "$@" ]]; then
-		echo "<div class=\"_ v f fw fcc fic\">$@</div>"
-	fi
+
+fw() {
+	csurround div "class=\"_$1 v$1 f fw fcc fic\""
 }
 
 invalid_id() {
@@ -298,12 +297,6 @@ for_each_in() {
 	done
 }
 
-FWS() {
-	echo "<div class=\"f _s vs fw fic\">"
-	cat -
-	echo "</div>"
-}
-
 im() {
 	ret=""
 	while [[ $# -ge 1 ]]; do
@@ -320,8 +313,24 @@ im() {
 contents=$ROOT/tmp/contents
 
 cond() {
-	cat - > $contents
-	[[ -z "`cat $contents`" ]]
+	# tee $contents$1
+	cat - > $contents$1
+	[[ -z "`cat $contents$1`" ]]
+}
+
+surround() {
+	echo "<$@>"
+	cat -
+	echo "</$1>"
+}
+
+csurround() {
+	local contents="`cat -`"
+
+	[[ -z "$contents" ]] || {
+		echo $contents | surround $@
+	}
+
 }
 
 Field() {

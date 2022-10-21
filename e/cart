@@ -9,17 +9,30 @@ EmptyContents() {
 	echo "<div class=\"tsxl tac\">$_EMPTY</div>"
 }
 
+Products() {
+	local product_id
+	while read product_id quantity; do
+		product_env $product_id
+		cat <<!
+<a class="card f vs b0 fic p" href="/e/product?shop_id=$shop_id&product_id=$product_id">
+	`PImage $product_image_path`
+	<div class="tsxl">$product_title</div>
+	<div class="tsl">$quantity x $product_price€</div>
+	`echo "$product_description" | csurround p`
+</a>
+!
+	done
+}
+
 Contents() {
 	TOTAL_CART_EXP="`process_cart $CART_PATH`"
 	TOTAL="`echo "$TOTAL_CART_EXP" | bc -l`"
 	_SUBMIT="`_ Submit`"
-	PRODUCTS="`ProductsFromCart -rcart $CART_PATH`"
-	PRODUCTS="`Wrap "$PRODUCTS"`"
+	PRODUCTS="`cat $CART_PATH | Products | fw`"
 
 	cat <<!
-<div class="v">
-	$PRODUCTS
-</div>
+$PRODUCTS
+
 <div class="tcv fic v">
 	<div class="tsxl">$TOTAL€</div>
 	<form action="/e/order" method="POST">
@@ -36,59 +49,33 @@ fi
 
 case "$REQUEST_METHOD" in
 	POST)
-		PRODUCT_PATH=$SHOP_PATH/$product_id
+		local PRODUCT_PATH=$SHOP_PATH/$product_id
 
 		if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
 			Fatal 404 Product not found
 		fi
 
-		if [[ $quantity -lt 0 ]]; then
-			Fatal 400 Invalid quantity
-		fi
+		product_env $product_id # TODO think twice about this use case
 
-		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-		fmkdir $USER_SHOP_PATH
-		STOCK="`cat $PRODUCT_PATH/stock`"
 		if [[ -f $CART_PATH ]] && cat $CART_PATH | grep -q $product_id; then
-			OLD_QUANTITY="`cat $CART_PATH | grep $product_id | awk '{ print $2 }'`"
+			# only do something if this is not the case,
+			# otherwise just redir
+			echo -n ""
+		elif [[ "$product_stock" != 0 ]]; then
+			fappend $CART_PATH echo $product_id 1
 		else
-			OLD_QUANTITY=0
-		fi
-		AVAILABLE_EXP="$STOCK - ($quantity - $OLD_QUANTITY) >= 0"
-		AVAILABLE="`echo $AVAILABLE_EXP | bc`"
-
-		[[ "$AVAILABLE" != "0" ]] || Fatal 400 Not enough stock
-
-		if [[ "$quantity" == "0" ]]; then
-			sed -i "/^$product_id /d" $CART_PATH
-		else
-			fappend $CART_PATH echo $product_id $quantity
-			cat $CART_PATH | awk \
-				'{a[$1]=$2} END{for (i in a) print i FS a[i]}' \
-				> $ROOT/tmp/cart
-			mv $ROOT/tmp/cart $CART_PATH
+			Fatal 400 Not enough stock
 		fi
 
-		case "$return" in
-			cart)
-				see_other cart ?shop_id=$shop_id
-				;;
-			shop)
-				see_other shop ?shop_id=$shop_id
-				;;
-			product)
-				see_other product ?shop_id=$shop_id\&product_id=$product_id
-				;;
-			*)
-				Fatal 400 "Invalid return"
-				;;
-		esac
+		see_other cart-edit ?shop_id=$shop_id
 
 		;;
 
 	GET)
 		if [[ -f "$CART_PATH" ]] && [[ ! -z `cat $CART_PATH` ]]; then
 			CONTENTS="`Contents`"
+			export EDIT_BTN="<a class=\"$RB\" href=\"/e/cart-edit?shop_id=$shop_id&user_id=$REMOTE_USER\"\">🖉</a>"
+
 		else
 			CONTENTS="`EmptyContents`"
 		fi

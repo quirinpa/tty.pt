@@ -11,7 +11,7 @@ Order() {
 	TOTAL_EXP="`process_cart $ORDER_PATH/raw`"
 	TOTAL="`echo "$TOTAL_EXP" | bc -l`"
 	ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
-	ORDER_STATE="`OrderState -rorders "$ORDER_STATE_TEXT" $1`"
+	ORDER_STATE="`OrderState orders "$ORDER_STATE_TEXT" $1`"
 
 	cat <<!
 <a href="/e/order?shop_id=$shop_id&order_id=$1" class="b0 p v">
@@ -44,8 +44,6 @@ fi
 
 case "$REQUEST_METHOD" in
 	GET)
-		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-
 		ORDERS_PATH=$SHOP_PATH/.orders
 
 		export _TITLE="`_ $shop_id` - `_ Orders`"
@@ -58,9 +56,8 @@ case "$REQUEST_METHOD" in
 			ORDERS="`UserOrders`"
 		fi
 
-		ORDERS="`Wrap $ORDERS`"
+		export ORDERS="`echo "$ORDERS" | fw`"
 
-		export ORDERS
 		NormalCat ?shop_id=$shop_id
 		;;
 	*)

@@ -95,3 +95,9 @@ pre {
 .menu :checked + div { display: block; }
 .menu a { text-decoration: none; }
 .menu a:hover { color: white; }
+
+.pn { padding: 0; }
+.fix { position: fixed; }
+
+.j { bottom: var(--S); }
+.l { right: var(--S); }

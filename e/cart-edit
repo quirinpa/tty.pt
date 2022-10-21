@@ -1,0 +1,76 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+. $ROOT/lib/shop.sh
+
+Products() {
+	local product_id
+	while read product_id quantity; do
+		product_env $product_id
+		cat <<!
+<div class="card f vs b0 fic p">
+	`PImage $product_image_path`
+	<a class="tsxl" href="/e/product?shop_id=$shop_id&product_id=$product_id">$product_title</a>
+	<div class="f _s fic">
+		<input name="quantity_$product_id" type="number" min="0" max="$product_stock" value="$quantity" class="s_4_5"></input>
+		<div class="tsl">x $product_price€</div>
+	</div>
+	`echo "$product_description" | csurround p`
+</div>
+!
+	done
+}
+
+if [[ -z "$shop_id" ]] || [[ ! -d $SHOP_PATH ]]; then
+	Fatal 404 Shop not found
+fi
+
+case "$REQUEST_METHOD" in
+	POST)
+		cat $CART_PATH | while read product_id quantity; do
+			local qname=quantity_$product_id
+			eval echo $product_id \$$qname
+		done | cat $CART_PATH - | sort -s -k1,1 | while read product_id old_quantity; do
+			read ignore quantity
+
+			product_env $product_id
+
+			local diff_exp="($quantity - $old_quantity)"
+			local new_stock_exp="$product_stock - $diff_exp"
+			local available_exp="$new_stock_exp >= 0"
+			local available="`echo $available_exp | bc`"
+
+			[[ "$available" != "0" ]] || Fatal 400 Not enough stock
+
+			# this should only happen on order placement
+			# local new_stock="`echo "$new_stock_exp" | bc`"
+			# fwrite $product_path/stock echo $new_stock
+
+			# echo $product_id $quantity
+			[[ "$quantity" == "0" ]] || echo $product_id $quantity
+		done > $CART_PATH
+
+		see_other cart ?shop_id=$shop_id
+
+		;;
+
+	GET)
+		if [[ ! -f "$CART_PATH" ]] || [[ -z "`cat $CART_PATH`" ]]; then
+			Fatal 400 You can not edit an empty cart
+		fi
+
+		export PRODUCTS="`cat $CART_PATH | Products | fw`"
+
+		export _TITLE="`_ $shop_id` - `_ "Edit cart"`"
+		export _SUBMIT="`_ Submit`"
+
+		# TODO im $CART_OWNER $SHOP_OWNER || Forbidden
+
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

@@ -94,3 +94,9 @@ Name|Nome
 Add teacher to school|Adicionar professor à escola
 Assign grades|Atribuir notas
 Grades|Notas
+Update|Actualizar
+Edit cart|Editar carrinho
+Edit shop|Editar loja
+Delete products|Apagar produtos
+Add to cart|Adicionar ao carrinho
+Delete product|Apagar produto
