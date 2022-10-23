@@ -14,8 +14,8 @@ case "$REQUEST_METHOD" in
 		SCHOOL_PATH="$ROOT/schools/$school_id"
 
 		fmkdir $SCHOOL_PATH
-		fwrite $SCHOOL_PATH/.owner echo $REMOTE_USER
-		fwrite $SCHOOL_PATH/title echo $school_title
+		echo $REMOTE_USER | fwrite $SCHOOL_PATH/.owner
+		echo $school_title | fwrite $SCHOOL_PATH/title
 
 		see_other school ?school_id=$school_id
 		;;

@@ -13,7 +13,7 @@ case "$REQUEST_METHOD" in
 	POST)
 		STUDENT_PATH="$SCHOOL_PATH/students/$student_id"
 
-		fappend $STUDENT_PATH/grades echo $class_id `urldecode $grade`
+		echo $class_id `urldecode $grade` | fappend $STUDENT_PATH/grades
 
 		see_other class ?school_id=$school_id\&class_id=$class_id
 		;;

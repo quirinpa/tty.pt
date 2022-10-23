@@ -21,17 +21,6 @@ nfiles( 'images',
 !
 }
 
-nfiles() {
-	urldecode "$@" | sed '/^$/d' | tr -d '\r'
-}
-
-a2l() {
-	while [[ $# -ge 1 ]]; do
-		echo $1
-		shift;
-	done
-}
-
 case "$REQUEST_METHOD" in
 	POST)
 		PRODUCT_ID_PATH=$SHOP_PATH/.count
@@ -40,12 +29,12 @@ case "$REQUEST_METHOD" in
 		DF_USER=$SHOP_OWNER
 
 		fmkdir $PRODUCT_PATH
-		fwrite $PRODUCT_PATH/title urldecode $title
-		fwrite $PRODUCT_PATH/description urldecode $description
+		urldecode $title | fwrite $PRODUCT_PATH/title
+		urldecode $description | fwrite $PRODUCT_PATH/description
 		images="`nfiles $images`"
-		[[ -z "$images" ]] || fwrite $PRODUCT_PATH/images a2l $images
-		fwrite $PRODUCT_PATH/price echo $price
-		fwrite $PRODUCT_PATH/stock echo $stock
+		[[ -z "$images" ]] || a2l $images | fwrite $PRODUCT_PATH/images
+		echo $price | fwrite $PRODUCT_PATH/price
+		echo $stock | fwrite $PRODUCT_PATH/stock
 
 		see_other shop ?shop_id=$shop_id
 		;;

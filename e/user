@@ -13,16 +13,16 @@ case "$REQUEST_METHOD" in
 				address_line_2="`urldecode $address_line_2`"
 				zip="`urldecode $zip`"
 				phone_number="`urldecode $phone_number`"
-				fwrite $USER_PATH/address_line_1 echo $address_line_1
-				fwrite $USER_PATH/address_line_2 echo $address_line_2
-				fwrite $USER_PATH/zip echo $zip
-				fwrite $USER_PATH/phone_number echo $phone_number
+				echo $address_line_1 | fwrite $USER_PATH/address_line_1
+				echo $address_line_2 | fwrite $USER_PATH/address_line_2
+				echo $zip | fwrite $USER_PATH/zip
+				echo $phone_number | fwrite $USER_PATH/phone_number
 				;;
 			vendor_data)
 				iban="`urldecode $iban`"
 				bicswift="`urldecode $bicswift`"
-				fwrite $USER_PATH/iban echo $iban
-				fwrite $USER_PATH/bicswift echo $bicswift
+				echo $iban | fwrite $USER_PATH/iban
+				echo $bicswift | fwrite $USER_PATH/bicswift
 				;;
 			*)
 				Fatal 400 Invalid action

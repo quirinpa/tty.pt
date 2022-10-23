@@ -101,3 +101,4 @@ pre {
 
 .j { bottom: var(--S); }
 .l { right: var(--S); }
+.cp { cursor: pointer; }

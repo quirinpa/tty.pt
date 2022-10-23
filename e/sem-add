@@ -15,7 +15,7 @@ case "$REQUEST_METHOD" in
 		SEM_PATH="$ROOT/sems/$sem_id"
 
 		fmkdir $SEM_PATH
-		fwrite $SEM_PATH/.owner echo $REMOTE_USER
+		echo $REMOTE_USER | fwrite $SEM_PATH/.owner
 
 		FILE_PATH=$ROOT/tmp/mpfd/file
 		if [[ -f $FILE_PATH ]]; then

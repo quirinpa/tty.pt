@@ -117,7 +117,7 @@ sem_op() {
 
 	if $SEM -q < $ROOT/tmp/data.txt; then
 		DF_USER=$SEM_OWNER
-		fwrite $SEM_FILE cat $ROOT/tmp/data.txt
+		cat $ROOT/tmp/data.txt | fwrite $SEM_FILE
 		rm $ROOT/tmp/data.txt
 		see_other sem ?sem_id=$sem_id
 	else

@@ -15,8 +15,8 @@ case "$REQUEST_METHOD" in
 		TEACHER_PATH="$SCHOOL_PATH/students/$teacher_id"
 
 		fmkdir $TEACHER_PATH
-		fwrite $TEACHER_PATH/name urldecode $name
-		fwrite $TEACHER_PATH/dob urldecode $dob
+		urldecode $name | fwrite $TEACHER_PATH/name
+		urldecode $dob | fwrite $TEACHER_PATH/dob
 
 		see_other student ?school_id=$school_id\&student_id=$student_id
 		;;

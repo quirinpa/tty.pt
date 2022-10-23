@@ -14,7 +14,7 @@ case "$REQUEST_METHOD" in
 		SHOP_PATH="$ROOT/shops/$shop_id"
 
 		fmkdir $SHOP_PATH
-		fwrite $SHOP_PATH/.owner echo $REMOTE_USER
+		echo $REMOTE_USER | fwrite $SHOP_PATH/.owner
 		fmkdir $SHOP_PATH/.orders
 
 		see_other shop ?shop_id=$shop_id

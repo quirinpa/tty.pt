@@ -49,6 +49,8 @@ function nfiles(nfiles_name, nfiles_el, submit_el, submit_label, file_name, add_
 
 	let nfiles_map = {};
 
+	const body = document.querySelector('body');
+
 	function nfiles_insert(url) {
 		let image = document.createElement('div');
 		image.classList.add('tss', 'pxs', 'c0', 'rxs', '_s', 'f', 'fic');
@@ -117,14 +119,28 @@ function nfiles(nfiles_name, nfiles_el, submit_el, submit_label, file_name, add_
 			},
 			body: formData,
 		})
-			.then(response => response.text())
-			.then(data => {
-				console.log('received', data);
-				// TODO might have multiple images
-				data.replaceAll('\r', '').split('\n')
-					.filter(url => !!url)
-					.map(nfiles_insert);
-				load_end();
+			.then(response => {
+				return response.text().then(data => {
+					const san = data.replaceAll('\r', '');
+					if (response.ok) {
+						console.log('received', data);
+						// TODO might have multiple images
+						san.split('\n')
+							.filter(url => !!url)
+							.map(nfiles_insert);
+						load_end();
+					} else {
+						load_end();
+						const notif = document.createElement('div');
+						notif.classList.add('tsxs', 'cf9', 'cp');
+						notif.innerText = san;
+						notif.onclick = function (ev) {
+							body.removeChild(notif);
+
+						};
+						body.prepend(notif);
+					}
+				});
 			});
 
 		return false;

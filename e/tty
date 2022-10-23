@@ -33,8 +33,7 @@ case "$REQUEST_METHOD" in
 				[[ -d $ROOT/users/$username ]] || Fatal 400 No such user
 
 				DF_USER=$username
-				fappend $ROOT/users/$username/.whisper \
-					echo "$REMOTE_USER": "$message"
+				echo "$REMOTE_USER": "$message" | fappend $ROOT/users/$username/.whisper
 				echo "Sent whisper."
 				;;
 			*)

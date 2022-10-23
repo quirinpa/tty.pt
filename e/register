@@ -24,10 +24,10 @@ case "$REQUEST_METHOD" in
 		USER_DIR=$ROOT/users/$username
 		DF_USER=$username
 		fmkdir $USER_DIR
-		fwrite $USER_DIR/email echo $email
+		echo $email | fwrite $USER_DIR/email
 		echo $username:$password | htpasswd -I $ROOT/.htpasswd
 		rand_str="`rand_str_1`"
-		fwrite $USER_DIR/rcode echo "$rand_str"
+		echo "$rand_str" | fwrite $USER_DIR/rcode
 		femail -f noreply@tty.pt $email <<!
 Subject: `_ "Registration on tty.pt"`
 

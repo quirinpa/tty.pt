@@ -14,7 +14,7 @@ case "$REQUEST_METHOD" in
 		POEM_PATH="$ROOT/poems/$poem_id"
 
 		fmkdir $POEM_PATH
-		fwrite $POEM_PATH/.owner echo $REMOTE_USER
+		echo $REMOTE_USER | fwrite $POEM_PATH/.owner
 		file_count="`cat $ROOT/tmp/mpfd/file-count`"
 		for i in `seq 0 $file_count`; do
 			FILE_PATH=$ROOT/tmp/mpfd/file$i

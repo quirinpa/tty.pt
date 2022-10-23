@@ -15,10 +15,6 @@ Images() {
 	done
 }
 
-# find_images() {
-# 	find $1 -type f | sed "s|$1/||"
-# }
-
 ls_images() {
 	ls $ROOT/htdocs/img/$REMOTE_USER | sed '/^small-.*$/d'
 }

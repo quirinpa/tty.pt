@@ -45,7 +45,7 @@ case "$REQUEST_METHOD" in
 
 			# this should only happen on order placement
 			# local new_stock="`echo "$new_stock_exp" | bc`"
-			# fwrite $product_path/stock echo $new_stock
+			# echo $new_stock | fwrite $product_path/stock
 
 			# echo $product_id $quantity
 			[[ "$quantity" == "0" ]] || echo $product_id $quantity

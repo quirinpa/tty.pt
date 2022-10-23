@@ -103,12 +103,12 @@ case "$REQUEST_METHOD" in
 
 			fmkdir $ORDERS_PATH
 			fmkdir $ORDER_PATH
-			fwrite $ORDER_PATH/raw cat $CART_PATH
-			fwrite $ORDER_PATH/owner echo $REMOTE_USER
-			fwrite $ORDER_PATH/state echo Pending_payment
-			fwrite $ORDER_PATH/address_line_1 cat $USER_PATH/address_line_1
-			fwrite $ORDER_PATH/address_line_2 cat $USER_PATH/address_line_2
-			fwrite $ORDER_PATH/zip cat $USER_PATH/zip
+			cat $CART_PATH | fwrite $ORDER_PATH/raw
+			echo $REMOTE_USER | fwrite $ORDER_PATH/owner
+			echo Pending_payment | fwrite $ORDER_PATH/state
+			cat $USER_PATH/address_line_1 | fwrite $ORDER_PATH/address_line_1
+			cat $USER_PATH/address_line_2 | fwrite $ORDER_PATH/address_line_2
+			cat $USER_PATH/zip | fwrite $ORDER_PATH/zip
 
 			cat $ORDER_PATH/raw | while read product_id quantity; do
 				counter_dec $SHOP_PATH/$product_id/stock $quantity
@@ -140,7 +140,7 @@ case "$REQUEST_METHOD" in
 					;;
 			esac
 
-			fwrite $ORDER_PATH/state echo $ORDER_STATE_TEXT
+			echo $ORDER_STATE_TEXT | fwrite $ORDER_PATH/state
 
 			case "$return" in
 				order)

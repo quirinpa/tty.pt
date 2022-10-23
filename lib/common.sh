@@ -156,14 +156,16 @@ free_space() {
 
 FREE_SPACE="`free_space`"
 
-_fbytes() {
+__fbytes() {
 	[[ -z "$DF_USER" ]] && Fatal 400 Checking bytes of unknown user
-	# echo exp="`df_total_exp`" >&2
 	OCCUPIED_SPACE="`df_total`"
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
-	# echo CAN_EXP="$CAN_EXP" >&2
 	CAN="`echo $CAN_EXP | bc -l`"
-	if [[ "$CAN" == "0" ]]; then
+	[[ "$CAN" != "0" ]]
+}
+
+_fbytes() {
+	if __fbytes $1; then
 		Fatal 400 No available space
 	fi
 }
@@ -181,19 +183,24 @@ fmkdir() {
 }
 
 fwrite() {
-	TARGET=$1
-	shift
-	count="`$@ | wc | awk '{print $3}'`"
-	_fbytes $count
-	$@ > $TARGET
+	cat - > $1
+	local count="`cat $1 | wc | awk '{print $3}'`"
+	if __fbytes $count; then
+		rm $1
+		Fatal 400 No available space
+	fi
 }
 
 fappend() {
-	TARGET=$1
-	shift
-	count="`$@ | wc | awk '{print $3}'`"
-	_fbytes $count
-	$@ >> $TARGET
+	cat - > $ROOT/tmp/append
+	local count="`cat $ROOT/tmp/append | wc | awk '{print $3}'`"
+	if __fbytes $count; then
+		rm $ROOT/tmp/append
+		Fatal 400 No available space
+	else
+		cat $ROOT/tmp/append >> $1
+		rm $ROOT/tmp/append
+	fi
 }
 
 rand_str_1() {
@@ -235,10 +242,18 @@ Fatal() {
 	shift
 	allargs="$@"
 	export _TITLE="`_ "$allargs"`"
-	export _HEAD_TITLE="tty.pt - $SC - $_TITLE"
-	Normal $SC
-	Cat fatal
-	exit 1
+
+	if [[ "$HTTP_ACCEPT" == "text/plain" ]]; then
+		NormalHead $SC
+		echo
+		echo $_TITLE
+		exit 1
+	else
+		export _HEAD_TITLE="tty.pt - $SC - $_TITLE"
+		Normal $SC
+		Cat fatal
+		exit 1
+	fi
 }
 
 DF_USER=$REMOTE_USER
@@ -345,4 +360,15 @@ Field() {
 EditBtn() {
 	local i_edit="✎"
 	echo $i_edit | surround a "href=\"$1\"" "class=\"$RB\""
+}
+
+nfiles() {
+	urldecode "$@" | sed '/^$/d' | tr -d '\r'
+}
+
+a2l() {
+	while [[ $# -ge 1 ]]; do
+		echo $1
+		shift;
+	done
 }
