@@ -20,7 +20,7 @@ case "$REQUEST_METHOD" in
 
 		im $SHOP_OWNER || Forbidden
 
-		rm -rf $SHOP_PATH/$product_id
+		product_rm $product_id
 
 		see_other shop ?shop_id=$shop_id
 		;;

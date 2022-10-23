@@ -5,11 +5,16 @@ set -e
 
 [[ -z "$VERY_COMMON" ]] || return 0
 VERY_COMMON=y
+RES_CONTENT_TYPE="text/html; charset=utf-8"
 
 debug() {
 	echo Status: 500 Internal Error
 	echo
 	echo Sorry, I\'m currently debugging. Please wait.
+}
+
+zcat() {
+	[[ -f "$@" ]] && cat $@ || true
 }
 
 NormalHead() {
@@ -23,7 +28,7 @@ NormalHead() {
 	export STATUS_TEXT
 	export STATUS_CODE=$1
 	echo "Status: $1 $STATUS_TEXT"
-	echo 'Content-Type: text/html; charset=utf-8'
+	echo "Content-Type: $RES_CONTENT_TYPE"
 }
 
 Head() {

@@ -38,7 +38,7 @@ case "$REQUEST_METHOD" in
 			local qname=delete_$product_id
 			eval echo $product_id \$$qname
 		done | while read product_id state; do
-			[[ "$state" != "on" ]] || rm -rf $SHOP_PATH/$product_id
+			[[ "$state" != "on" ]] || product_rm $product_id
 		done
 
 		see_other shop ?shop_id=$shop_id
@@ -53,7 +53,7 @@ case "$REQUEST_METHOD" in
 		export SHOP_BUTTONS="`ShopButtons`"
 		if im $SHOP_OWNER; then
 			export ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/e/product-add?shop_id=$shop_id\">+</a></div>"
-			export EDIT_BTN="<a class=\"$RB\" href=\"/e/shop-edit?shop_id=$shop_id\">🖉</a>"
+			export EDIT_BTN="`EditBtn "/e/shop-edit?shop_id=$shop_id"`"
 		fi
 
 		NormalCat ?shop_id=$shop_id

@@ -74,7 +74,7 @@ case "$REQUEST_METHOD" in
 	GET)
 		if [[ -f "$CART_PATH" ]] && [[ ! -z `cat $CART_PATH` ]]; then
 			CONTENTS="`Contents`"
-			export EDIT_BTN="<a class=\"$RB\" href=\"/e/cart-edit?shop_id=$shop_id&user_id=$REMOTE_USER\"\">🖉</a>"
+			export EDIT_BTN="`EditBtn "/e/cart-edit?shop_id=$shop_id"`"
 
 		else
 			CONTENTS="`EmptyContents`"

@@ -18,8 +18,12 @@ bc() {
 	echo "$exp" | $ROOT/usr/bin/bc "$@"
 }
 
+_urldecode() {
+	sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
+}
+
 urldecode() {
-	echo $@ | sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
+	echo $@ | _urldecode
 }
 
 url2vars() {
@@ -27,10 +31,6 @@ url2vars() {
 	exp="`echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1'`"
 	#exp="`echo $1 | tr '[A-Z]' '[a-z]'| tr '&' '\n'`"
 	eval "$exp"
-}
-
-zcat() {
-	[[ -f "$@" ]] && cat $@ || true
 }
 
 case "$REQUEST_METHOD" in
@@ -340,4 +340,9 @@ Field() {
 	<span>$2</span>
 </div>
 !
+}
+
+EditBtn() {
+	local i_edit="✎"
+	echo $i_edit | surround a "href=\"$1\"" "class=\"$RB\""
 }

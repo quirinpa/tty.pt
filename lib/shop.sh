@@ -30,6 +30,14 @@ process_cart() {
 	done | sum_lines_exp
 }
 
+product_rm() {
+	local product_id=$1
+	cat $SHOP_PATH/$product_id/images | while read line; do
+		[[ ! -f "$ROOT$line" ]] || rm $ROOT$line
+	done
+	rm -rf $SHOP_PATH/$product_id
+}
+
 SHOP_PATH=$ROOT/shops/$shop_id
 USER_PATH=$ROOT/users/$REMOTE_USER
 USER_SHOPS_PATH=$USER_PATH/shops

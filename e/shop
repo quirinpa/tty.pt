@@ -11,17 +11,22 @@ lsshown() {
 Products() {
 	local product_id
 	while read product_id; do
-		if [[ "`cat $SHOP_PATH/$product_id/stock`" -gt 0 ]]; then
-			product_env $product_id
-			cat <<!
-<a class="card f vs b0 fic p" href="/e/product?shop_id=$shop_id&product_id=$product_id">
+		local card_class=""
+
+		product_env $product_id
+
+		if [[ "$product_stock" == "0" ]]; then
+			card_class="c0"
+		fi
+
+		cat <<!
+<a class="card f vs b0 fic p $card_class" href="/e/product?shop_id=$shop_id&product_id=$product_id">
 	`PImage $product_image_path`
 	<div class="tsl">$product_price€</div>
 	<span class="tsxl">$product_title</span>
 	`echo "$product_description" | csurround p`
 </a>
 !
-		fi
 	done
 }
 
@@ -66,7 +71,7 @@ case "$REQUEST_METHOD" in
 		export SHOP_BUTTONS="`ShopButtons`"
 		if im $SHOP_OWNER; then
 			export ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/e/product-add?shop_id=$shop_id\">+</a></div>"
-			export EDIT_BTN="<a class=\"$RB\" href=\"/e/shop-edit?shop_id=$shop_id\">🖉</a>"
+			export EDIT_BTN="`EditBtn "/e/shop-edit?shop_id=$shop_id"`"
 		fi
 
 		NormalCat ?shop_id=$shop_id

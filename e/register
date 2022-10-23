@@ -2,11 +2,6 @@
 
 . $ROOT/lib/common.sh
 
-error() {
-	see_other register ?error=$1
-	exit
-}
-
 case "$REQUEST_METHOD" in
 	POST)
 		username="`urldecode $username`"

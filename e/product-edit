@@ -34,9 +34,7 @@ a2l() {
 
 case "$REQUEST_METHOD" in
 	POST)
-		PRODUCT_ID_PATH=$SHOP_PATH/.count
-		PRODUCT_ID="`counter_inc $PRODUCT_ID_PATH`"
-		PRODUCT_PATH=$SHOP_PATH/$PRODUCT_ID
+		PRODUCT_PATH=$SHOP_PATH/$product_id
 		DF_USER=$SHOP_OWNER
 
 		fmkdir $PRODUCT_PATH
@@ -45,20 +43,31 @@ case "$REQUEST_METHOD" in
 		images="`nfiles $images`"
 		[[ -z "$images" ]] || fwrite $PRODUCT_PATH/images a2l $images
 		fwrite $PRODUCT_PATH/price echo $price
-		fwrite $PRODUCT_PATH/stock echo $stock
 
-		see_other shop ?shop_id=$shop_id
+		local stock_exp="`cat $PRODUCT_PATH/stock` + $stock"
+		local new_stock="`echo $stock_exp | bc`"
+		fwrite $PRODUCT_PATH/stock echo $new_stock
+
+		see_other product ?shop_id=$shop_id\&product_id=$product_id
 		;;
 
 	GET)
-		export _TITLE="`_ $shop_id` - `_ "Add product"`"
+		export _TITLE="`_ $shop_id` - `_ "Edit product"` #$product_id"
 		export __TITLE="`_ Title`"
 		export _DESCRIPTION="`_ Description`"
 		export _IMAGES="`_ Images`"
-		export _STOCK="`_ Stock`"
+		export _ADD_TO_STOCK="`_ "Add to stock"`"
 		export _PRICE="`_ Price`"
 		export _SUBMIT="`_ Submit`"
 		export JS="`js`"
+
+		product_env $product_id
+		export product_id
+		export product_stock
+		export product_title
+		export product_description
+		export product_images
+		export product_price
 
 		NormalCat ?shop_id=$shop_id
 		;;

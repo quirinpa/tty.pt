@@ -33,7 +33,7 @@ case "$REQUEST_METHOD" in
 		export _SUBMIT="`_ Submit`"
 
 		if im $SCHOOL_OWNER $teacher_id; then
-			export EDIT_BTN="<a class=\"$RB\" href=\"/e/teacher-edit?school_id=$school_id&teacher_id=$teacher_id\"\">🖉</a>"
+			export EDIT_BTN="`EditBtn "/e/teacher-edit?school_id=$school_id&teacher_id=$teacher_id"`"
 		fi
 
 		NormalCat ?school_id=$school_id\&teacher_id=$teacher_id
