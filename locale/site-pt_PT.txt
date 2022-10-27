@@ -101,3 +101,15 @@ Delete products|Apagar produtos
 Add to cart|Adicionar ao carrinho
 Delete product|Apagar produto
 Add to stock|Adicionar stock
+start|entrada
+stop|saída
+pause|pausa
+resume|retorno
+pay|pagamento
+transfer|transferência
+buy|compra
+Graph|Gráfico
+Debug|Depurar
+Human|Humano
+Machine|Máquina
+Present|Presente

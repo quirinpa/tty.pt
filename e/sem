@@ -7,6 +7,12 @@
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ $sem_id`"
+		export _SUBMIT="`_ Submit`"
+		export _GRAPH="`_ Graph`"
+		export _DEBUG="`_ Debug`"
+		export _HUMAN="`_ Human`"
+		export _MACHINE="`_ Machine`"
+		export _PRESENT="`_ Present`"
 		options=""
 
 		export SEM_MENU="`SemMenu`"

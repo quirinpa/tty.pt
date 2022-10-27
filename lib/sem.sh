@@ -8,7 +8,7 @@ if [[ -z "$sem_id" ]] || [[ ! -d "$SEM_PATH" ]]; then
 fi
 
 SemMenuOption() {
-	echo "<div><a href=\"/e/sem-$1?sem_id=$sem_id\">$2</a></div>"
+	echo "<div><a href=\"/e/sem-$1?sem_id=$sem_id\">`_ "$1"`</a></div>"
 }
 
 SemScript() {
@@ -43,28 +43,28 @@ SemMenu() {
 	present="`echo $PRESENT | awk '{ print $1 }'`"
 
 	if [[ "$current" != "start" ]] && im $SEM_OWNER; then
-		options="$options`SemMenuOption start START`"
+		options="$options`SemMenuOption start`"
 	fi
 
 	if im $SEM_OWNER; then
 		if [[ "$current" != "pause" ]] && $SEM -p < $SEM_FILE | grep -q '^P '; then
-			options="$options`SemMenuOption pause PAUSE`"
+			options="$options`SemMenuOption pause`"
 		fi
 
 		if [[ "$current" != "resume" ]] && $SEM -p < $SEM_FILE | grep -q '^A '; then
-			options="$options`SemMenuOption resume RESUME`"
+			options="$options`SemMenuOption resume`"
 		fi
 	else
 		case "$present" in
 			P)
 				if [[ "$current" != "pause" ]]; then
-					options="$options`SemMenuOption pause PAUSE`"
+					options="$options`SemMenuOption pause`"
 				fi
 
 				;;
 			A)
 				if [[ "$current" != "resume" ]]; then
-					options="$options`SemMenuOption resume RESUME`"
+					options="$options`SemMenuOption resume`"
 				fi
 
 				;;
@@ -72,19 +72,19 @@ SemMenu() {
 	fi
 
 	if [[ "$current" != "pay" ]]; then
-		options="$options`SemMenuOption pay PAY`"
+		options="$options`SemMenuOption pay`"
 	fi
 
 	if [[ "$current" != "transfer" ]]; then
-		options="$options`SemMenuOption transfer TRANSFER`"
+		options="$options`SemMenuOption transfer`"
 	fi
 
 	if [[ "$current" != "buy" ]]; then
-		options="$options`SemMenuOption buy BUY`"
+		options="$options`SemMenuOption buy`"
 	fi
 
 	if [[ "$current" != "stop" ]]; then
-		options="$options`SemMenuOption stop STOP`"
+		options="$options`SemMenuOption stop`"
 	fi
 
 	cat <<!
