@@ -4,10 +4,10 @@
 		<a class="$RB" href="/e/sem?sem_id=$sem_id">👁</a>
 		$MENU
 	</header>
-	<h1 class="tac">$_TITLE</h1>
+	<h1 class="tac ttc">$_TITLE</h1>
 	<form action="/e/sem-buy" method="POST" class="v f">
 		<label>
-			Date/Time
+			$_DATE_TIME
 			<input required name="ts" type="datetime-local" value="$NOW" step="1"></input>
 		</label>
 
@@ -19,19 +19,21 @@
 		</label>
 
 		<label>
-			Value
-			<input required name="value" pattern="^\d+(\.\d+)?$" placeholder="33.33"></input>
+			$_VALUE
+			<input required type="number" name="value" placeholder="33.33" step="0.01"></input>
 		</label>
 
 		<label>
-			Rest of the line
-			<textarea name="rest" placeholder="# comments"></textarea>
+			$_MORE_INFO
+			<textarea name="rest"></textarea>
 		</label>
 
 		<input type="hidden" name="sem_id" value="$sem_id"></input>
 
-		<button>Submit</button>
+		<button>$_SUBMIT</button>
 	</form>
 </body>
 
-$SEM_SCRIPT
+<script>
+$JS
+</script>

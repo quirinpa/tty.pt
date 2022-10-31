@@ -113,3 +113,13 @@ Debug|Depurar
 Human|Humano
 Machine|Máquina
 Present|Presente
+Date / Time|Data / Tempo
+More information|Mais informações
+Telephone|Telefone
+Value|Valor
+To|Para
+Start of billing period|Início do período de facturação
+End of billing period|Fim do período de facturação
+Type|Tipo
+Entity|Entidade
+Reference|Referência

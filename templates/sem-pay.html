@@ -4,10 +4,10 @@
 		<a class="$RB" href="/e/sem?sem_id=$sem_id">👁</a>
 		$MENU
 	</header>
-	<h1 class="tac">$_TITLE</h1>
+	<h1 class="tac ttc">$_TITLE</h1>
 	<form action="/e/sem-pay" method="POST" class="v f">
 		<label>
-			Date/Time
+			$_DATE_TIME
 			<input required name="ts" type="datetime-local" value="$NOW" step="1"></input>
 		</label>
 
@@ -19,27 +19,46 @@
 		</label>
 
 		<label>
-			Value
-			<input required name="value" pattern="^\d+(\.\d+)?$" placeholder="33.33"></input>
+			$_VALUE
+			<input required type="number" name="value" placeholder="33.33" step="0.01"></input>
+		</label>
+
 		<label>
-			Start of billing period
+			$_BP_START
 			<input required name="from" type="datetime-local" value="$DNOW" step="1"></input>
 		</label>
 
 		<label>
-			End of billing period
+			$_BP_END
 			<input required name="to" type="datetime-local" value="$DNOW" step="1"></input>
 		</label>
 
 		<label>
-			Rest of the line
-			<textarea name="rest" placeholder="[type] [entity] [reference]"></textarea>
+			$_TYPE
+			<select name="type">
+				<option>comms</option>
+				<option>light</option>
+				<option>gas</option>
+			</select>
+		</label>
+
+		<label>
+			$_ENTITY
+			<input required name="entity" pattern="[0-9]{5}"></input>
+		</label>
+
+
+		<label>
+			$_REFERENCE
+			<input required name="reference" pattern="[0-9]{9}"></input>
 		</label>
 
 		<input type="hidden" name="sem_id" value="$sem_id"></input>
 
-		<button>Submit</button>
+		<button>$_SUBMIT</button>
 	</form>
 </body>
 
-$SEM_SCRIPT
+<script>
+$JS
+</script>

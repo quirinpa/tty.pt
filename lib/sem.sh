@@ -11,27 +11,16 @@ SemMenuOption() {
 	echo "<div><a href=\"/e/sem-$1?sem_id=$sem_id\">`_ "$1"`</a></div>"
 }
 
-SemScript() {
+js() {
 	cat <<!
-<script>
-let sem_menu = document.getElementById("sem_menu");
-let sem_menu_container = document.getElementById("sem_menu_container");
-sem_menu_container.classList.add("js");
-sem_menu_container.removeChild(sem_menu_container.querySelector("input"));
-sem_menu.classList.add("dn");
-let sem_menu_visible = false;
-sem_menu_container.onclick = function (ev) {
-	sem_menu_visible = !sem_menu_visible;
-	if (sem_menu_visible)
-		sem_menu.classList.remove("dn");
-	else
-		sem_menu.classList.add("dn");
-};
-</script>
+`cat $ROOT/js/menu.js`
+menu(document.getElementById("sem_menu_cont"));
 !
 }
 
-export SEM_SCRIPT="`SemScript`"
+export JS="`js`"
+PRESENT="`$SEM -p < $SEM_FILE | grep $REMOTE_USER`"
+
 PRESENT="`$SEM -p < $SEM_FILE | grep $REMOTE_USER`"
 if [[ -z "$PRESENT" ]]; then
 	Unauthorized
@@ -88,10 +77,10 @@ SemMenu() {
 	fi
 
 	cat <<!
-<label id="sem_menu_container" class="$RB rel c15 cf0 menu">
+<label id="sem_menu_cont" class="$RB rel c15 cf0 menu">
 	+
 	<input type="checkbox" />
-	<div id="sem_menu" class="abs vn f ah ak p c0 ts btn">
+	<div class="abs vn f ah ak p c0 ts btn ttc">
 		$options
 	</div>
 </label>
@@ -115,7 +104,7 @@ SourceIdOptions() {
 sem_op() {
 	$ROOT/usr/bin/sem-echo "`echo $@`" < $SEM_FILE > $ROOT/tmp/data.txt
 
-	if $SEM -q < $ROOT/tmp/data.txt; then
+	if $SEM -q 2>&1 < $ROOT/tmp/data.txt; then
 		DF_USER=$SEM_OWNER
 		cat $ROOT/tmp/data.txt | fwrite $SEM_FILE
 		rm $ROOT/tmp/data.txt
@@ -127,4 +116,3 @@ sem_op() {
 }
 
 export sem_id
-export SEM_SCRIPT

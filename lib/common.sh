@@ -161,7 +161,7 @@ __fbytes() {
 	OCCUPIED_SPACE="`df_total`"
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
 	CAN="`echo $CAN_EXP | bc -l`"
-	[[ "$CAN" != "0" ]]
+	[[ "$CAN" == "0" ]]
 }
 
 _fbytes() {
