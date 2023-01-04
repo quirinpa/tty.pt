@@ -37,6 +37,7 @@ case "$REQUEST_METHOD" in
 	POST)
 		case "$CONTENT_TYPE" in
 			multipart/form-data*)
+				grep -q "^$REMOTE_USER$" $ROOT/.uploaders || Forbidden
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
 				$ROOT/usr/bin/mpfd "$boundary" 2>&1
 				;;

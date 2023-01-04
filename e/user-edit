@@ -1,0 +1,45 @@
+#!/bin/ksh
+
+. $ROOT/lib/auth.sh
+. $ROOT/lib/common.sh
+
+USER_PATH=$ROOT/users/$REMOTE_USER
+
+case "$REQUEST_METHOD" in
+	POST)
+		urldecode $name | fwrite $USER_PATH/name
+		urldecode $address_line_1 | fwrite $USER_PATH/address_line_1
+		urldecode $address_line_2 | fwrite $USER_PATH/address_line_2
+		urldecode $zip | fwrite $USER_PATH/zip
+		urldecode $phone_number | fwrite $USER_PATH/phone_number
+		urldecode $iban | fwrite $USER_PATH/iban
+		urldecode $bicswift | fwrite $USER_PATH/bicswift
+
+		see_other user
+		;;
+	GET)
+		export _TITLE="`_ "Edit user"` - $REMOTE_USER"
+		export _NAME="`_ Name`"
+		export _ADDRESS_LINE_1="`_ "Address line 1"`"
+		export _ADDRESS_LINE_2="`_ "Address line 2"`"
+		export _ZIP_CODE="`_ "Zip code"`"
+		export _PHONE_NUMBER="`_ "Phone number"`"
+		export _ACCOUNT_IBAN="`_ "Account IBAN"`"
+		export _ACCOUNT_BICSWIFT="`_ "Account BICSWIFT"`"
+		export _SUBMIT="`_ Submit`"
+
+		export name="`zcat $USER_PATH/name`"
+		export address_line_1="`zcat $USER_PATH/address_line_1`"
+		export address_line_2="`zcat $USER_PATH/address_line_2`"
+		export zip="`zcat $USER_PATH/zip`"
+		export phone_number="`zcat $USER_PATH/phone_number`"
+		export iban="`zcat $USER_PATH/iban`"
+		export bicswift="`zcat $USER_PATH/bicswift`"
+
+		NormalCat
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

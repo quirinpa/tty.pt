@@ -17,6 +17,10 @@ case "$REQUEST_METHOD" in
 			Fatal 400 The passwords don\'t match
 		fi
 
+		if grep -q "^$email$" $ROOT/.blacklist; then
+			Forbidden
+		fi
+
 		if grep -q "^$username:" $ROOT/.htpasswd; then
 			Fatal 400 User already exists
 		fi

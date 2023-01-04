@@ -18,10 +18,13 @@ menu(document.getElementById("sem_menu_cont"));
 !
 }
 
-export JS="`js`"
-PRESENT="`$SEM -p < $SEM_FILE | grep $REMOTE_USER`"
+access() {
+	$SEM -p < $SEM_FILE
+	echo S Gerson
+}
 
-PRESENT="`$SEM -p < $SEM_FILE | grep $REMOTE_USER`"
+export JS="`js`"
+PRESENT="`access | grep $REMOTE_USER`"
 if [[ -z "$PRESENT" ]]; then
 	Unauthorized
 fi
@@ -31,11 +34,11 @@ SemMenu() {
 	options=""
 	present="`echo $PRESENT | awk '{ print $1 }'`"
 
-	if [[ "$current" != "start" ]] && im $SEM_OWNER; then
-		options="$options`SemMenuOption start`"
-	fi
-
 	if im $SEM_OWNER; then
+		if [[ "$current" != "start" ]]; then
+			options="$options`SemMenuOption start`"
+		fi
+
 		if [[ "$current" != "pause" ]] && $SEM -p < $SEM_FILE | grep -q '^P '; then
 			options="$options`SemMenuOption pause`"
 		fi
@@ -50,10 +53,18 @@ SemMenu() {
 					options="$options`SemMenuOption pause`"
 				fi
 
+				if [[ "$current" != "stop" ]]; then
+					options="$options`SemMenuOption stop`"
+				fi
+
 				;;
 			A)
 				if [[ "$current" != "resume" ]]; then
 					options="$options`SemMenuOption resume`"
+				fi
+
+				if [[ "$current" != "stop" ]]; then
+					options="$options`SemMenuOption stop`"
 				fi
 
 				;;
@@ -70,10 +81,6 @@ SemMenu() {
 
 	if [[ "$current" != "buy" ]]; then
 		options="$options`SemMenuOption buy`"
-	fi
-
-	if [[ "$current" != "stop" ]]; then
-		options="$options`SemMenuOption stop`"
 	fi
 
 	cat <<!
