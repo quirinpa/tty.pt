@@ -42,3 +42,7 @@ sort
 uniq
 comm
 convert
+git
+less
+diff
+env

@@ -15,17 +15,21 @@ case "$REQUEST_METHOD" in
 
 		fmkdir $POEM_PATH
 		echo $REMOTE_USER | fwrite $POEM_PATH/.owner
-		file_count="`cat $ROOT/tmp/mpfd/file-count`"
-		for i in `seq 0 $file_count`; do
-			FILE_PATH=$ROOT/tmp/mpfd/file$i
-			fbytes $FILE_PATH
-			filename="`cat $FILE_PATH-name`"
+
+		mpfd-ls | while read FILE_PATH filename ; do
 			file_lang="`echo $filename | sed 's/\.[^.]*$//'`"
 			if invalid_lang "$file_lang"; then
 				Fatal 400 Not a valid locale
 			fi
-			mv $FILE_PATH $POEM_PATH/$file_lang.html
+			fbytes $FILE_PATH
+			cat $FILE_PATH | cslash > $POEM_PATH/$file_lang.html
+			rm $FILE_PATH
 		done
+
+		if [[ ! -f $POEM_PATH/$lang.html ]]; then
+			rm -rf $POEM_PATH
+			Fatal 400 You must submit a poem in your language
+		fi
 
 		see_other poem ?poem_id=$poem_id
 		;;

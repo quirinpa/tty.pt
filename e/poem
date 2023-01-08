@@ -3,10 +3,6 @@
 . $ROOT/lib/optional-auth.sh
 . $ROOT/lib/common.sh
 
-noslash() {
-	sed -e 's:/:\\/:g' $1
-}
-
 POEM_PATH=$ROOT/poems/$poem_id
 COMMENTS_PATH="$POEM_PATH/comments.txt"
 

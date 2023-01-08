@@ -4,7 +4,11 @@
 
 Forbidden() {
 	NormalHead 403
-	export _TITLE="`_ Forbidden`"
+	_TITLE="`_ Forbidden`"
+	if [[ $# -ge 1 ]]; then
+		_TITLE="$_TITLE - $@"
+	fi
+	export _TITLE
 	echo
 	Head
 	export MENU="`Menu`"
@@ -37,7 +41,7 @@ case "$REQUEST_METHOD" in
 	POST)
 		case "$CONTENT_TYPE" in
 			multipart/form-data*)
-				grep -q "^$REMOTE_USER$" $ROOT/.uploaders || Forbidden
+				grep -q "^$REMOTE_USER$" $ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
 				$ROOT/usr/bin/mpfd "$boundary" 2>&1
 				;;
@@ -371,5 +375,26 @@ a2l() {
 	while [[ $# -ge 1 ]]; do
 		echo $1
 		shift;
+	done
+}
+
+noslash() {
+	sed -e 's:/:\\/:g' $1
+}
+
+cslash() {
+	if grep -q "^$REMOTE_USER$" $ROOT/.slash; then
+		cat -
+	else
+		noslash -
+	fi
+}
+
+mpfd-ls() {
+	local file_count="`cat $ROOT/tmp/mpfd/file-count`"
+	for i in `seq 0 $file_count`; do
+		local FILE_PATH=$ROOT/tmp/mpfd/file$i
+		filename="`cat $FILE_PATH-name`"
+		echo $FILE_PATH $filename
 	done
 }
