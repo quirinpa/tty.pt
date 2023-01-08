@@ -1,16 +1,4 @@
 #!/bin/ksh
+. $ROOT/lib/command.sh
 
-. $ROOT/lib/common.sh
-
-case "$REQUEST_METHOD" in
-	GET)
-		echo Status 200: Ok
-		echo
-		git -C $ROOT/htdocs/neverdark diff HEAD 2>&1
-		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
-esac
-
+git -C $ROOT/htdocs/neverdark diff origin/master | Command
