@@ -15,7 +15,7 @@ Command() {
 		echo
 		export _TITLE="`_ Command` - $SCRIPT"
 		export MENU="`Menu`"
-		export OUTPUT="`cat -`"
+		export OUTPUT="`literal`"
 		Cat command
 	fi
 }

@@ -10,7 +10,7 @@ case "$REQUEST_METHOD" in
 			export SHOP_ADD="<a class=\"$RB\" href=\"/e/shop-add\">+</a>"
 		fi
 
-		export SHOPS="`ls $ROOT/shops | BigButtons shop`"
+		export SHOPS="`ls_shown $ROOT/shops | BigButtons shop`"
 		NormalCat
 		;;
 	*)

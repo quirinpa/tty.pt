@@ -46,3 +46,13 @@ git
 less
 diff
 env
+ssh
+useradd
+pw_mkdb
+adduser
+perl
+pwd_mkdb
+group_add
+groupadd
+ssh_keygen
+ssh-keygen

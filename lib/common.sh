@@ -398,3 +398,15 @@ mpfd-ls() {
 		echo $FILE_PATH $filename
 	done
 }
+
+literal() {
+	sed 's/</\&lt\;/g'
+}
+
+ls_shown() {
+	ls $1 | while read line; do
+		if [[ ! -f "$1/$line/.hidden" ]]; then
+			echo $line
+		fi
+	done
+}
