@@ -278,11 +278,11 @@ Fatal() {
 }
 
 DF_USER=$REMOTE_USER
-SCRIPT="`echo $SCRIPT_NAME | awk -F '/' '{print $2}'`"
-ARG="`echo $SCRIPT_NAME | awk -F '/' '{print $3}'`"
+SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $2}'`"
+ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
 if [[ "$SCRIPT" == "e" ]]; then
-	SCRIPT="`echo $SCRIPT_NAME | awk -F '/' '{print $3}'`"
-	ARG="`echo $SCRIPT_NAME | awk -F '/' '{print $4}'`"
+	SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
+	ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $4}'`"
 	e_mode=1
 fi
 

@@ -5,8 +5,10 @@
 . $DOCUMENT_ROOT/lib/sem.sh
 
 if [[ ! -z "$ARG" ]]; then
-	. ./.sub-index $@ 2>&1
-	exit 0
+	case "$ARG" in
+		add) . ./.add ; exit 0;;
+		*) . ./.sub-index $@ ; exit 0;;
+	esac
 fi
 
 if [[ "$REQUEST_METHOD" != "GET" ]]; then
@@ -16,7 +18,7 @@ fi
 
 export _TITLE="`_ Sems`"
 if [[ ! -z "$REMOTE_USER" ]]; then
-export SEM_ADD="<a class=\"$RB\" href=\"/e/sem-add\">+</a>"
+export SEM_ADD="<a class=\"$RB\" href=\"/sem/add\">+</a>"
 fi
 
 export SEMS="`ls $DOCUMENT_ROOT/sem | BigButtons sem`"
