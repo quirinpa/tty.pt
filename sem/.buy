@@ -1,3 +1,5 @@
+#!/bin/ksh
+
 sem_source
 
 buy_options() {

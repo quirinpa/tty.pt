@@ -1,3 +1,5 @@
+#!/bin/ksh
+
 echo Status 200: Ok
 echo Content-Type: text
 echo

@@ -1,3 +1,5 @@
+#!/bin/ksh
+
 im $SEM_OWNER || Forbidden
 
 case "$REQUEST_METHOD" in

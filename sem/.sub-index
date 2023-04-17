@@ -1,4 +1,5 @@
 #!/bin/ksh
+
 sem_source
 
 SUB_ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $4}'`"

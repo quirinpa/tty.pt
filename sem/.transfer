@@ -1,3 +1,5 @@
+#!/bin/ksh
+
 transfer_from_options() {
 	if im $SEM_OWNER; then
 		$SEM -p < $SEM_FILE | awk '{ print $2 }'
