@@ -23,4 +23,4 @@ fi
 
 export SEMS="`ls $DOCUMENT_ROOT/sem | BigButtons sem`"
 Normal $SCRIPT sem
-Cat sems
+Scat .template/index

@@ -1,7 +1,0 @@
-#!/bin/ksh
-. $ROOT/lib/auth.sh
-. $ROOT/lib/command.sh
-. $ROOT/lib/sem.sh
-sem_source
-
-git -C $ROOT/sems/$sem_id diff | Command
