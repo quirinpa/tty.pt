@@ -53,7 +53,7 @@ case "$REQUEST_METHOD" in
 		export product_title
 		export product_price
 		export product_stock
-		export PRODUCT_IMAGES="`echo "$product_images" | ProductImages | fw s`"
+		export PRODUCT_IMAGES="`echo "$product_images" | ProductImages | fw 8`"
 		export _STOCK="`_ Stock`"
 		
 		if [[ "$product_stock" != "0" ]]; then

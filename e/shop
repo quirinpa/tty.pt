@@ -20,7 +20,7 @@ Products() {
 		fi
 
 		cat <<!
-<a class="card f vs b0 fic p $card_class" href="/e/product?shop_id=$shop_id&product_id=$product_id">
+<a class="card f v8 b0 fic p $card_class" href="/e/product?shop_id=$shop_id&product_id=$product_id">
 	`PImage $product_image_path`
 	<div class="tsl">$product_price€</div>
 	<span class="tsxl">$product_title</span>

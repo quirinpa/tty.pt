@@ -3,6 +3,7 @@
 . $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 . $ROOT/lib/sem.sh
+sem_source
 
 im $SEM_OWNER || Forbidden
 

@@ -1,4 +1,4 @@
-SCHOOL_PATH="$ROOT/schools/$school_id"
+SCHOOL_PATH="$DOCUMENT_ROOT/schools/$school_id"
 
 if [[ -z "$school_id" ]] || [[ ! -d "$SCHOOL_PATH" ]]; then
 	Fatal 404 School not found

@@ -1,6 +1,6 @@
 #!/bin/ksh
 
-. $ROOT/lib/very-common.sh
+. $DOCUMENT_ROOT/lib/very-common.sh
 
 Forbidden() {
 	NormalHead 403
@@ -19,7 +19,7 @@ Forbidden() {
 bc() {
 	read exp
 	#echo "BC='$exp'" >&2
-	echo "$exp" | $ROOT/usr/bin/bc "$@"
+	echo "$exp" | $DOCUMENT_ROOT/usr/bin/bc "$@"
 }
 
 _urldecode() {
@@ -41,9 +41,9 @@ case "$REQUEST_METHOD" in
 	POST)
 		case "$CONTENT_TYPE" in
 			multipart/form-data*)
-				grep -q "^$REMOTE_USER$" $ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
+				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
-				$ROOT/usr/bin/mpfd "$boundary" 2>&1
+				$DOCUMENT_ROOT/usr/bin/mpfd "$boundary" 2>&1
 				;;
 			application/x-www-form-urlencoded*)
 				read line1 || true
@@ -97,6 +97,12 @@ revlines() {
 	rev | tr '\n' '~' | rev | tr '~' '\n'
 }
 
+_see_other() {
+	echo 'Status: 303 See Other'
+	echo "Location: $1"
+	echo
+}
+
 see_other() {
 	echo 'Status: 303 See Other'
 	echo "Location: /e/$1$2"
@@ -113,17 +119,17 @@ format_df() {
 }
 
 df_dir() {
-	if [[ ! -d $ROOT/$1 ]]; then
+	if [[ ! -d $DOCUMENT_ROOT/$1 ]]; then
 		return
 	fi
-	du_user="`du -c $ROOT/$1 | tail -1 | awk '{print $1}'`"
+	du_user="`du -c $DOCUMENT_ROOT/$1 | tail -1 | awk '{print $1}'`"
 	format_df $1 `calcround "$du_user * 1024"`
 }
 
 dir_df() {
-	ls $ROOT/$1 | \
+	ls $DOCUMENT_ROOT/$1 | \
 		while read line; do
-			path=$ROOT/$1/$line
+			path=$DOCUMENT_ROOT/$1/$line
 			OWNER="`cat $path/.owner`"
 			[[ "$OWNER" != "$DF_USER" ]] || df_dir $1/$line
 		done
@@ -154,7 +160,7 @@ calcround() {
 }
 
 free_space() {
-	N_USERS="`cat $ROOT/.htpasswd | wc -l | sed 's/ //g'`"
+	N_USERS="`cat $DOCUMENT_ROOT/.htpasswd | wc -l | sed 's/ //g'`"
 	FREE_SPACE_EXP="(20000000000 / $N_USERS)"
 	calcround "$FREE_SPACE_EXP"
 }
@@ -182,7 +188,7 @@ fbytes() {
 
 fmkdir() {
 	if [[ ! -d "$1" ]]; then
-		fbytes $ROOT/empty
+		fbytes $DOCUMENT_ROOT/empty
 		mkdir -p "$1"
 	fi
 }
@@ -197,27 +203,27 @@ fwrite() {
 }
 
 fappend() {
-	cat - > $ROOT/tmp/append
-	local count="`cat $ROOT/tmp/append | wc | awk '{print $3}'`"
+	cat - > $DOCUMENT_ROOT/tmp/append
+	local count="`cat $DOCUMENT_ROOT/tmp/append | wc | awk '{print $3}'`"
 	if __fbytes $count; then
-		rm $ROOT/tmp/append
+		rm $DOCUMENT_ROOT/tmp/append
 		Fatal 400 No available space
 	else
-		cat $ROOT/tmp/append >> $1
-		rm $ROOT/tmp/append
+		cat $DOCUMENT_ROOT/tmp/append >> $1
+		rm $DOCUMENT_ROOT/tmp/append
 	fi
 }
 
 rand_str_1() {
 	# TODO maybe remove lowercase conversion
-	xxd -l32 -ps $ROOT/dev/urandom | xxd -r -ps | openssl base64 \
+	xxd -l32 -ps $DOCUMENT_ROOT/dev/urandom | xxd -r -ps | openssl base64 \
 		    | tr -d = | tr + - | tr / _ | tr '[A-Z]' '[a-z]'
 }
 
 ## COMPONENTS
 
 Whisper() {
-	WHISPER_PATH=$ROOT/users/$REMOTE_USER/.whisper
+	WHISPER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER/.whisper
 	WHISPER="`zcat $WHISPER_PATH | no_html`"
 	if [[ -z "$WHISPER" ]]; then
 		return
@@ -225,6 +231,16 @@ Whisper() {
 
 	echo "<pre>$WHISPER</pre>"
 	rm $WHISPER_PATH
+}
+
+NotNormal() {
+	NormalHead "$1"
+	shift
+	echo "Link: <http://$HTTP_HOST$@>; rel=\"alternate\"; hreflang=\"x-default\""
+	echo
+	Head
+	Whisper
+	export MENU="`Menu`"
 }
 
 Normal() {
@@ -262,10 +278,16 @@ Fatal() {
 }
 
 DF_USER=$REMOTE_USER
-SCRIPT="`basename $SCRIPT_NAME | cut -f1 -d'.'`"
+SCRIPT="`echo $SCRIPT_NAME | awk -F '/' '{print $2}'`"
+ARG="`echo $SCRIPT_NAME | awk -F '/' '{print $3}'`"
+if [[ "$SCRIPT" == "e" ]]; then
+	SCRIPT="`echo $SCRIPT_NAME | awk -F '/' '{print $3}'`"
+	ARG="`echo $SCRIPT_NAME | awk -F '/' '{print $4}'`"
+	e_mode=1
+fi
 
 fw() {
-	csurround div "class=\"_$1 v$1 f fw fcc fic\""
+	csurround div "class=\"h$1 v$1 f fw fcc fic\""
 }
 
 invalid_id() {
@@ -281,20 +303,33 @@ invalid_password() {
 
 invalid_lang() {
 	lang="$@"
-	! grep -q "$lang" $ROOT/locale/langs
+	! grep -q "$lang" $DOCUMENT_ROOT/locale/langs
 }
 
 Buttons() {
-	while read id; do
-		_TITLE="`_ $id`"
-		where="$2"
-		extra="$3"
-		cat <<!
+	if [[ $e_mode == 1 ]]; then
+		while read id; do
+			_TITLE="`_ $id`"
+			where="$2"
+			extra="$3"
+			cat <<!
 <a class="btn $1" href="/e/$where?${where}_id=$id$extra">
 	$_TITLE
 </a>
 !
-	done
+		done
+	else
+		while read id; do
+			_TITLE="`_ $id`"
+			where="$2"
+			extra="$3"
+			cat <<!
+<a class="btn $1" href="/$where/$id$extra">
+	$_TITLE
+</a>
+!
+		done
+	fi
 }
 
 BigButtons() {
@@ -330,7 +365,7 @@ im() {
 	[[ "$ret" == "1" ]]
 }
 
-contents=$ROOT/tmp/contents
+contents=$DOCUMENT_ROOT/tmp/contents
 
 cond() {
 	# tee $contents$1
@@ -383,7 +418,7 @@ noslash() {
 }
 
 cslash() {
-	if grep -q "^$REMOTE_USER$" $ROOT/.slash; then
+	if grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.slash; then
 		cat -
 	else
 		noslash -
@@ -391,9 +426,9 @@ cslash() {
 }
 
 mpfd-ls() {
-	local file_count="`cat $ROOT/tmp/mpfd/file-count`"
+	local file_count="`cat $DOCUMENT_ROOT/tmp/mpfd/file-count`"
 	for i in `seq 0 $file_count`; do
-		local FILE_PATH=$ROOT/tmp/mpfd/file$i
+		local FILE_PATH=$DOCUMENT_ROOT/tmp/mpfd/file$i
 		filename="`cat $FILE_PATH-name`"
 		echo $FILE_PATH $filename
 	done

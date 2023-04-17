@@ -3,11 +3,13 @@
 . $ROOT/lib/auth.sh
 . $ROOT/lib/common.sh
 . $ROOT/lib/sem.sh
+sem_source
 
 case "$REQUEST_METHOD" in
 	GET)
 		export _TITLE="`_ $sem_id`"
 		export _SUBMIT="`_ Submit`"
+		export _DOWNLOAD="`_ Download`"
 		export _GRAPH="`_ Graph`"
 		export _DEBUG="`_ Debug`"
 		export _HUMAN="`_ Human`"

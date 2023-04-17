@@ -1,0 +1,36 @@
+pay_options() {
+	if im $SEM_OWNER; then
+		$SEM -p < $SEM_FILE | awk '{ print $2 }'
+	else
+		echo $REMOTE_USER
+	fi
+}
+
+case "$REQUEST_METHOD" in
+	POST)
+		sem_op PAY `urldecode $ts` $id `urldecode $value` `urldecode $from` `urldecode $to` $type $entity $reference
+
+		;;
+	GET)
+		export _TITLE="`_ pay`"
+		export _DATE_TIME="`_ "Date / Time"`"
+		export _VALUE="`_ Value`"
+		export _BP_START="`_ "Start of billing period"`"
+		export _BP_END="`_ "End of billing period"`"
+		export _TYPE="`_ Type`"
+		export _ENTITY="`_ Entity`"
+		export _REFERENCE="`_ Reference`"
+		export _SUBMIT="`_ Submit`"
+		export SEM_MENU="`SemMenu pay`"
+		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
+		export DNOW="`date -u +"%Y-%m-%d"`T00:00:00"
+		export ID_OPTIONS="`pay_options | IdOptions`"
+		Normal $SCRIPT sem/$sem_id/pay
+		Cat sem-pay
+
+		;;
+	*)
+		echo "Status: 405 Method Not Allowed"
+		echo
+		;;
+esac

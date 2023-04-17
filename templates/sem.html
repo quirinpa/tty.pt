@@ -3,7 +3,7 @@ pre { display: inline-block; }
 </style>
 
 <body class="v f fic">
-	<header class="_ f fic">
+	<header class="h f fic">
 		$SEM_MENU
 		$MENU
 	</header>
@@ -13,37 +13,42 @@ pre { display: inline-block; }
 	<pre>$SEM</pre>
 
 	<form action="/e/sem" method="GET" class="v tac">
-		<div class="fw f _">
-			<label class="_">
+		<div class="fw f h">
+			<label class="h">
 				<input type="checkbox" name="graph" $graph_checked></input>
 				$_GRAPH
 			</label>
 
-			<label class="_">
+			<label class="h">
 				<input type="checkbox" name="debug" $debug_checked></input>
 				$_DEBUG
 			</label>
 
-			<label class="_">
+			<label class="h">
 				<input type="checkbox" name="human" $human_checked></input>
 				$_HUMAN
 			</label>
 
-			<label class="_">
+			<label class="h">
 				<input type="checkbox" name="machine" $machine_checked></input>
 				$_MACHINE
 			</label>
 
-			<label class="_">
+			<label class="h">
 				<input type="checkbox" name="present" $present_checked></input>
 				$_PRESENT
 			</label>
 		</div>
-
 		<input type="hidden" name="sem_id" value="$sem_id"></input>
-
-		<button>$_SUBMIT</button>
+		<span class="h f fcc">
+			<button>$_SUBMIT</button>
+			<a class="btn" href="/e/sem-download?sem_id=$sem_id">$_DOWNLOAD</a>
+			<a class="btn" href="/e/sem-diff?sem_id=$sem_id">diff</a>
+		</span>
 	</form>
+	<div class="tac">
+		git clone https://tty.pt/sems/$sem_id/.git
+	</div>
 </body>
 
 <script>

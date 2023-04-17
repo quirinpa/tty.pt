@@ -16,7 +16,7 @@ Courses() {
 		fi
 	} | cond || {
 		echo "<h2>`_ Courses`</h2>"
-		cat $contents | fw s
+		cat $contents | fw 8
 	}
 }
 
@@ -30,7 +30,7 @@ Grades() {
 !
 	done | cond || {
 		echo "<h2>`_ Grades`</h2>"
-		cat $contents | fw s
+		cat $contents | fw 8
 	}
 }
 

@@ -1,5 +1,5 @@
 get_product_path() {
-	echo $ROOT/shops/$shop_id/$1
+	echo $DOCUMENT_ROOT/shops/$shop_id/$1
 }
 
 product_env() {
@@ -33,13 +33,13 @@ process_cart() {
 product_rm() {
 	local product_id=$1
 	cat $SHOP_PATH/$product_id/images | while read line; do
-		[[ ! -f "$ROOT$line" ]] || rm $ROOT$line
+		[[ ! -f "$DOCUMENT_ROOT$line" ]] || rm $DOCUMENT_ROOT$line
 	done
 	rm -rf $SHOP_PATH/$product_id
 }
 
-SHOP_PATH=$ROOT/shops/$shop_id
-USER_PATH=$ROOT/users/$REMOTE_USER
+SHOP_PATH=$DOCUMENT_ROOT/shops/$shop_id
+USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
 USER_SHOPS_PATH=$USER_PATH/shops
 USER_SHOP_PATH=$USER_SHOPS_PATH/$shop_id
 CART_PATH=$USER_SHOP_PATH/cart

@@ -9,7 +9,7 @@ Products() {
 	while read product_id quantity; do
 		product_env $product_id
 		cat <<!
-<div class="card f vs b0 fic p">
+<div class="card f v8 b0 fic p">
 	`PImage $product_image_path`
 	<a class="tsxl" href="/e/product?shop_id=$shop_id&product_id=$product_id">$product_title</a>
 	<div class="f _s fic">

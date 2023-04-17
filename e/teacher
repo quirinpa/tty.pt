@@ -11,14 +11,14 @@ teacher_things() {
 Classes() {
 	teacher_things classes | SmallButtons class \&school_id=$school_id | cond || {
 		echo "<h2>`_ Classes`</h2>"
-		cat $contents | fw s
+		cat $contents | fw 8
 	}
 }
 
 Courses() {
 	teacher_things courses | SmallButtons course \&school_id=$school_id | cond || {
 		echo "<h2>`_ Courses` (`_ Regent`)</h2>"
-		cat $contents | fw s
+		cat $contents | fw 8
 	}
 }
 

@@ -26,12 +26,12 @@ function nfiles(nfiles_name, nfiles_el, submit_el, submit_label, file_name, add_
 	nfiles_el.removeChild(textarea);
 
 	let nfiles_cont = document.createElement('div');
-	nfiles_cont.classList.add('fw', 'f', '_s', 'vs', 'fic');
+	nfiles_cont.classList.add('fw', 'f', 'h8', 'v8', 'fic');
 	nfiles_el.appendChild(nfiles_cont);
 
 	let upload_image = document.createElement('button');
 	upload_image.innerText = '📁';
-	upload_image.classList.add('btn', 'round', 'ps', 'tsxl');
+	upload_image.classList.add('btn', 'round', 'p8', 'tsxl');
 	upload_image.type = "button";
 	nfiles_el.appendChild(upload_image);
 
@@ -53,7 +53,7 @@ function nfiles(nfiles_name, nfiles_el, submit_el, submit_label, file_name, add_
 
 	function nfiles_insert(url) {
 		let image = document.createElement('div');
-		image.classList.add('tss', 'pxs', 'c0', 'rxs', '_s', 'f', 'fic');
+		image.classList.add('tss', 'p4', 'c0', 'rxs', 'h8', 'f', 'fic');
 
 		let image_link = document.createElement('a');
 		const bname = basename(url);
@@ -64,7 +64,7 @@ function nfiles(nfiles_name, nfiles_el, submit_el, submit_label, file_name, add_
 		nfiles_map[url] = true;
 
 		let btn = document.createElement('button');
-		btn.classList.add('btn', 'round', 'pxs', 'tss', 'c15', 'cf0');
+		btn.classList.add('btn', 'round', 'p4', 'tss', 'c15', 'cf0');
 		btn.innerText = '×';
 		btn.type = 'button';
 		btn.onclick = function (ev) {

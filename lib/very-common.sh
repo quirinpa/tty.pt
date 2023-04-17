@@ -43,11 +43,16 @@ Head() {
 !
 }
 
+Scat() {
+	cat $1.html | envsubst
+	echo "</html>"
+}
+
 Cat() {
 	if [[ $# -lt 1 ]]; then
 		envsubst
 	else
-		cat $ROOT/templates/$1.html | envsubst
+		cat $DOCUMENT_ROOT/templates/$1.html | envsubst
 	fi
 	echo "</html>"
 }
@@ -56,7 +61,7 @@ Cat() {
 get_lang() {
 	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr '-' '_' | tr ';' ' ' | \
 		while read alang qlang; do \
-			if grep "$alang" $ROOT/locale/langs; then
+			if grep "$alang" $DOCUMENT_ROOT/locale/langs; then
 				break
 			fi
 		done
@@ -76,24 +81,24 @@ ILANG=$LANG
 _() {
 	IFS='$'
 	TEXTDOMAIN=site
-	value="`cat $ROOT/locale/$TEXTDOMAIN-$lang.txt | sed -n "s|^$@\|||p"`"
+	value="`cat $DOCUMENT_ROOT/locale/$TEXTDOMAIN-$lang.txt | sed -n "s|^$@\|||p"`"
 	[[ -z "$value" ]] && echo $@ || echo $value
 }
 
-export RB="btn round ps tsxl"
-export RBS="btn round ps ts"
-export RBXS="btn round pxs tss"
+export RB="btn round p8 ts64"
+export RBS="btn round p8 ts"
+export RBXS="btn round p4 tss"
 export SRB="btn round ps tsl"
 
 Menu() {
 	if [[ ! -z "$REMOTE_USER" ]]; then
 		USER_NAME="<span class=\"ts\">$REMOTE_USER</span>"
-		USER_ICON="<a class=\"tsxl f _ fic btn ps\" href=\"/e/user\"><span>🔑 </span><span> $USER_NAME</span></a>"
+		USER_ICON="<a class=\"tsxl f h fic btn p8\" href=\"/e/user\"><span>🔑 </span><span> $USER_NAME</span></a>"
 	else
 		USER_ICON="<a class=\"$RB\" href=\"/e/login\">🔑 </a>"
 	fi
 	export USER_ICON
-	cat $ROOT/components/menu.html | envsubst
+	cat $DOCUMENT_ROOT/components/menu.html | envsubst
 }
 
 Unauthorized() {

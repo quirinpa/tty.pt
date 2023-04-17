@@ -56,3 +56,4 @@ group_add
 groupadd
 ssh_keygen
 ssh-keygen
+git-http-backend

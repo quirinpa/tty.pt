@@ -1,33 +1,23 @@
-SEM_PATH="$ROOT/sems/$sem_id"
-SEM_FILE="$SEM_PATH/data.txt"
-SEM_OWNER="`cat $SEM_PATH/.owner`"
-SEM="$ROOT/usr/bin/sem"
-
-if [[ -z "$sem_id" ]] || [[ ! -d "$SEM_PATH" ]]; then
-	Fatal 404 Sem not found
-fi
-
 SemMenuOption() {
-	echo "<div><a href=\"/e/sem-$1?sem_id=$sem_id\">`_ "$1"`</a></div>"
+	if [[ $e_mode == 1 ]]; then
+		echo "<div><a href=\"/e/sem-$1?sem_id=$sem_id\">`_ "$1"`</a></div>"
+	else
+		echo "<div><a href=\"/sem/$sem_id/$1\">`_ "$1"`</a></div>"
+	fi
 }
 
 js() {
 	cat <<!
-`cat $ROOT/js/menu.js`
+`cat $DOCUMENT_ROOT/js/menu.js`
 menu(document.getElementById("sem_menu_cont"));
 !
 }
 
 access() {
 	$SEM -p < $SEM_FILE
-	echo S Gerson
 }
 
 export JS="`js`"
-PRESENT="`access | grep $REMOTE_USER`"
-if [[ -z "$PRESENT" ]]; then
-	Unauthorized
-fi
 
 SemMenu() {
 	current="$1"
@@ -87,7 +77,7 @@ SemMenu() {
 <label id="sem_menu_cont" class="$RB rel c15 cf0 menu">
 	+
 	<input type="checkbox" />
-	<div class="abs vn f ah ak p c0 ts btn ttc">
+	<div class="abs v0 f ah ak p c0 ts btn ttc">
 		$options
 	</div>
 </label>
@@ -109,17 +99,51 @@ SourceIdOptions() {
 }
 
 sem_op() {
-	$ROOT/usr/bin/sem-echo "`echo $@`" < $SEM_FILE > $ROOT/tmp/data.txt
+	$DOCUMENT_ROOT/usr/bin/sem-echo "`echo $@`" < $SEM_FILE > $DOCUMENT_ROOT/tmp/data.txt
 
-	if $SEM -q 2>&1 < $ROOT/tmp/data.txt; then
+	if $SEM -q 2>&1 < $DOCUMENT_ROOT/tmp/data.txt; then
 		DF_USER=$SEM_OWNER
-		cat $ROOT/tmp/data.txt | fwrite $SEM_FILE
-		rm $ROOT/tmp/data.txt
-		see_other sem ?sem_id=$sem_id
+		cat $DOCUMENT_ROOT/tmp/data.txt | fwrite $SEM_FILE
+		rm $DOCUMENT_ROOT/tmp/data.txt
+		if [[ $e_mode == 1 ]]; then
+			_see_other e/sem?sem_id=$sem_id
+		else
+			_see_other .
+		fi
 	else
-		rm $ROOT/tmp/data.txt
+		rm $DOCUMENT_ROOT/tmp/data.txt
 		Fatal 409 We can not have that
 	fi
 }
 
-export sem_id
+sem_source() {
+	if [[ $e_mode == 1 ]]; then
+		SEM_PATH="$DOCUMENT_ROOT/sems/$sem_id"
+	else
+		SEM_PATH="$DOCUMENT_ROOT/sem/$sem_id"
+	fi
+	if [[ -z "$sem_id" ]]; then
+		sem_id="`echo $SCRIPT_NAME | awk -F'/' '{print $3}'`"
+		SEM_PATH="$DOCUMENT_ROOT/sem/$sem_id"
+		sem_script=1
+	fi
+	SEM_FILE="$SEM_PATH/data.txt"
+
+	if [[ -z "$sem_id" ]] ; then
+		Fatal 404 Sem not found
+	fi
+
+	SEM_OWNER="`cat $SEM_PATH/.owner`"
+	SEM="$DOCUMENT_ROOT/usr/bin/sem"
+
+	if [[ ! -d "$SEM_PATH" ]]; then
+		Fatal 404 Sem not found
+	fi
+
+	PRESENT="`access | grep $REMOTE_USER`"
+	if [[ -z "$PRESENT" ]]; then
+		Unauthorized
+	fi
+
+	export sem_id
+}

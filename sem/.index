@@ -1,0 +1,24 @@
+#!/bin/ksh
+
+. $DOCUMENT_ROOT/lib/very-common.sh
+. $DOCUMENT_ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/sem.sh
+
+if [[ ! -z "$ARG" ]]; then
+	. ./.sub-index $@ 2>&1
+	exit 0
+fi
+
+if [[ "$REQUEST_METHOD" != "GET" ]]; then
+	echo "Status: 405 Method Not Allowed"
+	echo
+fi
+
+export _TITLE="`_ Sems`"
+if [[ ! -z "$REMOTE_USER" ]]; then
+export SEM_ADD="<a class=\"$RB\" href=\"/e/sem-add\">+</a>"
+fi
+
+export SEMS="`ls $DOCUMENT_ROOT/sem | BigButtons sem`"
+Normal $SCRIPT sem
+Cat sems

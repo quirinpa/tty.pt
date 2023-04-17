@@ -14,7 +14,7 @@ Products() {
 		if [[ "`cat $SHOP_PATH/$product_id/stock`" -gt 0 ]]; then
 			product_env $product_id
 			cat <<!
-<label class="card f vs b0 fic p">
+<label class="card f v8 b0 fic p">
 	`PImage $product_image_path`
 	<div class="tsl">$product_price€</div>
 	<a class="tsxl" href="/e/product?shop_id=$shop_id&product_id=$product_id">$product_title</a>
@@ -52,7 +52,7 @@ case "$REQUEST_METHOD" in
 		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
 		export SHOP_BUTTONS="`ShopButtons`"
 		if im $SHOP_OWNER; then
-			export ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/e/product-add?shop_id=$shop_id\">+</a></div>"
+			export ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round p8 btn\" href=\"/e/product-add?shop_id=$shop_id\">+</a></div>"
 			export EDIT_BTN="`EditBtn "/e/shop-edit?shop_id=$shop_id"`"
 		fi
 

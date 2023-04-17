@@ -67,7 +67,7 @@ Products() {
 	while read product_id quantity; do
 		product_env $product_id
 		cat <<!
-<a class="card f vs b0 fic p" href="/e/product?shop_id=$shop_id&product_id=$product_id">
+<a class="card f v8 b0 fic p" href="/e/product?shop_id=$shop_id&product_id=$product_id">
 	`PImage $product_image_path`
 	<div class="tsxl">$product_title</div>
 	`echo "$product_description" | csurround p`

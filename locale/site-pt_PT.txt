@@ -121,3 +121,5 @@ End of billing period|Fim do período de facturação
 Type|Tipo
 Entity|Entidade
 Reference|Referência
+Source Code|Código Fonte
+Commands|Comandos
