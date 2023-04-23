@@ -43,30 +43,25 @@ ProductDelete() {
 !
 }
 
-case "$REQUEST_METHOD" in
-	GET)
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
 
-		export _TITLE="`_ $shop_id` - `_ Product` #$product_id"
+export _TITLE="`_ $shop_id` - `_ Product` #$product_id"
 
-		product_env $product_id
-		export product_title
-		export product_price
-		export product_stock
-		export PRODUCT_IMAGES="`echo "$product_images" | ProductImages | fw 8`"
-		export _STOCK="`_ Stock`"
-		
-		if [[ "$product_stock" != "0" ]]; then
-			export ADD_TO_CART="`CartAdd $CART_PATH`"
-		fi
+product_env $product_id
+export product_title
+export product_price
+export product_stock
+export PRODUCT_IMAGES="`echo "$product_images" | ProductImages | fw 8`"
+export _STOCK="`_ Stock`"
 
-		if im $SHOP_OWNER; then
-			export DELETE_PRODUCT="`ProductDelete $product_id`"
-			export EDIT_BTN="`EditBtn "/shop/$shop_id/$product_id/edit"`"
-		fi
+if [[ "$product_stock" != "0" ]]; then
+	export ADD_TO_CART="`CartAdd $CART_PATH`"
+fi
 
-		Normal 200 shop/$shop_id/$product_id
-		Scat template/index
-		;;
-	*) NotAllowed ;;
-esac
+if im $SHOP_OWNER; then
+	export DELETE_PRODUCT="`ProductDelete $product_id`"
+	export EDIT_BTN="`EditBtn "/shop/$shop_id/$product_id/edit"`"
+fi
 
+Normal 200 shop/$shop_id/$product_id
+Scat template/index

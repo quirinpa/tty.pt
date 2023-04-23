@@ -1,16 +1,11 @@
 #!/bin/ksh
 
-. $DOCUMENT_ROOT/lib/very-common.sh
-. $DOCUMENT_ROOT/lib/common.sh
 . $DOCUMENT_ROOT/lib/shop.sh
-
-set -- `echo $DOCUMENT_URI | tr '/' ' '`
-shift
 
 if [[ ! -z "$1" ]]; then
 	case "$1" in
-		add) shift; . ./.add $@ ; exit 0;;
-		*) shift; . ./.sub-index $@ ; exit 0;;
+		add) shift; . ./.add $@ ; exit;;
+		*) shift; . ./.sub-index $@ ; exit;;
 	esac
 fi
 

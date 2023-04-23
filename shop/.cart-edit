@@ -19,34 +19,7 @@ Products() {
 }
 
 case "$REQUEST_METHOD" in
-	POST)
-		cat $CART_PATH | while read product_id quantity; do
-			local qname=quantity_$product_id
-			eval echo $product_id \$$qname
-		done | cat $CART_PATH - | sort -s -k1,1 | while read product_id old_quantity; do
-			read ignore quantity
-
-			product_env $product_id
-
-			local diff_exp="($quantity - $old_quantity)"
-			local new_stock_exp="$product_stock - $diff_exp"
-			local available_exp="$new_stock_exp >= 0"
-			local available="`echo $available_exp | bc`"
-
-			[[ "$available" != "0" ]] || Fatal 400 Not enough stock
-
-			# this should only happen on order placement
-			# local new_stock="`echo "$new_stock_exp" | bc`"
-			# echo $new_stock | fwrite $product_path/stock
-
-			# echo $product_id $quantity
-			[[ "$quantity" == "0" ]] || echo $product_id $quantity
-		done > $CART_PATH
-
-		_see_other /shop/$shop_id/cart
-
-		;;
-
+	POST) ;;
 	GET)
 		if [[ ! -f "$CART_PATH" ]] || [[ -z "`cat $CART_PATH`" ]]; then
 			Fatal 400 You can not edit an empty cart
@@ -62,8 +35,30 @@ case "$REQUEST_METHOD" in
 		Normal 200 shop/$shop_id/cart/edit
 		Scat .template/cart-edit
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
+	*) NotAllowed ;;
 esac
+
+cat $CART_PATH | while read product_id quantity; do
+	local qname=quantity_$product_id
+	eval echo $product_id \$$qname
+done | cat $CART_PATH - | sort -s -k1,1 | while read product_id old_quantity; do
+	read ignore quantity
+
+	product_env $product_id
+
+	local diff_exp="($quantity - $old_quantity)"
+	local new_stock_exp="$product_stock - $diff_exp"
+	local available_exp="$new_stock_exp >= 0"
+	local available="`echo $available_exp | bc`"
+
+	[[ "$available" != "0" ]] || Fatal 400 Not enough stock
+
+	# this should only happen on order placement
+	# local new_stock="`echo "$new_stock_exp" | bc`"
+	# echo $new_stock | fwrite $product_path/stock
+
+	# echo $product_id $quantity
+	[[ "$quantity" == "0" ]] || echo $product_id $quantity
+done > $CART_PATH
+
+_see_other /shop/$shop_id/cart

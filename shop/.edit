@@ -27,19 +27,7 @@ if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
 fi
 
 case "$REQUEST_METHOD" in
-	POST)
-		im $SHOP_OWNER || Forbidden
-
-		lsshown $SHOP_PATH/ | while read product_id; do
-			local qname=delete_$product_id
-			eval echo $product_id \$$qname
-		done | while read product_id state; do
-			[[ "$state" != "on" ]] || product_rm $product_id
-		done
-
-		_see_other .
-
-		;;
+	POST) ;;
 	GET)
 		export _TITLE="`_ $shop_id` - `_ "Edit shop"`"
 		export _DELETE_PRODUCTS="`_ "Delete products"`"
@@ -55,9 +43,16 @@ case "$REQUEST_METHOD" in
 		Normal 200 shop/$shop_id/edit
 		Scat .template/edit
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
+	*) NotAllowed ;;
 esac
 
+im $SHOP_OWNER || Forbidden
+
+lsshown $SHOP_PATH/ | while read product_id; do
+qname=delete_$product_id
+eval echo $product_id \$$qname
+done | while read product_id state; do
+	[[ "$state" != "on" ]] || product_rm $product_id
+done
+
+_see_other .

@@ -1,0 +1,18 @@
+<body class="f fic v">
+	$MENU
+
+	<h1 class="tac">$_TITLE</h1>
+
+	<form action="add" method="POST" class="v f fic" enctype="multipart/form-data">
+		<label>
+			$_POEM_ID
+			<input required name="poem_id"></input>
+		</label>
+		<label>
+			$_FILES
+			<input required type="file" name="file[]" multiple></input>
+		</label>
+		<div>$_ADD_POEM_NOTE</div>
+		<button>$_SUBMIT</button>
+	</form>
+</body>

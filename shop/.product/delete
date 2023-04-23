@@ -1,19 +1,8 @@
 #!/bin/ksh
-debug
-echo $REQUEST_METHOD
+[[ "$REQUEST_METHOD" == "POST" ]] || NotAllowed
 
-case "$REQUEST_METHOD" in
-	POST)
-		local product_path=$SHOP_PATH/$product_id
-
-		SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-
-		im $SHOP_OWNER || Forbidden
-
-		product_rm $product_id
-
-		_see_other /shop/$shop_id
-		;;
-	*) NotAllowed;;
-esac
-
+local product_path=$SHOP_PATH/$product_id
+SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+im $SHOP_OWNER || Forbidden
+product_rm $product_id
+_see_other /shop/$shop_id

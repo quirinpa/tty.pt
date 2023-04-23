@@ -1,28 +1,22 @@
 #!/bin/ksh
 
+[[ ! -z "$REMOTE_USER" ]] || Unauthorized
+
 sem_source
 
 SUB_ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $4}'`"
 
 case "$SUB_ARG" in
-	download) . ./.download ; exit 0 ;;
-	buy) . ./.buy ; exit 0 ;;
-	pause) . ./.pause ; exit 0 ;;
-	pay) . ./.pay ; exit 0 ;;
-	resume) . ./.resume ; exit 0 ;;
-	start) . ./.start ; exit 0 ;;
-	stop) . ./.stop ; exit 0 ;;
-	transfer) . ./.transfer ; exit 0 ;;
-	diff) . ./.diff ; exit 0 ;;
-	.git)
-		export GIT_HTTP_EXPORT_ALL=1
-		export GIT_PROJECT_ROOT="/"
-		export SCRIPT_NAME=""
-		export PATH_INFO=$DOCUMENT_URI
-		export REQUEST_METHOD
-		/usr/local/libexec/git/git-http-backend $@
-		exit 0
-		;;
+	download) . ./.download ; exit;;
+	buy) . ./.buy ; exit;;
+	pause) . ./.pause ; exit;;
+	pay) . ./.pay ; exit;;
+	resume) . ./.resume ; exit;;
+	start) . ./.start ; exit;;
+	stop) . ./.stop ; exit;;
+	transfer) . ./.transfer ; exit;;
+	diff) . ./.diff ; exit;;
+	.git) git_backend $ARG; exit;;
 esac
 
 export _TITLE="`_ $sem_id`"

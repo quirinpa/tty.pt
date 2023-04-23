@@ -1,0 +1,39 @@
+#!/bin/ksh
+export user="`echo $1 | sed 's/^~//'`"
+shift
+path=$DOCUMENT_ROOT/home/$user
+
+if [[ ! -f "$path/.index" ]]; then
+	test "$REMOTE_USER" == "$user" || NotFound
+	mkdir -p $path || true
+	cat - > $path/.index <<!
+#!/bin/ksh
+if test "\$1" == ".git"; then
+	im \$user || Unauthorized
+	git_backend
+fi
+export CONTENT="\$user's page"
+if im \$user; then
+	CONTENT="\$CONTENT<br />git clone https://tty.pt/~\$user"
+fi
+Normal 200 ~\$user
+Scat index
+!
+	cat - > $path/index.html <<!
+<body class="v f fic">
+	\$MENU
+	<pre>\$CONTENT</pre>
+</body>
+!
+	created=1
+fi
+
+cd $path
+
+if test $created; then
+	git init
+	git add .index index.html
+	git commit -m "First commit"
+fi >/dev/null
+
+. ./.index $@

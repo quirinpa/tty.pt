@@ -1,0 +1,8 @@
+#!/bin/ksh
+
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+
+export _REGISTRATION_COMPLETE="`_ "Registration complete"`"
+export _ACCOUNT_CREATED="`_ "Please click the link sent to your e-mail to activate your account."`"
+Normal 200 welcome
+Scat template/welcome

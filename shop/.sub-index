@@ -57,26 +57,7 @@ ShopButtons() {
 }
 
 case "$REQUEST_METHOD" in
-	POST)
-		case "$action" in
-			delete)
-				PRODUCT_PATH=$SHOP_PATH/$product_id
-				if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
-					Fatal 404 Product not found
-				fi
-
-				im $SHOP_OWNER || Forbidden
-
-				rm -rf $SHOP_PATH/$product_id
-
-				see_other shop ?shop_id=$shop_id
-				;;
-			*)
-				Fatal 400 Invalid action
-				;;
-		esac
-
-		;;
+	POST) ;;
 	GET)
 		export _TITLE="`_ $shop_id`"
 
@@ -91,4 +72,22 @@ case "$REQUEST_METHOD" in
 		Scat .template/sub-index
 		;;
 	*) NotAllowed ;;
+esac
+
+case "$action" in
+	delete)
+		PRODUCT_PATH=$SHOP_PATH/$product_id
+		if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
+			Fatal 404 Product not found
+		fi
+
+		im $SHOP_OWNER || Forbidden
+
+		rm -rf $SHOP_PATH/$product_id
+
+		_see_other shop/$shop_id
+		;;
+	*)
+		Fatal 400 Invalid action
+		;;
 esac

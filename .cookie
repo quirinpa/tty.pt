@@ -1,7 +1,5 @@
 #!/bin/ksh
 
-. $ROOT/lib/common.sh
-
 NormalHead 200
 echo
 echo "<pre>"

@@ -1,7 +1,5 @@
 #!/bin/ksh
 
-. $DOCUMENT_ROOT/lib/very-common.sh
-. $DOCUMENT_ROOT/lib/common.sh
 . $DOCUMENT_ROOT/lib/sem.sh
 
 if [[ ! -z "$ARG" ]]; then

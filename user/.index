@@ -1,8 +1,5 @@
 #!/bin/ksh
 
-. $ROOT/lib/optional-auth.sh
-. $ROOT/lib/common.sh
-
 USER_PATH=$ROOT/users/$REMOTE_USER
 
 Field() {
@@ -71,24 +68,23 @@ case "$REQUEST_METHOD" in
 			export EDIT_BTN="`EditBtn "/e/user-edit?user_id=$user_id"`"
 		fi
 
-		export _TITLE="`_ User` - $REMOTE_USER"
-
 		_NAME="`_ Name`"
+
 		export NAME="`zcat $USER_PATH/name | Field "$_NAME"`"
-
 		export ADDRESS="`Address`"
-
 		export PHONE_NUMBER="`PhoneNumber`"
-
 		export ACCOUNT_INFO="`AccountInfo`"
 
+		export _TITLE="`_ User` - $REMOTE_USER"
 		export _LOGOUT="`_ Logout`"
 		export _SUBMIT="`_ Submit`"
+		export _PAGE="`_ Page`"
 
 		export iban="`zcat $USER_PATH/iban`"
 		export bicswift="`zcat $USER_PATH/bicswift`"
 
-		NormalCat
+		Normal 200 user
+		Scat .template/index
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

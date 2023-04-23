@@ -17,8 +17,30 @@ Forbidden() {
 }
 
 NotAllowed() {
-	echo "Status: 405 Method Not Allowed"
+	NormalHead 405 Method Not Allowed
+	_TITLE="`_ Method Not Allowed`"
+	if [[ $# -ge 1 ]]; then
+		_TITLE="$_TITLE - $@"
+	fi
+	export _TITLE
 	echo
+	Head
+	export MENU="`Menu`"
+	Cat fatal
+	exit
+}
+
+NotFound() {
+	NormalHead 404 Not Found
+	_TITLE="`_ Not Found`"
+	if [[ $# -ge 1 ]]; then
+		_TITLE="$_TITLE - $@"
+	fi
+	export _TITLE
+	echo
+	Head
+	export MENU="`Menu`"
+	Cat fatal
 	exit
 }
 
@@ -220,12 +242,6 @@ fappend() {
 	fi
 }
 
-rand_str_1() {
-	# TODO maybe remove lowercase conversion
-	xxd -l32 -ps $DOCUMENT_ROOT/dev/urandom | xxd -r -ps | openssl base64 \
-		    | tr -d = | tr + - | tr / _ | tr '[A-Z]' '[a-z]'
-}
-
 ## COMPONENTS
 
 Whisper() {
@@ -286,6 +302,7 @@ Fatal() {
 DF_USER=$REMOTE_USER
 SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $2}'`"
 ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
+set -- `echo $DOCUMENT_URI | tr '/' ' '`
 if [[ "$SCRIPT" == "e" ]]; then
 	SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
 	ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $4}'`"
@@ -450,4 +467,15 @@ ls_shown() {
 			echo $line
 		fi
 	done
+}
+
+export GIT_HTTP_EXPORT_ALL=1
+export REQUEST_METHOD
+
+git_backend() {
+	export GIT_PROJECT_ROOT="/"
+	export PATH_INFO="`echo $DOCUMENT_URI | sed 's|^/~|/home/|'`"
+	# echo PATH_INFO$PATH_INFO
+	$DOCUMENT_ROOT/usr/local/libexec/git/git-http-backend 2>&1
+	exit
 }

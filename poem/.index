@@ -1,0 +1,19 @@
+#!/bin/ksh
+
+if [[ ! -z "$1" ]]; then
+	case "$1" in
+		add) shift; . ./.add $@ ; exit 0;;
+		*) . ./.sub-index $@ ; exit 0;;
+	esac
+fi
+
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+export _TITLE="`_ Poems`"
+
+if [[ ! -z "$REMOTE_USER" ]]; then
+	export POEM_ADD="<a class=\"$RB\" href=\"/poem/add\">+</p>"
+fi
+
+export POEMS="`ls_shown $ROOT/poems | BigButtons poem`"
+Normal 200 poem
+Scat .template/index

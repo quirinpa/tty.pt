@@ -43,13 +43,13 @@ shop_source() {
 		shop_id="$ARG"
 	fi
 	SHOP_PATH=$DOCUMENT_ROOT/shop/$shop_id
+	if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
+		Fatal 404 Shop not found
+	fi
 	USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
 	USER_SHOPS_PATH=$USER_PATH/shops
 	USER_SHOP_PATH=$USER_SHOPS_PATH/$shop_id
 	CART_PATH=$USER_SHOP_PATH/cart
 	SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-	if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
-		Fatal 404 Shop not found
-	fi
 	export shop_id
 }

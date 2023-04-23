@@ -57,3 +57,4 @@ groupadd
 ssh_keygen
 ssh-keygen
 git-http-backend
+doas

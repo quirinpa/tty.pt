@@ -14,24 +14,7 @@ nfiles( 'images',
 }
 
 case "$REQUEST_METHOD" in
-	POST)
-		PRODUCT_PATH=$SHOP_PATH/$product_id
-		DF_USER=$SHOP_OWNER
-
-		fmkdir $PRODUCT_PATH
-		urldecode $title | fwrite $PRODUCT_PATH/title
-		urldecode $description | fwrite $PRODUCT_PATH/description
-		images="`nfiles $images`"
-		[[ -z "$images" ]] || a2l $images | fwrite $PRODUCT_PATH/images
-		echo $price | fwrite $PRODUCT_PATH/price
-
-		local stock_exp="`cat $PRODUCT_PATH/stock` + $stock"
-		local new_stock="`echo $stock_exp | bc`"
-		echo $new_stock | fwrite $PRODUCT_PATH/stock
-
-		_see_other /shop/$shop_id/$product_id
-		;;
-
+	POST) ;;
 	GET)
 		export _TITLE="`_ $shop_id` - `_ "Edit product"` #$product_id"
 		export __TITLE="`_ Title`"
@@ -53,9 +36,21 @@ case "$REQUEST_METHOD" in
 		Normal 200 shop/$shop_id/$product_id/edit
 		Scat template/edit
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
+	*) NotAllowed ;;
 esac
 
+PRODUCT_PATH=$SHOP_PATH/$product_id
+DF_USER=$SHOP_OWNER
+
+fmkdir $PRODUCT_PATH
+urldecode $title | fwrite $PRODUCT_PATH/title
+urldecode $description | fwrite $PRODUCT_PATH/description
+images="`nfiles $images`"
+[[ -z "$images" ]] || a2l $images | fwrite $PRODUCT_PATH/images
+echo $price | fwrite $PRODUCT_PATH/price
+
+local stock_exp="`cat $PRODUCT_PATH/stock` + $stock"
+local new_stock="`echo $stock_exp | bc`"
+echo $new_stock | fwrite $PRODUCT_PATH/stock
+
+_see_other /shop/$shop_id/$product_id

@@ -81,41 +81,7 @@ fi
 DF_USER=$SHOP_OWNER
 
 case "$REQUEST_METHOD" in
-	POST)
-		ORDER_PATH=$SHOP_PATH/.orders/$order_id
-
-		im $SHOP_OWNER || Forbidden
-
-		ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
-		case "$ORDER_STATE_TEXT" in
-			Pending_payment)
-				ORDER_STATE_TEXT=Pending_shipment
-				;;
-			Pending_shipment)
-				ORDER_STATE_TEXT=Shipped
-				;;
-			Shipped)
-				ORDER_STATE_TEXT=Delivered
-				;;
-			Delivered)
-				rm -rf $ORDER_PATH
-				_see_other /shop/$shop_id/order
-				exit
-				;;
-		esac
-
-		echo $ORDER_STATE_TEXT | fwrite $ORDER_PATH/state
-
-		case "$return" in
-			order)
-				_see_other /shop/$shop_id/order/$order_id
-				;;
-			orders)
-				_see_other /shop/$shop_id/order
-				;;
-		esac
-		;;
-
+	POST) ;;
 	GET)
 		ORDER_PATH=$SHOP_PATH/.orders/$order_id
 		if [[ -z "$order_id" ]] || [[ ! -d "$ORDER_PATH" ]]; then
@@ -148,4 +114,37 @@ case "$REQUEST_METHOD" in
 		Scat template/sub-index
 		;;
 	*) NotAllowed ;;
+esac
+
+ORDER_PATH=$SHOP_PATH/.orders/$order_id
+
+im $SHOP_OWNER || Forbidden
+
+ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
+case "$ORDER_STATE_TEXT" in
+	Pending_payment)
+		ORDER_STATE_TEXT=Pending_shipment
+		;;
+	Pending_shipment)
+		ORDER_STATE_TEXT=Shipped
+		;;
+	Shipped)
+		ORDER_STATE_TEXT=Delivered
+		;;
+	Delivered)
+		rm -rf $ORDER_PATH
+		_see_other /shop/$shop_id/order
+		exit
+		;;
+esac
+
+echo $ORDER_STATE_TEXT | fwrite $ORDER_PATH/state
+
+case "$return" in
+	order)
+		_see_other /shop/$shop_id/order/$order_id
+		;;
+	orders)
+		_see_other /shop/$shop_id/order
+		;;
 esac
