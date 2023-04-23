@@ -1,9 +1,6 @@
 #!/bin/ksh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/shop.sh
-. $ROOT/lib/order.sh
+order_id=$1
 
 AccountInfo() {
 	ACCOUNT_IBAN="`zcat $ROOT/users/$SHOP_OWNER/iban`"
@@ -67,7 +64,7 @@ Products() {
 	while read product_id quantity; do
 		product_env $product_id
 		cat <<!
-<a class="card f v8 b0 fic p" href="/e/product?shop_id=$shop_id&product_id=$product_id">
+<a class="card f v8 b0 fic p" href="/shop/$shop_id/$product_id">
 	`PImage $product_image_path`
 	<div class="tsxl">$product_title</div>
 	`echo "$product_description" | csurround p`
@@ -85,73 +82,38 @@ DF_USER=$SHOP_OWNER
 
 case "$REQUEST_METHOD" in
 	POST)
-		if [[ -z "$order_id" ]]; then
-			if [[ -z "`zcat $CART_PATH`" ]]; then
-				Fatal 404 Cart not found
-			fi
+		ORDER_PATH=$SHOP_PATH/.orders/$order_id
 
-			if [[ -z "`zcat $USER_PATH/address_line_1`" ]] \
-				|| [[ -z "`zcat $USER_PATH/address_line_2`" ]] \
-				|| [[ -z "`zcat $USER_PATH/zip`" ]]; then
-				Fatal 400 Invalid shipping address 
-			fi
+		im $SHOP_OWNER || Forbidden
 
-			ORDERS_PATH=$SHOP_PATH/.orders
-			ORDER_ID_PATH=$SHOP_PATH/.orders/.count
-			ORDER_ID="`counter_inc $ORDER_ID_PATH`"
-			ORDER_PATH=$SHOP_PATH/.orders/$ORDER_ID
+		ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
+		case "$ORDER_STATE_TEXT" in
+			Pending_payment)
+				ORDER_STATE_TEXT=Pending_shipment
+				;;
+			Pending_shipment)
+				ORDER_STATE_TEXT=Shipped
+				;;
+			Shipped)
+				ORDER_STATE_TEXT=Delivered
+				;;
+			Delivered)
+				rm -rf $ORDER_PATH
+				_see_other /shop/$shop_id/order
+				exit
+				;;
+		esac
 
-			fmkdir $ORDERS_PATH
-			fmkdir $ORDER_PATH
-			cat $CART_PATH | fwrite $ORDER_PATH/raw
-			echo $REMOTE_USER | fwrite $ORDER_PATH/owner
-			echo Pending_payment | fwrite $ORDER_PATH/state
-			cat $USER_PATH/address_line_1 | fwrite $ORDER_PATH/address_line_1
-			cat $USER_PATH/address_line_2 | fwrite $ORDER_PATH/address_line_2
-			cat $USER_PATH/zip | fwrite $ORDER_PATH/zip
+		echo $ORDER_STATE_TEXT | fwrite $ORDER_PATH/state
 
-			cat $ORDER_PATH/raw | while read product_id quantity; do
-				counter_dec $SHOP_PATH/$product_id/stock $quantity
-			done >/tmp/null
-
-			rm $CART_PATH # TODO also remove unneeded directories?
-
-			see_other order ?shop_id=$shop_id\&order_id=$ORDER_ID
-		else
-			ORDER_PATH=$SHOP_PATH/.orders/$order_id
-
-			im $SHOP_OWNER || Forbidden
-
-			ORDER_STATE_TEXT="`cat $ORDER_PATH/state`"
-			case "$ORDER_STATE_TEXT" in
-				Pending_payment)
-					ORDER_STATE_TEXT=Pending_shipment
-					;;
-				Pending_shipment)
-					ORDER_STATE_TEXT=Shipped
-					;;
-				Shipped)
-					ORDER_STATE_TEXT=Delivered
-					;;
-				Delivered)
-					rm -rf $ORDER_PATH
-					see_other orders ?shop_id=$shop_id
-					exit
-					;;
-			esac
-
-			echo $ORDER_STATE_TEXT | fwrite $ORDER_PATH/state
-
-			case "$return" in
-				order)
-					see_other order ?shop_id=$shop_id\&order_id=$order_id
-					;;
-				orders)
-					see_other orders ?shop_id=$shop_id
-					;;
-			esac
-		fi
-
+		case "$return" in
+			order)
+				_see_other /shop/$shop_id/order/$order_id
+				;;
+			orders)
+				_see_other /shop/$shop_id/order
+				;;
+		esac
 		;;
 
 	GET)
@@ -182,12 +144,8 @@ case "$REQUEST_METHOD" in
 					;;
 			esac
 		fi
-		NormalCat ?shop_id=$shop_id
+		Normal 200 order/$order_id
+		Scat template/sub-index
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
+	*) NotAllowed ;;
 esac
-
-

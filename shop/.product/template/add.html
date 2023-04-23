@@ -3,13 +3,13 @@ pre { display: inline-block; }
 </style>
 <body class="f fic v">
 	<div class="f h">
-		<a class="$RB" href="/e/shop?shop_id=$shop_id">💰</a>
+		<a class="$RB" href="/shop/$shop_id">💰</a>
 		$MENU
 	</div>
 
 	<h1 class="tac">$_TITLE</h1>
 
-	<form action="/e/product-add" method="POST" class="v f fic">
+	<form action="add" method="POST" class="v f fic">
 		<input type="hidden" name="shop_id" value="$shop_id" />
 		<label>
 			$__TITLE

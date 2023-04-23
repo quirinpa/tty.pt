@@ -93,9 +93,9 @@ export SRB="btn round ps tsl"
 Menu() {
 	if [[ ! -z "$REMOTE_USER" ]]; then
 		USER_NAME="<span class=\"ts\">$REMOTE_USER</span>"
-		USER_ICON="<a class=\"tsxl f h fic btn p8\" href=\"/e/user\"><span>🔑 </span><span> $USER_NAME</span></a>"
+		USER_ICON="<a class=\"tsxl f h fic btn p8\" href=\"/e/user\"><span role=\"img\" aria-label=\"user\">🔑 </span><span> $USER_NAME</span></a>"
 	else
-		USER_ICON="<a class=\"$RB\" href=\"/e/login\">🔑 </a>"
+		USER_ICON="<a class=\"$RB\" href=\"/e/login\"><span role=\"img\" aria-label=\"login\">🔑 </span></a>"
 	fi
 	export USER_ICON
 	cat $DOCUMENT_ROOT/components/menu.html | envsubst

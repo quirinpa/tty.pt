@@ -16,6 +16,12 @@ Forbidden() {
 	exit
 }
 
+NotAllowed() {
+	echo "Status: 405 Method Not Allowed"
+	echo
+	exit
+}
+
 bc() {
 	read exp
 	#echo "BC='$exp'" >&2
@@ -313,9 +319,9 @@ Buttons() {
 			where="$2"
 			extra="$3"
 			cat <<!
-<a class="btn $1" href="/e/$where?${where}_id=$id$extra">
+<div><a class="btn $1" href="/e/$where?${where}_id=$id$extra">
 	$_TITLE
-</a>
+</a></div>
 !
 		done
 	else
@@ -324,9 +330,9 @@ Buttons() {
 			where="$2"
 			extra="$3"
 			cat <<!
-<a class="btn $1" href="/$where/$id$extra">
+<div><a class="btn $1" href="/$where/$id$extra">
 	$_TITLE
-</a>
+</a></div>
 !
 		done
 	fi

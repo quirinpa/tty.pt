@@ -1,8 +1,9 @@
 #!/bin/ksh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/shop.sh
+case "$1" in
+	edit) shift; . ./.cart-edit ; exit 0 ;;
+esac
+
 
 EmptyContents() {
 	_EMPTY="`_ "Empty"`"
@@ -14,7 +15,7 @@ Products() {
 	while read product_id quantity; do
 		product_env $product_id
 		cat <<!
-<a class="card f v8 b0 fic p" href="/e/product?shop_id=$shop_id&product_id=$product_id">
+<a class="card f v8 b0 fic p" href="/shop/$shop_id/$product_id">
 	`PImage $product_image_path`
 	<div class="tsxl">$product_title</div>
 	<div class="tsl">$quantity x $product_price€</div>
@@ -35,8 +36,7 @@ $PRODUCTS
 
 <div class="tcv fic v">
 	<div class="tsxl">$TOTAL€</div>
-	<form action="/e/order" method="POST">
-		<input type="hidden" name="shop_id" value="$shop_id"></input>
+	<form action="/shop/$shop_id/order" method="POST">
 		<button>$_SUBMIT</Button>
 	</form>
 </div>
@@ -67,14 +67,14 @@ case "$REQUEST_METHOD" in
 			Fatal 400 Not enough stock
 		fi
 
-		see_other cart-edit ?shop_id=$shop_id
+		_see_other /shop/$shop_id/cart/edit
 
 		;;
 
 	GET)
 		if [[ -f "$CART_PATH" ]] && [[ ! -z `cat $CART_PATH` ]]; then
 			CONTENTS="`Contents`"
-			export EDIT_BTN="`EditBtn "/e/cart-edit?shop_id=$shop_id"`"
+			export EDIT_BTN="`EditBtn "/shop/$shop_id/cart/edit"`"
 
 		else
 			CONTENTS="`EmptyContents`"
@@ -83,10 +83,8 @@ case "$REQUEST_METHOD" in
 
 		export _TITLE="`_ $shop_id` - `_ Cart`"
 
-		NormalCat
+		Normal 200 shop/$shop_id/cart
+		Scat .template/cart
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
+	*) NotAllowed ;;
 esac

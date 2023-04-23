@@ -1,0 +1,7 @@
+#!/bin/ksh
+
+case "$1" in
+	add) shift; . ./add ; exit 0 ;;
+esac
+
+. ./sub-index

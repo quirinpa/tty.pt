@@ -1,9 +1,5 @@
 #!/bin/ksh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/shop.sh
-
 Products() {
 	local product_id
 	while read product_id quantity; do
@@ -11,7 +7,7 @@ Products() {
 		cat <<!
 <div class="card f v8 b0 fic p">
 	`PImage $product_image_path`
-	<a class="tsxl" href="/e/product?shop_id=$shop_id&product_id=$product_id">$product_title</a>
+	<a class="tsxl" href="/shop/$shop_id/$product_id">$product_title</a>
 	<div class="f _s fic">
 		<input name="quantity_$product_id" type="number" min="0" max="$product_stock" value="$quantity" class="s_4_5"></input>
 		<div class="tsl">x $product_price€</div>
@@ -21,10 +17,6 @@ Products() {
 !
 	done
 }
-
-if [[ -z "$shop_id" ]] || [[ ! -d $SHOP_PATH ]]; then
-	Fatal 404 Shop not found
-fi
 
 case "$REQUEST_METHOD" in
 	POST)
@@ -51,7 +43,7 @@ case "$REQUEST_METHOD" in
 			[[ "$quantity" == "0" ]] || echo $product_id $quantity
 		done > $CART_PATH
 
-		see_other cart ?shop_id=$shop_id
+		_see_other /shop/$shop_id/cart
 
 		;;
 
@@ -67,7 +59,8 @@ case "$REQUEST_METHOD" in
 
 		# TODO im $CART_OWNER $SHOP_OWNER || Forbidden
 
-		NormalCat
+		Normal 200 shop/$shop_id/cart/edit
+		Scat .template/cart-edit
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"

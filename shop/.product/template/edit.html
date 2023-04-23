@@ -3,13 +3,13 @@ pre { display: inline-block; }
 </style>
 <body class="f fic v">
 	<div class="f h">
-		<a class="$RB" href="/e/shop?shop_id=$shop_id">💰</a>
+		<a class="$RB" href="/shop/$shop_id">💰</a>
 		$MENU
 	</div>
 
 	<h1 class="tac">$_TITLE</h1>
 
-	<form action="/e/product-edit" method="POST" class="v f fic">
+	<form action="edit" method="POST" class="v f fic">
 		<input type="hidden" name="shop_id" value="$shop_id" />
 		<input type="hidden" name="product_id" value="$product_id" />
 		<label>
@@ -42,4 +42,5 @@ pre { display: inline-block; }
 <script>
 $JS
 </script>
+
 

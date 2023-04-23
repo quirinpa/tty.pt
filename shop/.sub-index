@@ -1,8 +1,25 @@
 #!/bin/ksh
 
-. $ROOT/lib/optional-auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/shop.sh
+shop_source
+
+case "$1" in
+	cart) shift; . ./.cart ; exit 0 ;;
+	prod) shift; . ./.product ; exit 0 ;;
+	edit) shift; . ./.edit ; exit 0;;
+	order)
+		shift
+		cd .order
+		. ./index
+		exit 0
+		;;
+	*)
+		if [[ ! -z "$1" ]]; then
+			cd .product
+			. ./index $@
+			exit 0
+		fi
+		;;
+esac
 
 lsshown() {
 	 find $1 -type d -mindepth 1 -maxdepth 1 -name "[!.]*" | sed "s|$1||" | sed "s/\/$//"
@@ -20,7 +37,7 @@ Products() {
 		fi
 
 		cat <<!
-<a class="card f v8 b0 fic p $card_class" href="/e/product?shop_id=$shop_id&product_id=$product_id">
+<a class="card f v8 b0 fic p $card_class" href="/shop/$shop_id/$product_id">
 	`PImage $product_image_path`
 	<div class="tsl">$product_price€</div>
 	<span class="tsxl">$product_title</span>
@@ -34,14 +51,10 @@ ShopButtons() {
 	[[ ! -z "$REMOTE_USER" ]] || return
 
 	cat <<!
-<a class="$RB" href="/e/orders?shop_id=$shop_id">🚚</a>
-<a class="$RB" href="/e/cart?shop_id=$shop_id">🛒</a>
+<a class="$RB" href="/shop/$shop_id/order">🚚</a>
+<a class="$RB" href="/shop/$shop_id/cart">🛒</a>
 !
 }
-
-if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
-	Fatal 404 Shop not found
-fi
 
 case "$REQUEST_METHOD" in
 	POST)
@@ -70,14 +83,12 @@ case "$REQUEST_METHOD" in
 		export PRODUCTS="`lsshown $SHOP_PATH/ | Products | fw`"
 		export SHOP_BUTTONS="`ShopButtons`"
 		if im $SHOP_OWNER; then
-			export ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/e/product-add?shop_id=$shop_id\">+</a></div>"
-			export EDIT_BTN="`EditBtn "/e/shop-edit?shop_id=$shop_id"`"
+			export ADD_PRODUCT_BUTTON="<div class=\"tar\"><a class=\"tsxl round ps btn\" href=\"/shop/$shop_id/add\">+</a></div>"
+			export EDIT_BTN="`EditBtn "/shop/$shop_id/edit"`"
 		fi
 
-		NormalCat ?shop_id=$shop_id
+		Normal 200 shop/$shop_id
+		Scat .template/sub-index
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
+	*) NotAllowed ;;
 esac

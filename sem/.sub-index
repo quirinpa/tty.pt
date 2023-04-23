@@ -25,9 +25,6 @@ case "$SUB_ARG" in
 		;;
 esac
 
-# debug
-# echo $SUB_ARG
-
 export _TITLE="`_ $sem_id`"
 export _SUBMIT="`_ Submit`"
 export _DOWNLOAD="`_ Download`"
@@ -71,5 +68,5 @@ fi
 
 export SEM="`$SEM $options 2>&1 < $SEM_FILE`"
 
-Normal $SCRIPT sem/$sem_id
+Normal 200 sem/$sem_id
 Scat .template/sub-index

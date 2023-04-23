@@ -1,0 +1,27 @@
+#!/bin/ksh
+
+. $DOCUMENT_ROOT/lib/very-common.sh
+. $DOCUMENT_ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/shop.sh
+
+set -- `echo $DOCUMENT_URI | tr '/' ' '`
+shift
+
+if [[ ! -z "$1" ]]; then
+	case "$1" in
+		add) shift; . ./.add $@ ; exit 0;;
+		*) shift; . ./.sub-index $@ ; exit 0;;
+	esac
+fi
+
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+
+export _TITLE="`_ Shops`"
+
+if [[ ! -z "$REMOTE_USER" ]]; then
+	export SHOP_ADD="<a class=\"$RB\" href=\"/shop/add\">+</a>"
+fi
+
+export SHOPS="`ls $DOCUMENT_ROOT/shop | BigButtons shop`"
+Normal 200 shop
+Scat .template/index

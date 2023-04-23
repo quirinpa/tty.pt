@@ -1,18 +1,17 @@
 #!/bin/ksh
 
-. $ROOT/lib/optional-auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/shop.sh
-
-if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
-	Fatal 404 Shop not found
-fi
-
+product_id=$1
 PRODUCT_PATH=$SHOP_PATH/$product_id
 
 if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
 	Fatal 404 Product not found
 fi
+
+shift
+case "$1" in
+	delete) shift; . ./delete ; exit 0 ;;
+	edit) shift; . ./edit ; exit 0 ;;
+esac
 
 ProductImages() {
 	while read product_image_path; do
@@ -26,7 +25,7 @@ CartAdd() {
 	fi
 
 	cat <<!
-<form action="/e/cart" method="POST">
+<form action="/shop/$shop_id/cart" method="POST">
 	<button class="rs ps">`_ "Add to cart"`</button>	
 	<input type="hidden" name="shop_id" value="$shop_id"></input>
 	<input type="hidden" name="product_id" value="$product_id"></input>
@@ -36,7 +35,7 @@ CartAdd() {
 
 ProductDelete() {
 	cat <<!
-<form action="/e/product-delete" method="POST">
+<form action="/shop/$shop_id/$product_id/delete" method="POST">
 	<input type="hidden" name="shop_id" value="$shop_id"></input>
 	<input type="hidden" name="product_id" value="$product_id"></input>
 	<button class="rs ps c1">`_ "Delete product"`</button>
@@ -62,13 +61,12 @@ case "$REQUEST_METHOD" in
 
 		if im $SHOP_OWNER; then
 			export DELETE_PRODUCT="`ProductDelete $product_id`"
-			export EDIT_BTN="`EditBtn "/e/product-edit?shop_id=$shop_id&product_id=$product_id"`"
+			export EDIT_BTN="`EditBtn "/shop/$shop_id/$product_id/edit"`"
 		fi
 
-		NormalCat ?shop_id=$shop_id\&product_id=$product_id
+		Normal 200 shop/$shop_id/$product_id
+		Scat template/index
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
+	*) NotAllowed ;;
 esac
+

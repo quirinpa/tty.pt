@@ -20,12 +20,9 @@ case "$REQUEST_METHOD" in
 		export SEM_MENU="`SemMenu pause`"
 		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
 		export ID_OPTIONS="`pause_options | IdOptions`"
-		Normal $SCRIPT sem/$sem_id/pause
+		Normal 200 sem/$sem_id/pause
 		Cat sem-pause
 
 		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
-esac 2>&1
+	*) NotAllowed ;;
+esac

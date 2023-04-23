@@ -72,6 +72,12 @@ button, .btn {
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 	text-decoration: none;
 }
+
+button > a, .btn > a, a.btn {
+	display: block;
+	text-decoration: none;
+}
+
 button:hover, .btn:hover, .card:hover {
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 }

@@ -1,5 +1,5 @@
 get_product_path() {
-	echo $DOCUMENT_ROOT/shops/$shop_id/$1
+	echo $DOCUMENT_ROOT/shop/$shop_id/$1
 }
 
 product_env() {
@@ -38,11 +38,18 @@ product_rm() {
 	rm -rf $SHOP_PATH/$product_id
 }
 
-SHOP_PATH=$DOCUMENT_ROOT/shops/$shop_id
-USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
-USER_SHOPS_PATH=$USER_PATH/shops
-USER_SHOP_PATH=$USER_SHOPS_PATH/$shop_id
-CART_PATH=$USER_SHOP_PATH/cart
-SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-
-export shop_id
+shop_source() {
+	if [[ -z "$shop_id" ]]; then
+		shop_id="$ARG"
+	fi
+	SHOP_PATH=$DOCUMENT_ROOT/shop/$shop_id
+	USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
+	USER_SHOPS_PATH=$USER_PATH/shops
+	USER_SHOP_PATH=$USER_SHOPS_PATH/$shop_id
+	CART_PATH=$USER_SHOP_PATH/cart
+	SHOP_OWNER="`cat $SHOP_PATH/.owner`"
+	if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
+		Fatal 404 Shop not found
+	fi
+	export shop_id
+}

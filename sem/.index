@@ -11,10 +11,7 @@ if [[ ! -z "$ARG" ]]; then
 	esac
 fi
 
-if [[ "$REQUEST_METHOD" != "GET" ]]; then
-	echo "Status: 405 Method Not Allowed"
-	echo
-fi
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
 
 export _TITLE="`_ Sems`"
 if [[ ! -z "$REMOTE_USER" ]]; then
@@ -22,5 +19,5 @@ export SEM_ADD="<a class=\"$RB\" href=\"/sem/add\">+</a>"
 fi
 
 export SEMS="`ls $DOCUMENT_ROOT/sem | BigButtons sem`"
-Normal $SCRIPT sem
+Normal 200 sem
 Scat .template/index

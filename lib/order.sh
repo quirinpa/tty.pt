@@ -4,7 +4,7 @@ OrderStateVendor() {
 	return_str="<input name=\"return\" type=\"hidden\" value=\"$1\"></input>"
 
 	cat <<!
-<form action="/e/order" method="POST" class="tac">
+<form action="/shop/$shop_id/order/$2" method="POST" class="tac">
 	<input type="hidden" name="shop_id" value="$shop_id"></input>
 	<input type="hidden" name="order_id" value="$2"></input>
 	$return_str

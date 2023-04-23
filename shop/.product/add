@@ -1,13 +1,5 @@
 #!/bin/ksh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/shop.sh
-
-if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
-	fatal 404 Shop not found
-fi
-
 im $SHOP_OWNER || Forbidden
 
 js() {
@@ -36,7 +28,7 @@ case "$REQUEST_METHOD" in
 		echo $price | fwrite $PRODUCT_PATH/price
 		echo $stock | fwrite $PRODUCT_PATH/stock
 
-		see_other shop ?shop_id=$shop_id
+		_see_other /shop/$shop_id
 		;;
 
 	GET)
@@ -49,7 +41,8 @@ case "$REQUEST_METHOD" in
 		export _SUBMIT="`_ Submit`"
 		export JS="`js`"
 
-		NormalCat ?shop_id=$shop_id
+		Normal 200 shop/$shop_id/add
+		Scat template/add
 		;;
 	*)
 		echo "Status: 405 Method Not Allowed"
