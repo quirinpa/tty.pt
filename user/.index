@@ -62,32 +62,27 @@ AccountInfo() {
 
 }
 
-case "$REQUEST_METHOD" in
-	GET)
-		if [[ -z "$user_id" ]] || im $user_id; then
-			export EDIT_BTN="`EditBtn "/e/user-edit?user_id=$user_id"`"
-		fi
+[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
 
-		_NAME="`_ Name`"
+if [[ -z "$user_id" ]] || im $user_id; then
+	export EDIT_BTN="`EditBtn "/e/user-edit?user_id=$user_id"`"
+fi
 
-		export NAME="`zcat $USER_PATH/name | Field "$_NAME"`"
-		export ADDRESS="`Address`"
-		export PHONE_NUMBER="`PhoneNumber`"
-		export ACCOUNT_INFO="`AccountInfo`"
+_NAME="`_ Name`"
 
-		export _TITLE="`_ User` - $REMOTE_USER"
-		export _LOGOUT="`_ Logout`"
-		export _SUBMIT="`_ Submit`"
-		export _PAGE="`_ Page`"
+export NAME="`zcat $USER_PATH/name | Field "$_NAME"`"
+export ADDRESS="`Address`"
+export PHONE_NUMBER="`PhoneNumber`"
+export ACCOUNT_INFO="`AccountInfo`"
 
-		export iban="`zcat $USER_PATH/iban`"
-		export bicswift="`zcat $USER_PATH/bicswift`"
+export _TITLE="`_ User` - $REMOTE_USER"
+export _LOGOUT="`_ Logout`"
+export _SUBMIT="`_ Submit`"
+export _PAGE="`_ Page`"
 
-		Normal 200 user
-		Scat .template/index
-		;;
-	*)
-		echo "Status: 405 Method Not Allowed"
-		echo
-		;;
-esac
+export iban="`zcat $USER_PATH/iban`"
+export bicswift="`zcat $USER_PATH/bicswift`"
+export REMOTE_USER
+
+Normal 200 user
+Scat .template/index

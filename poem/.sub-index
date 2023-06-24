@@ -1,7 +1,7 @@
 #!/bin/ksh
 
 poem_id=$1
-POEM_PATH=$ROOT/poems/$poem_id
+POEM_PATH=$ROOT/poem/$poem_id
 COMMENTS_PATH="$POEM_PATH/comments.txt"
 
 case "$REQUEST_METHOD" in

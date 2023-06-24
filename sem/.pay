@@ -2,11 +2,57 @@
 
 pay_options() {
 	if im $SEM_OWNER; then
-		$SEM -p < $SEM_FILE | awk '{ print $2 }'
-	else
-		echo $REMOTE_USER
+		$SEM -p < $SEM_FILE | sed "/^. $REMOTE_USER$/d" | awk '{print $2}'
 	fi
+	echo $REMOTE_USER y
 }
+
+payments() {
+	cat $SEM_FILE | sed -n '/^PAY /p'
+}
+
+types="`payments | awk '{print $7; print $3}' | sort -u`"
+last_payment="`payments | sed -n "/^PAY [^ ]* $REMOTE_USER .* $type/p" | tail -n 1`"
+
+pay_info() {
+	cat $SEM_FILE | sed -n '/^PAY /p' | awk '{print $7 " " $3}'
+}
+
+type_options() {
+	echo $TYPE y
+	pay_info | awk '{ print $1 }' | sort -u | sed "/^$TYPE$/d"
+}
+
+date_get() {
+	local res="`date -j -f "%Y-%m-%dT%H:%M:%S" "$1" +"%Y-%m-%d" || true`"
+	if test -z "$res"; then
+		res="`date -j -f "%Y-%m-%d" "$1" +"%Y-%m-%d"`"
+	fi
+	echo $res
+}
+
+month_inc() {
+	read date
+	local year="`echo $date | awk '{print $1}'`"
+	local month="`echo $date | awk '{print $2}'`"
+	year="`echo | bc -e "if ( $month + 1 > 12 ) $year + 1 else $year"`"
+	year="`printf "%04u" $year`"
+	month="`echo | bc -e "if ( $month + 1 > 12 ) 1 else ( $month + 1 )"`"
+	month="`printf "%02u" $month`"
+	echo $year-$month-`echo $date | awk '{print $3}'`
+}
+
+set -- $last_payment
+export VALUE=$4
+export START="`date_get "$5" | tr '-' ' '`"
+export END="`date_get "$6" | tr '-' ' '` | "
+START="`echo $START | month_inc | tr ' ' '-'`T00:00:00"
+END="`echo $END | month_inc | tr ' ' '-'`T00:00:00"
+TYPE=$7
+if ! test -z "$type"; then
+	TYPE=$type
+fi
+export ENTITY=$8
 
 case "$REQUEST_METHOD" in
 	POST)
@@ -27,8 +73,9 @@ case "$REQUEST_METHOD" in
 		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
 		export DNOW="`date -u +"%Y-%m-%d"`T00:00:00"
 		export ID_OPTIONS="`pay_options | IdOptions`"
-		Normal 200 sem/$sem_id/pay
-		Cat sem-pay
+		export TYPE_OPTIONS="`type_options | IdOptions`"
+		Normal 200 pay
+		Scat .template/pay
 
 		;;
 	*) NotAllowed ;;

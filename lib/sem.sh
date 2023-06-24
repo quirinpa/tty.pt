@@ -85,8 +85,12 @@ SemMenu() {
 }
 
 IdOptions() {
-	while read value; do
-		echo "<option value=\"$value\">$value</option>"
+	while read value sel; do
+		if test "$sel" == "y"; then
+			echo "<option selected value=\"$value\">$value</option>"
+		else
+			echo "<option value=\"$value\">$value</option>"
+		fi
 	done
 }
 

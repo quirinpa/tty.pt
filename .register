@@ -22,6 +22,10 @@ password="`urldecode $password`"
 password2="`urldecode $password2`"
 email="`urldecode $email`"
 
+if invalid_id $username || test "$username" == "www"; then
+	Fatal 400 Not a valid username
+fi
+
 if invalid_password $password; then
 	Fatal 400 Not a valid password
 fi

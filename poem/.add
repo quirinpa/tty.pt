@@ -10,7 +10,7 @@ case "$REQUEST_METHOD" in
 			Fatal 400 Not a valid ID
 		fi
 
-		POEM_PATH="$ROOT/poems/$poem_id"
+		POEM_PATH="$ROOT/poem/$poem_id"
 
 		fmkdir $POEM_PATH
 		echo $REMOTE_USER | fwrite $POEM_PATH/.owner

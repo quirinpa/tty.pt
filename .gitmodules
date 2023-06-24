@@ -1,0 +1,3 @@
+[submodule "neverdark"]
+	path = nd
+	url = git@github.com:tty-pt/neverdark.git

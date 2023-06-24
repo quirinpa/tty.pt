@@ -129,12 +129,14 @@ _see_other() {
 	echo 'Status: 303 See Other'
 	echo "Location: $1"
 	echo
+	exit
 }
 
 see_other() {
 	echo 'Status: 303 See Other'
 	echo "Location: /e/$1$2"
 	echo
+	exit
 }
 
 no_html() {
@@ -270,8 +272,16 @@ Normal() {
 	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
 	echo
 	Head
-
 	Whisper
+	export MENU="`Menu`"
+}
+
+UserNormal() {
+	NormalHead "$1"
+	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
+	echo
+	export HEAD="`Head`"
+	export WHISPER="`Whisper`"
 	export MENU="`Menu`"
 }
 

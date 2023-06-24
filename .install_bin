@@ -58,3 +58,8 @@ ssh_keygen
 ssh-keygen
 git-http-backend
 doas
+ln
+chmod
+tar
+uniq
+uniq
