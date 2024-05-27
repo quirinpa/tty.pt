@@ -1,0 +1,50 @@
+#!/bin/ksh
+
+IsAllowedItemFound $@
+
+im $OWNER || Forbidden
+
+all_options() {
+	ls $ROOT/chords/ | while read line; do
+		attr="`test "$1" != "$line" || echo selected`"
+		echo "<option $attr value='$line'>$line</option>"
+	done
+}
+
+songbook_edit() {
+	local counter=0
+	while IFS=: read song t; do
+		path="$ROOT/chords/$song"
+		echo "<div class='f h'>"
+		echo "<select name='song_$counter'>`all_options "$song"`</select>"
+		echo "<input name='t_$counter' type='number' step='1' value='$t'></input>"
+		echo "<a class='$RB' href='/chords/`urlencode "$song"`?t=$t'>👁</a>"
+		echo "</div>"
+		counter="`math $counter + 1`"
+	done
+	echo "<input type='hidden' name='count' value='$counter'></input>"
+}
+
+content() {
+	echo "<form action='.' method='POST' class='v f fic'>"
+	cat $ITEM_PATH | songbook_edit
+	echo "<button class='rs ps'>`_ 'Submit'`</button>"
+	echo "</form>"
+}
+
+fun() {
+}
+
+SubIndex $@
+MustPost
+
+c=0
+while test $c -lt $count; do
+	eval "csong=\${song_$c}"
+	eval "ct=\${t_$c}"
+	csong="`urldecode "$csong"`"
+	echo $csong:$ct
+	c=`math $c + 1`
+done > $ITEM_PATH
+
+_see_other ./

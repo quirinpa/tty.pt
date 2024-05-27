@@ -25,7 +25,7 @@ fi
 _TITLE="`cat "$ITEM_PATH" | head -n 1`"
 
 content() {
-	echo "<pre class='v0 f chords'>"
+	echo "<pre class='v0 chords'>"
 	cat "$ITEM_PATH" | tail -n +3 | transp -t $t -h $flags
 	echo "</pre>"
 }

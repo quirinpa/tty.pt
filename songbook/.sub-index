@@ -1,0 +1,37 @@
+#!/bin/ksh
+
+iid="$1"
+ITEM_PATH="$ROOT/songbook/$iid"
+OWNER="`ls -al $ITEM_PATH | awk '{ print $3 }'`"
+shift
+
+if test "$1" == "edit"; then
+	shift
+	. ./.edit $@
+	exit 0
+fi
+
+IsAllowedItemFound $@
+
+test -z "$b" || flags="-b"
+test -z "$l" || flags="$flags -l"
+
+fun() {
+	EditBtn
+}
+
+songbook() {
+	local path song t
+	while IFS=: read song t; do
+		path="$ROOT/chords/$song"
+		echo "<div class='h f fic jcsb'><h1 class='tac'>`cat "$path" | head -n 1`</h1>`editbtn`</div>"
+		cat "$path" | tail -n +2 | transp -h $flags -t $t
+	done
+}
+
+content() {
+	echo "<pre class='v0 chords'>`cat $ITEM_PATH | songbook`</pre>"
+}
+
+SubIndex $@
+NotAllowed

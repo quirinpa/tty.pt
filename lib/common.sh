@@ -483,8 +483,6 @@ AddBtn() {
 }
 
 Index() {
-	test "$REQUEST_METHOD" == "GET" || return 0
-
 	typ=$1
 	test $# -lt 1 || shift
 	case "$1" in
@@ -498,7 +496,7 @@ Index() {
 			;;
 	esac
 
-	test "$REQUEST_METHOD" == "GET" || NotAllowed
+	test "$REQUEST_METHOD" == "GET" || return 0
 
 	export _TITLE
 
