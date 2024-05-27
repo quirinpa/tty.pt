@@ -1,6 +1,6 @@
 SCHOOL_PATH="$DOCUMENT_ROOT/schools/$school_id"
 
-if [[ -z "$school_id" ]] || [[ ! -d "$SCHOOL_PATH" ]]; then
+if test -z "$school_id" || test ! -d "$SCHOOL_PATH"; then
 	Fatal 404 School not found
 fi
 
@@ -30,5 +30,5 @@ LabeledIDEdit() {
 }
 
 invalid_s() {
-	invalid_id $2 || [[ ! -d "$SCHOOL_PATH/$1/$2" ]]
+	invalid_id $2 || test ! -d "$SCHOOL_PATH/$1/$2"
 }

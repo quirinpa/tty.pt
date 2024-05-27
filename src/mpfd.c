@@ -30,8 +30,8 @@ int main(int argc, char * argv[]) {
 	line[boundarylen] = '\0';
 	assert(!strcmp(line, boundary));
 
-	if (getenv("ROOT"))
-		root = getenv("ROOT");
+	if (getenv("DOCUMENT_ROOT"))
+		root = getenv("DOCUMENT_ROOT");
 
 	snprintf(mpfd_path, sizeof(mpfd_path), "%s/tmp/mpfd", root);
 	//printf("MPFD_PATH: %s\n", mpfd_path);

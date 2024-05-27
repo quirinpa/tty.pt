@@ -1,8 +1,8 @@
 #!/bin/ksh
 
-. $ROOT/lib/optional-auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/school.sh
+. $DOCUMENT_ROOT/lib/optional-auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/school.sh
 
 Courses() {
 	for_each_in "$SCHOOL_PATH/courses" classes "$class_id" \

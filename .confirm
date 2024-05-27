@@ -1,11 +1,11 @@
-#!/bin/ksh
+#!/bin/sh
 
-[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+test "$REQUEST_METHOD" == "GET" || NotAllowed
 
 USER_PATH=$ROOT/users/$username
 USER_RCODE="`cat $USER_PATH/rcode`"
 
-if [[ "$rcode" != "$USER_RCODE" ]]; then
+if test "$rcode" != "$USER_RCODE"; then
 	Fatal 401 "You can not do that"
 fi
 

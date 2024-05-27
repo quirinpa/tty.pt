@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 content() {
 	cat <<!
 <h1 class="tac">`_ "Registration complete"`</h1>

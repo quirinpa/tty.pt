@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 [[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
 

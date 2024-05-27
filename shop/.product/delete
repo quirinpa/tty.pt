@@ -1,5 +1,5 @@
-#!/bin/ksh
-[[ "$REQUEST_METHOD" == "POST" ]] || NotAllowed
+#!/bin/sh
+test "$REQUEST_METHOD" == "POST" || NotAllowed
 
 local product_path=$SHOP_PATH/$iid
 SHOP_OWNER="`cat $SHOP_PATH/.owner`"

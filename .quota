@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 . $ROOT/lib/command.sh
 
 echo "`df_total`/`free_space`" | Command

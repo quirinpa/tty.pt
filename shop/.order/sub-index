@@ -1,11 +1,11 @@
-#!/bin/ksh
+#!/bin/sh
 
 order_id=$1
 
 AccountInfo() {
 	ACCOUNT_IBAN="`zcat $ROOT/users/$OWNER/iban`"
 
-	if [[ -z "$ACCOUNT_IBAN" ]]; then
+	if test -z "$ACCOUNT_IBAN"; then
 		return
 	fi
 
@@ -20,7 +20,7 @@ AccountInfo() {
 MBWayInfo() {
 	PHONE_NUMBER="`zcat $ROOT/users/$OWNER/phone_number`"
 
-	if [[ -z $PHONE_NUMBER ]]; then
+	if test -z $PHONE_NUMBER; then
 		return
 	fi
 
@@ -44,8 +44,8 @@ TransferData() {
 }
 
 AddressInfo() {
-	if [[ "$ORDER_STATE_TEXT" != "Pending_shipment" ]] \
-		|| [[ "$REMOTE_USER" != "$OWNER" ]]; then
+	if test "$ORDER_STATE_TEXT" != "Pending_shipment" \
+		|| test "$REMOTE_USER" != "$OWNER"; then
 		return;
 	fi
 
@@ -74,7 +74,7 @@ Products() {
 	done
 }
 
-if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
+if test -z "$shop_id" || test ! -d "$SHOP_PATH"; then
 	Fatal 404 Shop not found
 fi
 
@@ -84,7 +84,7 @@ case "$REQUEST_METHOD" in
 	POST) ;;
 	GET)
 		ORDER_PATH=$SHOP_PATH/.orders/$order_id
-		if [[ -z "$order_id" ]] || [[ ! -d "$ORDER_PATH" ]]; then
+		if test -z "$order_id" || test ! -d "$ORDER_PATH"; then
 			Fatal 404 Order not found
 		fi
 

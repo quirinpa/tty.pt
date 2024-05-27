@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 SUBINDEX_ICON=📜
 _TITLE="`_ Poems`"
 Index poem $@

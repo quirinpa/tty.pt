@@ -1,6 +1,6 @@
-#!/bin/ksh
+#!/bin/sh
 
-. $ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/common.sh
 
 case "$REQUEST_METHOD" in
 	GET)

@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 . $ROOT/lib/command.sh
 
 # If i have to update from outside,

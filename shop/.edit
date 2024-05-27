@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 lsshown() {
 	 find $1 -type d -mindepth 1 -maxdepth 1 -name "[!.]*" | sed "s|$1||" | sed "s/\/$//"
@@ -7,7 +7,7 @@ lsshown() {
 Products() {
 	local product_id
 	while read product_id; do
-		if [[ "`cat $SHOP_PATH/$product_id/stock`" -gt 0 ]]; then
+		if test "`cat $SHOP_PATH/$product_id/stock`" -gt 0; then
 			product_env $product_id
 			cat <<!
 <label class="card f v8 b0 fic p">
@@ -44,7 +44,7 @@ fun() {
 # qname=delete_$product_id
 # eval echo $product_id \$$qname
 # done | while read product_id state; do
-# 	[[ "$state" != "on" ]] || product_rm $product_id
+# 	test "$state" != "on" || product_rm $product_id
 # done
 
 # _see_other .

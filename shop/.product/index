@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 shift
 
 case "$1" in

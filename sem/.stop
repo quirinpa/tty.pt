@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 stop_options() {
 	if im $SEM_OWNER; then

@@ -1,21 +1,21 @@
-#!/bin/ksh
+#!/bin/sh
 
 umask 002
 set -e
 
-[[ -z "$VERY_COMMON" ]] || return 0
+test -z "$VERY_COMMON" || return 0
 VERY_COMMON=y
 RES_CONTENT_TYPE="text/html; charset=utf-8"
 
 debug() {
-	echo Status: 500 Internal Error
+	echo 500 Internal Error
 	echo "Content-Type: text/plain; charset=utf-8"
 	echo
 	echo Sorry, I\'m currently debugging. Please wait.
 }
 
 zcat() {
-	[[ -f "$@" ]] && cat $@ || true
+	test -f "$@" && cat $@ || true
 }
 
 NormalHead() {
@@ -28,9 +28,9 @@ NormalHead() {
 	esac
 	export STATUS_TEXT
 	export STATUS_CODE=$1
-	echo "Status: $1 $STATUS_TEXT"
+	echo "$1 $STATUS_TEXT"
 	echo "Content-Type: $RES_CONTENT_TYPE"
-	[[ -z "$HEADERS" ]] || echo -n $HEADERS
+	test -z "$HEADERS" || echo -n $HEADERS
 }
 
 Head() {
@@ -52,7 +52,7 @@ Scat() {
 }
 
 Cat() {
-	if [[ $# -lt 1 ]]; then
+	if test $# -lt 1; then
 		envsubst
 	else
 		cat $DOCUMENT_ROOT/templates/$1.html | envsubst
@@ -73,7 +73,7 @@ get_lang() {
 lang="`get_lang`"
 export lang
 export LANG=$lang
-if [[ -z "$LANG" ]]; then
+if test -z "$LANG"; then
 	LANG=pt_PT
 fi
 ILANG=$LANG
@@ -83,7 +83,7 @@ _() {
 	IFS='$'
 	TEXTDOMAIN=site
 	value="`cat $DOCUMENT_ROOT/locale/$TEXTDOMAIN-$lang.txt | sed -n "s|^$arg\|||p"`"
-	[[ -z "$value" ]] && echo $arg || echo $value
+	test -z "$value" && echo $arg || echo $value
 }
 
 export RB="btn round p8 ts64"
@@ -94,7 +94,7 @@ export SRB="btn round ps tsl"
 Menu() {
 	local user_name
 	local user_icon
-	if [[ ! -z "$REMOTE_USER" ]]; then
+	if test ! -z "$REMOTE_USER"; then
 		user_name="<span class=\"ts\">$REMOTE_USER</span>"
 		user_icon="<a class=\"tsxl f h fic btn p8\" href=\"/user\"><span role=\"img\" aria-label=\"user\">🔑 </span><span> $user_name</span></a>"
 	else
@@ -129,14 +129,14 @@ auth() {
 	username=$1
 	password=$2
 	hash="`grep "^$username:" $DOCUMENT_ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
-	[[ ! -z "$hash" ]] || Fatal 400 No such user
+	test ! -z "$hash" || Fatal 400 No such user
 	if crypt_checkpass "$password" "$hash"; then
 		Unauthorized
 	fi
-	[[ ! -f $ROOT/users/$username/rcode ]] || Fatal 400 The account was not activated
+	test ! -f $DOCUMENT_ROOT/users/$username/rcode || Fatal 400 The account was not activated
 
 	TOKEN="`rand_str_1`"
-	#[[ -d $ROOT/sessions ]] || mkdir $ROOT/sessions
+	#test -d $DOCUMENT_ROOT/sessions || mkdir $DOCUMENT_ROOT/sessions
 	echo $username > $DOCUMENT_ROOT/sessions/$TOKEN
 	HEADERS=$HEADERS"Set-Cookie: QSESSION=$TOKEN; SameSite=Lax\n"
 }

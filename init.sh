@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 mkdir dev 2>/dev/null || true
 cd dev
 mknod zero c 13 12

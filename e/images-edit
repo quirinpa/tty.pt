@@ -1,21 +1,21 @@
-#!/bin/ksh
+#!/bin/sh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
 
 ls_images() {
-	ls $ROOT/htdocs/img/$REMOTE_USER | sed '/^small-.*$/d'
+	ls $DOCUMENT_ROOT/htdocs/img/$REMOTE_USER | sed '/^small-.*$/d'
 }
 
 case "$REQUEST_METHOD" in
 	POST)
-		USER_IMAGES_PATH=$ROOT/htdocs/img/$REMOTE_USER
+		USER_IMAGES_PATH=$DOCUMENT_ROOT/htdocs/img/$REMOTE_USER
 
 		ls_images | while read noext; do
 			local qname=delete_$noext
 			eval echo $noext \$$qname
 		done | while read noext state; do
-			[[ "$state" != "on" ]] || rm $USER_IMAGES_PATH/$noext.*
+			test "$state" != "on" || rm $USER_IMAGES_PATH/$noext.*
 		done
 
 		RESP_CONTENT_TYPE="text/plain"

@@ -1,30 +1,30 @@
 #!/bin/ksh
 
-. $ROOT/lib/optional-auth.sh
-. $ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/optional-auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
 
-POEM_PATH=$ROOT/poems/$poem_id
+POEM_PATH=$DOCUMENT_ROOT/poems/$poem_id
 COMMENTS_PATH="$POEM_PATH/comments.txt"
 
 case "$REQUEST_METHOD" in
 	POST)
-		[[ ! -z "$REMOTE_USER" ]] || Unauthorized
+		test ! -z "$REMOTE_USER" || Unauthorized
 		echo $REMOTE_USER: "`urldecode "$comment"`" | fappend $COMMENTS_PATH
 		see_other poem ?poem_id=$poem_id
 		;;
 	GET)
-		if [[ -z "$poem_id" ]]; then
+		if test -z "$poem_id"; then
 			Fatal 404 Poem not found
 		fi
 
 		POEM_HTML_PATH="$POEM_PATH/pt_PT.html"
 
-		if [[ ! -f "$POEM_HTML_PATH" ]] || [[ ! -d "$POEM_PATH" ]]; then
+		if test ! -f "$POEM_HTML_PATH" || test ! -d "$POEM_PATH"; then
 			Fatal 404 Poem not found
 		fi
 
 		NEW_POEM_HTML_PATH="$POEM_PATH/$lang.html"
-		if [[ -f $NEW_POEM_HTML_PATH ]]; then
+		if test -f $NEW_POEM_HTML_PATH; then
 			POEM_HTML_PATH=$NEW_POEM_HTML_PATH
 		fi
 

@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 test -z "$t" && t=0 || true
 

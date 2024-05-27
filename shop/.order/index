@@ -1,8 +1,8 @@
-#!/bin/ksh
+#!/bin/sh
 
 . $ROOT/lib/order.sh
 
-if [[ ! -z "$1" ]]; then
+if test ! -z "$1"; then
 	. ./sub-index $@
 	exit 0
 fi
@@ -63,13 +63,13 @@ case "$REQUEST_METHOD" in
 	*) NotAllowed ;;
 esac
 
-if [[ -z "`zcat $CART_PATH`" ]]; then
+if test -z "`zcat $CART_PATH`"; then
 	Fatal 404 Cart not found
 fi
 
-if [[ -z "`zcat $USER_PATH/address_line_1`" ]] \
-	|| [[ -z "`zcat $USER_PATH/address_line_2`" ]] \
-	|| [[ -z "`zcat $USER_PATH/zip`" ]]; then
+if test -z "`zcat $USER_PATH/address_line_1`" \
+	|| test -z "`zcat $USER_PATH/address_line_2`" \
+	|| test -z "`zcat $USER_PATH/zip`"; then
 			Fatal 400 Invalid shipping address 
 fi
 

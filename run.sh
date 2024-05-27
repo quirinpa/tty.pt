@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 export HTTP_ACCEPT_LANGUAGE="pt,en-US;q=0.9,en;q=0.8,es;q=0.7"
 export CONTENT_TYPE=application/x-www-form-urlencoded
@@ -9,12 +9,12 @@ order_id=9
 
 post() {
 	export SCRIPT_NAME=$2
-	echo "$1" | REQUEST_METHOD=POST ROOT=$ROOT $ROOT/$2
+	echo "$1" | REQUEST_METHOD=POST DOCUMENT_ROOT=$DOCUMENT_ROOT $DOCUMENT_ROOT/$2
 }
 
 get() {
 	export SCRIPT_NAME=$2
-	QUERY_STRING=$1 REQUEST_METHOD=GET ROOT=$ROOT $ROOT/$2
+	QUERY_STRING=$1 REQUEST_METHOD=GET DOCUMENT_ROOT=$DOCUMENT_ROOT $DOCUMENT_ROOT/$2
 }
 
 query_string=shop_id=$shop_id
@@ -75,12 +75,12 @@ case "$1" in
 	get-orders) get $query_string e/orders ;;
 	get-image-add) get $query_string e/image-add ;;
 	post-image-add)
-		content="`cat $ROOT/image-add-content.txt`"
+		content="`cat $DOCUMENT_ROOT/image-add-content.txt`"
 		export CONTENT_TYPE="multipart/form-data; boundary=----WebKitFormBoundaryHWi9UJlsyPtomSAF"
 		post "$content" e/image-add
 		;;
 	post-poem-add)
-		content="`cat $ROOT/poem-add-content.txt`"
+		content="`cat $DOCUMENT_ROOT/poem-add-content.txt`"
 		export CONTENT_TYPE="multipart/form-data; boundary=----WebKitFormBoundaryIOyK8yKGOlfFIG1u"
 		post "$content" e/poem-add
 		;;
@@ -90,7 +90,7 @@ case "$1" in
 		get username=$username\&rcode=$rcode e/registration-confirm
 		;;
 	post-sem-add) 
-		content="`cat $ROOT/sem-add-content.txt`"
+		content="`cat $DOCUMENT_ROOT/sem-add-content.txt`"
 		export CONTENT_TYPE="multipart/form-data; boundary=----WebKitFormBoundaryIOyK8yKGOlfFIG1u"
 		post "$content" e/sem-add
 		;;

@@ -1,6 +1,6 @@
 . $DOCUMENT_ROOT/lib/common.sh
 
-if [[ "$REQUEST_METHOD" != "GET" ]]; then
+if test "$REQUEST_METHOD" != "GET"; then
 	echo "Status: 405 Method Not Allowed"
 	echo
 	exit
@@ -8,11 +8,11 @@ fi
 
 Command() {
 	local args="$@"
-	if [[ -z "$args" ]]; then
+	if test -z "$args"; then
 		args=$SCRIPT
 	fi
 
-	if [[ "$HTTP_ACCEPT" == "text/plain" ]]; then
+	if test "$HTTP_ACCEPT" == "text/plain"; then
 		NormalHead 200
 		echo
 	else

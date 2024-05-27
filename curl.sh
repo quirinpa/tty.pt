@@ -1,4 +1,4 @@
-. $ROOT/lib/more-common.sh
+. $DOCUMENT_ROOT/lib/more-common.sh
 
 echo -n Enter username:\  1>&2
 read username

@@ -6,7 +6,7 @@ product_env() {
 	local product_id=$1
 	product_path="`get_product_path $product_id`"
 	product_images="`zcat $product_path/images`"
-	[[ ! -z "$product_images" ]] || product_images=/img/no-image.png
+	test ! -z "$product_images" || product_images=/img/no-image.png
 	product_image_path="`echo "$product_images" | head -n 1`"
 	product_title="`cat $product_path/title`"
 	product_description="`cat $product_path/description`"
@@ -33,17 +33,17 @@ process_cart() {
 product_rm() {
 	local product_id=$1
 	cat $SHOP_PATH/$product_id/images | while read line; do
-		[[ ! -f "$DOCUMENT_ROOT$line" ]] || rm $DOCUMENT_ROOT$line
+		test ! -f "$DOCUMENT_ROOT$line" || rm $DOCUMENT_ROOT$line
 	done
 	rm -rf $SHOP_PATH/$product_id
 }
 
 shop_source() {
-	if [[ -z "$shop_id" ]]; then
+	if test -z "$shop_id"; then
 		shop_id="$ARG"
 	fi
 	SHOP_PATH=$DOCUMENT_ROOT/shop/$shop_id
-	if [[ -z "$shop_id" ]] || [[ ! -d "$SHOP_PATH" ]]; then
+	if test -z "$shop_id" || test ! -d "$SHOP_PATH"; then
 		Fatal 404 Shop not found
 	fi
 	USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER

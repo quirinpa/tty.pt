@@ -1,8 +1,8 @@
 #!/bin/ksh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/school.sh
+. $DOCUMENT_ROOT/lib/auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/school.sh
 
 COURSE_PATH="$SCHOOL_PATH/courses/$course_id"
 COURSE_REGENT="`cat $COURSE_PATH/.teacher`"

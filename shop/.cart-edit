@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 Products() {
 	local product_id
@@ -21,7 +21,7 @@ Products() {
 case "$REQUEST_METHOD" in
 	POST) ;;
 	GET)
-		if [[ ! -f "$CART_PATH" ]] || [[ -z "`cat $CART_PATH`" ]]; then
+		if test ! -f "$CART_PATH" || test -z "`cat $CART_PATH`"; then
 			Fatal 400 You can not edit an empty cart
 		fi
 
@@ -51,14 +51,14 @@ done | cat $CART_PATH - | sort -s -k1,1 | while read product_id old_quantity; do
 	local available_exp="$new_stock_exp >= 0"
 	local available="`echo $available_exp | bc`"
 
-	[[ "$available" != "0" ]] || Fatal 400 Not enough stock
+	test "$available" != "0" || Fatal 400 Not enough stock
 
 	# this should only happen on order placement
 	# local new_stock="`echo "$new_stock_exp" | bc`"
 	# echo $new_stock | fwrite $product_path/stock
 
 	# echo $product_id $quantity
-	[[ "$quantity" == "0" ]] || echo $product_id $quantity
+	test "$quantity" == "0" || echo $product_id $quantity
 done > $CART_PATH
 
 _see_other /shop/$shop_id/cart

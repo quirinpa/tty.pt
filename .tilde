@@ -1,13 +1,13 @@
-#!/bin/ksh
+#!/bin/sh
 export user="`echo $1 | sed 's/^~//'`"
 shift
 path=$DOCUMENT_ROOT/home/$user
 
-if [[ ! -f "$path/.index" ]]; then
+if test ! -f "$path/.index"; then
 	test "$REMOTE_USER" == "$user" || NotFound
 	mkdir -p $path || true
 	cat - > $path/.index <<!
-#!/bin/ksh
+#!/bin/sh
 user=\$1
 shift
 

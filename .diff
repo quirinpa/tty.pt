@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 . $ROOT/lib/command.sh
 
 # git -C $ROOT/ fetch origin/main

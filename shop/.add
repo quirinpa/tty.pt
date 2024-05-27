@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 case "$REQUEST_METHOD" in
 	POST) ;;

@@ -1,6 +1,6 @@
-#!/bin/ksh
+#!/bin/sh
 
-[[ ! -z "$REMOTE_USER" ]] || Unauthorized
+test ! -z "$REMOTE_USER" || Unauthorized
 
 IsAllowedItemFound $@
 sem_source
@@ -23,32 +23,32 @@ options=""
 
 FUNCTIONS="`SemMenu`"
 
-if [[ "$graph" == "on" ]]; then
+if test "$graph" == "on"; then
 	graph_checked=checked
 	options=$options"g"
 fi
 
-if [[ "$debug" == "on" ]]; then
+if test "$debug" == "on"; then
 	debug_checked=checked
 	options=$options"d"
 fi
 
-if [[ "$human" == "on" ]]; then
+if test "$human" == "on"; then
 	human_checked=checked
 	options=$options"h"
 fi
 
-if [[ "$machine" == "on" ]]; then
+if test "$machine" == "on"; then
 	machine_checked=checked
 	options=$options"m"
 fi
 
-if [[ "$present" == "on" ]]; then
+if test "$present" == "on"; then
 	present_checked=checked
 	options=$options"p"
 fi
 
-if [[ ! -z "$options" ]]; then
+if test ! -z "$options"; then
 	options="-$options"
 fi
 

@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 test ! -z "$REMOTE_USER" || Forbidden
 test "$REQUEST_METHOD" == "GET" || NotAllowed

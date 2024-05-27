@@ -1,11 +1,11 @@
-#!/bin/ksh
+#!/bin/sh
 
 . $DOCUMENT_ROOT/lib/very-common.sh
 
 Forbidden() {
 	NormalHead 403
 	_TITLE="`_ Forbidden`"
-	if [[ $# -ge 1 ]]; then
+	if test $# -ge 1; then
 		_TITLE="$_TITLE - $@"
 	fi
 	export _TITLE
@@ -19,7 +19,7 @@ Forbidden() {
 NotAllowed() {
 	NormalHead 405 Method Not Allowed
 	_TITLE="`_ Method Not Allowed`"
-	if [[ $# -ge 1 ]]; then
+	if test $# -ge 1; then
 		_TITLE="$_TITLE - $@"
 	fi
 	export _TITLE
@@ -31,13 +31,13 @@ NotAllowed() {
 }
 
 MustPost() {
-	test "$REQUEST_METHOD" == "POST" || NotAllowed
+	test "$REQUEST_METHOD" = "POST" || NotAllowed
 }
 
 NotFound() {
 	NormalHead 404 Not Found
 	_TITLE="`_ Not Found`"
-	if [[ $# -ge 1 ]]; then
+	if test $# -ge 1; then
 		_TITLE="$_TITLE - $@"
 	fi
 	export _TITLE
@@ -51,7 +51,7 @@ NotFound() {
 bc() {
 	read exp
 	#echo "BC='$exp'" >&2
-	echo "$exp" | $DOCUMENT_ROOT/usr/bin/bc "$@"
+	echo "$exp" | $DOCUMENT_ROOT/bin/bc "$@"
 }
 
 math() {
@@ -103,7 +103,7 @@ esac
 
 counter_inc() {
 	current="`zcat $1`"
-	if [[ ! -z "$current" ]]; then
+	if test ! -z "$current"; then
 		next="`echo $current + 1 | bc`"
 		echo $next | tee $1
 	else
@@ -113,7 +113,7 @@ counter_inc() {
 }
 
 counter_dec() {
-	if [[ -f $1 ]]; then
+	if test -f $1; then
 		current="`cat $1`"
 		next="`echo $current - $2 | bc`"
 		echo $next | tee $1
@@ -134,14 +134,14 @@ revlines() {
 }
 
 _see_other() {
-	echo 'Status: 303 See Other'
+	echo '303 See Other'
 	echo "Location: $1"
 	echo
 	exit
 }
 
 see_other() {
-	echo 'Status: 303 See Other'
+	echo '303 See Other'
 	echo "Location: /e/$1$2"
 	echo
 	exit
@@ -157,7 +157,7 @@ format_df() {
 }
 
 df_dir() {
-	if [[ ! -d $DOCUMENT_ROOT/$1 ]]; then
+	if test ! -d $DOCUMENT_ROOT/$1; then
 		return
 	fi
 	du_user="`du -c $DOCUMENT_ROOT/$1 | tail -1 | awk '{print $1}'`"
@@ -169,7 +169,7 @@ dir_df() {
 		while read line; do
 			path=$DOCUMENT_ROOT/$1/$line
 			OWNER="`cat $path/.owner`"
-			[[ "$OWNER" != "$DF_USER" ]] || df_dir $1/$line
+			test "$OWNER" != "$DF_USER" || df_dir $1/$line
 		done
 }
 
@@ -206,11 +206,11 @@ free_space() {
 FREE_SPACE="`free_space`"
 
 __fbytes() {
-	[[ -z "$DF_USER" ]] && Fatal 400 Checking bytes of unknown user
+	test -z "$DF_USER" && Fatal 400 Checking bytes of unknown user
 	OCCUPIED_SPACE="`df_total`"
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
 	CAN="`echo $CAN_EXP | bc -l`"
-	[[ "$CAN" == "0" ]]
+	test "$CAN" = "0"
 }
 
 _fbytes() {
@@ -225,7 +225,7 @@ fbytes() {
 }
 
 fmkdir() {
-	if [[ ! -d "$1" ]]; then
+	if test ! -d "$1"; then
 		fbytes $DOCUMENT_ROOT/empty
 		mkdir -p "$1"
 	fi
@@ -257,7 +257,7 @@ fappend() {
 Whisper() {
 	WHISPER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER/.whisper
 	WHISPER="`zcat $WHISPER_PATH | no_html`"
-	if [[ -z "$WHISPER" ]]; then
+	if test -z "$WHISPER"; then
 		return
 	fi
 
@@ -304,7 +304,7 @@ Fatal() {
 	allargs="$@"
 	export _TITLE="`_ "$allargs"`"
 
-	if [[ "$HTTP_ACCEPT" == "text/plain" ]]; then
+	if test "$HTTP_ACCEPT" = "text/plain"; then
 		NormalHead $SC
 		echo
 		echo $_TITLE
@@ -321,7 +321,7 @@ DF_USER=$REMOTE_USER
 SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $2}'`"
 ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
 set -- `echo $DOCUMENT_URI | tr '/' ' '`
-if [[ "$SCRIPT" == "e" ]]; then
+if test "$SCRIPT" = "e"; then
 	SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
 	ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $4}'`"
 	e_mode=1
@@ -334,12 +334,12 @@ fw() {
 invalid_id() {
 	valid="`echo $@ | tr -cd '[a-zA-Z0-9]_'`"
 	count="`echo $@ | wc -c`"
-	[[ "$valid" != "$@" ]] || [[ "$count" -le 0 ]]
+	test "$valid" != "$@" || test "$count" -le 0
 }
 
 invalid_password() {
 	count="`echo $@ | wc -c`"
-	[[ "$count" -le 8 ]]
+	test "$count" -le 8
 }
 
 invalid_lang() {
@@ -356,7 +356,7 @@ urlencode () {
 }
 
 Buttons() {
-	if [[ $e_mode == 1 ]]; then
+	if test $e_mode = 1; then
 		while read id; do
 			_TITLE="`_ $id`"
 			where="$2"
@@ -405,15 +405,15 @@ for_each_in() {
 
 im() {
 	ret=""
-	while [[ $# -ge 1 ]]; do
-		if [[ "$REMOTE_USER" == "$1" ]]; then
+	while test $# -ge 1; do
+		if test "$REMOTE_USER" = "$1"; then
 			ret="1"
 			break;
 		fi
 		shift
 	done
 
-	[[ "$ret" == "1" ]]
+	test "$ret" = "1"
 }
 
 contents=$DOCUMENT_ROOT/tmp/contents
@@ -421,7 +421,7 @@ contents=$DOCUMENT_ROOT/tmp/contents
 cond() {
 	# tee $contents$1
 	cat - > $contents$1
-	[[ -z "`cat $contents$1`" ]]
+	test -z "`cat $contents$1`"
 }
 
 surround() {
@@ -433,7 +433,7 @@ surround() {
 csurround() {
 	local contents="`cat -`"
 
-	[[ -z "$contents" ]] || {
+	test -z "$contents" || {
 		echo $contents | surround $@
 	}
 
@@ -469,7 +469,7 @@ Functions() {
 
 IsAllowedItemFound() {
 	set -- `echo $REQUEST_URI | tr '/' ' '`
-	local item_path="$ROOT/$1/$iid"
+	local item_path="$DOCUMENT_ROOT/$1/$iid"
 	test ! -z "$ITEM_PATH" \
 		|| ITEM_PATH="$item_path"
 
@@ -496,7 +496,7 @@ Index() {
 			;;
 	esac
 
-	test "$REQUEST_METHOD" == "GET" || return 0
+	test "$REQUEST_METHOD" = "GET" || return 0
 
 	export _TITLE
 
@@ -514,12 +514,12 @@ Index() {
 	export CONTENT
 	export FUNCTIONS
 	Normal 200 $typ
-	Scat $ROOT/components/common
+	Scat $DOCUMENT_ROOT/components/common
 	exit 0
 }
 
 SubIndex() {
-	test "$REQUEST_METHOD" == "GET" || return 0
+	test "$REQUEST_METHOD" = "GET" || return 0
 	SUBINDEX_ICON=""
 	test ! -z "$_TITLE" || _TITLE="$iid"
 	test ! -z "$PRECLASS" || PRECLASS="v f fic"
@@ -537,14 +537,14 @@ SubIndex() {
 	export PRECLASS
 
 	Normal 200 ./$iid
-	Scat $ROOT/components/common
+	Scat $DOCUMENT_ROOT/components/common
 	exit 0
 }
 
 Add() {
-	[[ ! -z "$REMOTE_USER" ]] || Forbidden
+	test ! -z "$REMOTE_USER" || Forbidden
 
-	if test "$REQUEST_METHOD" == "GET"; then
+	if test "$REQUEST_METHOD" = "GET"; then
 		test ! -z "$_TITLE" || _TITLE="`_ "Add item"`"
 		test ! -z "$SUBINDEX_ICON" || SUBINDEX_ICON="🗂"
 
@@ -560,9 +560,9 @@ Add() {
 		return
 	fi
 
-	test "$REQUEST_METHOD" == "POST" || NotAllowed
+	test "$REQUEST_METHOD" = "POST" || NotAllowed
 
-	iid="`cat $ROOT/tmp/mpfd/iid`"
+	iid="`cat $DOCUMENT_ROOT/tmp/mpfd/iid`"
 
 	if invalid_id $iid; then
 		Fatal 400 Not a valid ID
@@ -588,7 +588,7 @@ nfiles() {
 }
 
 a2l() {
-	while [[ $# -ge 1 ]]; do
+	while test $# -ge 1; do
 		echo $1
 		shift;
 	done
@@ -606,7 +606,7 @@ cslash() {
 	fi
 }
 
-mpfd-ls() {
+mpfd_ls() {
 	local file_count="`cat $DOCUMENT_ROOT/tmp/mpfd/file-count`"
 	for i in `seq 0 $file_count`; do
 		local FILE_PATH=$DOCUMENT_ROOT/tmp/mpfd/file$i
@@ -621,7 +621,7 @@ literal() {
 
 ls_shown() {
 	ls $1 | while read line; do
-		if [[ ! -f "$1/$line/.hidden" ]]; then
+		if test ! -f "$1/$line/.hidden"; then
 			echo $line
 		fi
 	done

@@ -1,8 +1,8 @@
 #!/bin/ksh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/school.sh
+. $DOCUMENT_ROOT/lib/auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/school.sh
 
 im $SCHOOL_OWNER || Forbidden
 

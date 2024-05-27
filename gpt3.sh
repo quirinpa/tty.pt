@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 prompt="`cat`"
 
 urlescape() {

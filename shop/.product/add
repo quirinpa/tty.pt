@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 im $SHOP_OWNER || Forbidden
 
@@ -40,7 +40,7 @@ fmkdir $PRODUCT_PATH
 urldecode $title | fwrite $PRODUCT_PATH/title
 urldecode $description | fwrite $PRODUCT_PATH/description
 images="`nfiles $images`"
-[[ -z "$images" ]] || a2l $images | fwrite $PRODUCT_PATH/images
+test -z "$images" || a2l $images | fwrite $PRODUCT_PATH/images
 echo $price | fwrite $PRODUCT_PATH/price
 echo $stock | fwrite $PRODUCT_PATH/stock
 

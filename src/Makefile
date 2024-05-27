@@ -1,4 +1,4 @@
-ROOT=/var/www
+DOCUMENT_ROOT=/var/www
 
 all: mpfd crypt_checkpass
 
@@ -9,7 +9,7 @@ crypt_checkpass: crypt_checkpass.c
 	${CC} -o $@ crypt_checkpass.c
 
 install: mpfd crypt_checkpass
-	${INSTALL} mpfd ${ROOT}/usr/bin
-	${INSTALL} crypt_checkpass ${ROOT}/usr/bin
+	${INSTALL} mpfd ${DOCUMENT_ROOT}/usr/bin
+	${INSTALL} crypt_checkpass ${DOCUMENT_ROOT}/usr/bin
 
 .PHONY: install all

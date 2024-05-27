@@ -1,9 +1,9 @@
-#!/bin/ksh
+#!/bin/sh
 
 pause_options() {
 	if im $SEM_OWNER; then
 		$SEM -p < $SEM_FILE | grep '^P ' | awk '{ print $2 }'
-	elif [[ "$PRESENT" == "P $REMOTE_USER" ]]; then
+	elif test "$PRESENT" == "P $REMOTE_USER"; then
 		echo $REMOTE_USER
 	fi
 }

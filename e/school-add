@@ -1,7 +1,7 @@
 #!/bin/ksh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
 
 case "$REQUEST_METHOD" in
 	POST)
@@ -11,7 +11,7 @@ case "$REQUEST_METHOD" in
 			Fatal 400 Not a valid ID
 		fi
 
-		SCHOOL_PATH="$ROOT/schools/$school_id"
+		SCHOOL_PATH="$DOCUMENT_ROOT/schools/$school_id"
 
 		fmkdir $SCHOOL_PATH
 		echo $REMOTE_USER | fwrite $SCHOOL_PATH/.owner

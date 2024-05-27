@@ -1,8 +1,8 @@
 #!/bin/ksh
 
-. $ROOT/lib/optional-auth.sh
-. $ROOT/lib/common.sh
-. $ROOT/lib/school.sh
+. $DOCUMENT_ROOT/lib/optional-auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/school.sh
 
 COURSE_PATH=$SCHOOL_PATH/courses/$course_id
 

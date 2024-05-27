@@ -5,7 +5,6 @@ xxd
 openssl
 sh
 basename
-ksh
 tr
 awk
 sed

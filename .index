@@ -1,9 +1,9 @@
-#!/bin/ksh
+#!/bin/sh -x
 
 . $DOCUMENT_ROOT/lib/optional-auth.sh
 . $DOCUMENT_ROOT/lib/common.sh
 
-if [[ ! -z "$1" ]]; then
+if test ! -z "$1"; then
 	INDEX_ICON="🏠"
 	case "$1" in
 		login) shift; . ./.login;;
@@ -30,12 +30,12 @@ if [[ ! -z "$1" ]]; then
 		~*) . ./.tilde $@;;
 		*)
 			path=$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI
-			if [[ ! -f $path ]]; then
-				[[ ! -z "$REMOTE_USER" ]] || NotFound
+			if test ! -f $path; then
+				test ! -z "$REMOTE_USER" || NotFound
 				path=$DOCUMENT_ROOT/home/$REMOTE_USER/$DOCUMENT_URI
 				# check perms (not applicable, for now)
 				# ls -al $path  | awk '{print $1}' | tail -c 4 | grep -q r
-				[[ -f $path ]] || NotFound
+				test -f $path || NotFound
 			fi
 			echo Status 200: Ok
 			echo
@@ -45,7 +45,7 @@ if [[ ! -z "$1" ]]; then
 	NotAllowed
 fi
 
-[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+test "$REQUEST_METHOD" = "GET" || NotAllowed
 
 export _TITLE="tty.pt"
 export _POEMS="`_ Poems`"

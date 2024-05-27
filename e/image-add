@@ -1,37 +1,37 @@
-#!/bin/ksh
+#!/bin/sh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
 
 case "$REQUEST_METHOD" in
 	POST)
-		grep -q "^$REMOTE_USER$" $ROOT/.uploaders \
+		grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders \
 			|| Forbidden "You can not do that"
 
-		USER_IMAGES_PATH=$ROOT/htdocs/img/$REMOTE_USER
+		USER_IMAGES_PATH=$DOCUMENT_ROOT/htdocs/img/$REMOTE_USER
 
 		fmkdir $USER_IMAGES_PATH
 
-		[[ ! -f $ROOT/tmp/images ]] || rm $ROOT/tmp/images
+		test ! -f $DOCUMENT_ROOT/tmp/images || rm $DOCUMENT_ROOT/tmp/images
 
-		file_count="`cat $ROOT/tmp/mpfd/file-count`"
+		file_count="`cat $DOCUMENT_ROOT/tmp/mpfd/file-count`"
 		for i in `seq 0 $file_count`; do
-			FILE_PATH=$ROOT/tmp/mpfd/file$i
+			FILE_PATH=$DOCUMENT_ROOT/tmp/mpfd/file$i
 			fbytes $FILE_PATH
-			IMAGE_ID="`counter_inc $ROOT/public/img-counter`"
+			IMAGE_ID="`counter_inc $DOCUMENT_ROOT/public/img-counter`"
 			ext="`file -i $FILE_PATH | awk '{print $2}' | tr '/' ' ' | awk '{print $2}'`"
 			mv $FILE_PATH $USER_IMAGES_PATH/$IMAGE_ID.$ext
 			cd $USER_IMAGES_PATH
 			convert -resize x128 $IMAGE_ID.$ext small-$IMAGE_ID.$ext 2>&1
-			cd - > $ROOT/tmp/null
-			echo /img/$REMOTE_USER/$IMAGE_ID.$ext >> $ROOT/tmp/images
+			cd - > $DOCUMENT_ROOT/tmp/null
+			echo /img/$REMOTE_USER/$IMAGE_ID.$ext >> $DOCUMENT_ROOT/tmp/images
 		done
 
-		if [[ "$HTTP_ACCEPT" == "text/plain" ]]; then
+		if test "$HTTP_ACCEPT" == "text/plain"; then
 			RESP_CONTENT_TYPE="text/plain"
 			NormalHead 200
 			echo
-			cat $ROOT/tmp/images
+			cat $DOCUMENT_ROOT/tmp/images
 			exit
 		fi
 

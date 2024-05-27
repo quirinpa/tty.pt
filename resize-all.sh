@@ -1,7 +1,7 @@
-#!/bin/ksh
-ROOT=/var/www
+#!/bin/sh
+DOCUMENT_ROOT=/var/www
 
-find $ROOT/htdocs/img -type f | while read line; do
+find $DOCUMENT_ROOT/htdocs/img -type f | while read line; do
 	dname="`dirname $line`"
 	bname="`basename $line`"
 	cd $dname
@@ -9,7 +9,7 @@ find $ROOT/htdocs/img -type f | while read line; do
 	cd -
 done
 
-# find $ROOT/shops/loja_dos_sonhos/ -type f -name "images" | while read line; do
+# find $DOCUMENT_ROOT/shops/loja_dos_sonhos/ -type f -name "images" | while read line; do
 # 	echo $line:
 # 	cat $line
 # 	cat $line | while read line2; do

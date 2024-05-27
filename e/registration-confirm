@@ -1,13 +1,13 @@
-#!/bin/ksh
+#!/bin/sh
 
-. $ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/common.sh
 
 case "$REQUEST_METHOD" in
 	GET)
-		USER_PATH=$ROOT/users/$username
+		USER_PATH=$DOCUMENT_ROOT/users/$username
 		USER_RCODE="`cat $USER_PATH/rcode`"
 
-		if [[ "$rcode" != "$USER_RCODE" ]]; then
+		if test "$rcode" != "$USER_RCODE"; then
 			Fatal 401 "You can not do that"
 		fi
 

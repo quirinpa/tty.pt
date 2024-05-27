@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 USER_PATH=$ROOT/users/$REMOTE_USER
 
@@ -22,7 +22,7 @@ Address() {
 }
 
 PhoneNumber() {
-	if [[ ! -f "$USER_PATH/phone_number" ]]; then
+	if test ! -f "$USER_PATH/phone_number"; then
 		return
 	fi
 
@@ -39,7 +39,7 @@ PhoneNumber() {
 }
 
 AccountInfo() {
-	if [[ ! -f "$USER_PATH/iban" ]] || [[ ! -f "$USER_PATH/bicswift" ]]; then
+	if test ! -f "$USER_PATH/iban" || test ! -f "$USER_PATH/bicswift"; then
 		return
 	fi
 
@@ -62,10 +62,10 @@ AccountInfo() {
 
 }
 
-[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
+test "$REQUEST_METHOD" == "GET" || NotAllowed
 
 fun() {
-	if [[ -z "$user_id" ]] || im $user_id; then
+	if test -z "$user_id" || im $user_id; then
 		EditBtn "/e/user-edit?user_id=$user_id"
 	fi
 }

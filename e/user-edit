@@ -1,9 +1,9 @@
-#!/bin/ksh
+#!/bin/sh
 
-. $ROOT/lib/auth.sh
-. $ROOT/lib/common.sh
+. $DOCUMENT_ROOT/lib/auth.sh
+. $DOCUMENT_ROOT/lib/common.sh
 
-USER_PATH=$ROOT/users/$REMOTE_USER
+USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
 
 case "$REQUEST_METHOD" in
 	POST)

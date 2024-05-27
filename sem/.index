@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 . $DOCUMENT_ROOT/lib/sem.sh
 SUBINDEX_ICON=🏡
 _TITLE="`_ Sems`"

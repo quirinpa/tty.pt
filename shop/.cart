@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 case "$1" in
 	edit) shift; . ./.cart-edit ; exit 0 ;;
@@ -43,14 +43,14 @@ $PRODUCTS
 !
 }
 
-if [[ -z "$shop_id" ]] || [[ ! -d $SHOP_PATH ]]; then
+if test -z "$shop_id" || test ! -d $SHOP_PATH; then
 	Fatal 404 Shop not found
 fi
 
 case "$REQUEST_METHOD" in
 	POST) ;;
 	GET)
-		if [[ -f "$CART_PATH" ]] && [[ ! -z `cat $CART_PATH` ]]; then
+		if test -f "$CART_PATH" && test ! -z `cat $CART_PATH`; then
 			CONTENTS="`Contents`"
 			export EDIT_BTN="`EditBtn "/shop/$shop_id/cart/edit"`"
 
@@ -69,17 +69,17 @@ esac
 
 local PRODUCT_PATH=$SHOP_PATH/$product_id
 
-if [[ -z "$product_id" ]] || [[ ! -d "$PRODUCT_PATH" ]]; then
+if test -z "$product_id" || test ! -d "$PRODUCT_PATH"; then
 	Fatal 404 Product not found
 fi
 
 product_env $product_id # TODO think twice about this use case
 
-if [[ -f $CART_PATH ]] && cat $CART_PATH | grep -q $product_id; then
+if test -f $CART_PATH && cat $CART_PATH | grep -q $product_id; then
 	# only do something if this is not the case,
 	# otherwise just redir
 	echo -n ""
-elif [[ "$product_stock" != 0 ]]; then
+elif test "$product_stock" != 0; then
 	echo $product_id 1 | fappend $CART_PATH
 else
 	Fatal 400 Not enough stock

@@ -1,8 +1,8 @@
-#!/bin/ksh
+#!/bin/sh
 
 . $DOCUMENT_ROOT/lib/very-common.sh
 
-if [[ -z "$cookie" ]] || [[ ! -f "$DOCUMENT_ROOT/sessions/$cookie" ]]; then
+if test -z "$cookie" || test ! -f "$DOCUMENT_ROOT/sessions/$cookie"; then
 	Unauthorized
 fi
 

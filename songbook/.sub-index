@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 iid="$1"
 ITEM_PATH="$ROOT/songbook/$iid"

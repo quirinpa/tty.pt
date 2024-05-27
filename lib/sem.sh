@@ -1,5 +1,5 @@
 SemMenuOption() {
-	if [[ $e_mode == 1 ]]; then
+	if test $e_mode == 1; then
 		echo "<div><a href=\"/e/sem-$1?iid=$iid\">`_ "$1"`</a></div>"
 	else
 		echo "<div><a href=\"/sem/$iid/$1\">`_ "$1"`</a></div>"
@@ -25,35 +25,35 @@ SemMenu() {
 	present="`echo $PRESENT | awk '{ print $1 }'`"
 
 	if im $SEM_OWNER; then
-		if [[ "$current" != "start" ]]; then
+		if test "$current" != "start"; then
 			options="$options`SemMenuOption start`"
 		fi
 
-		if [[ "$current" != "pause" ]] && $SEM -p < $SEM_FILE | grep -q '^P '; then
+		if test "$current" != "pause" && $SEM -p < $SEM_FILE | grep -q '^P '; then
 			options="$options`SemMenuOption pause`"
 		fi
 
-		if [[ "$current" != "resume" ]] && $SEM -p < $SEM_FILE | grep -q '^A '; then
+		if test "$current" != "resume" && $SEM -p < $SEM_FILE | grep -q '^A '; then
 			options="$options`SemMenuOption resume`"
 		fi
 	else
 		case "$present" in
 			P)
-				if [[ "$current" != "pause" ]]; then
+				if test "$current" != "pause"; then
 					options="$options`SemMenuOption pause`"
 				fi
 
-				if [[ "$current" != "stop" ]]; then
+				if test "$current" != "stop"; then
 					options="$options`SemMenuOption stop`"
 				fi
 
 				;;
 			A)
-				if [[ "$current" != "resume" ]]; then
+				if test "$current" != "resume"; then
 					options="$options`SemMenuOption resume`"
 				fi
 
-				if [[ "$current" != "stop" ]]; then
+				if test "$current" != "stop"; then
 					options="$options`SemMenuOption stop`"
 				fi
 
@@ -61,15 +61,15 @@ SemMenu() {
 		esac
 	fi
 
-	if [[ "$current" != "pay" ]]; then
+	if test "$current" != "pay"; then
 		options="$options`SemMenuOption pay`"
 	fi
 
-	if [[ "$current" != "transfer" ]]; then
+	if test "$current" != "transfer"; then
 		options="$options`SemMenuOption transfer`"
 	fi
 
-	if [[ "$current" != "buy" ]]; then
+	if test "$current" != "buy"; then
 		options="$options`SemMenuOption buy`"
 	fi
 
@@ -111,7 +111,7 @@ sem_op() {
 		rm $DOCUMENT_ROOT/tmp/data.txt
 		git -C $DOCUMENT_ROOT/sem/$iid add data.txt
 		git -C $DOCUMENT_ROOT/sem/$iid commit -m "$@"
-		if [[ $e_mode == 1 ]]; then
+		if test $e_mode == 1; then
 			_see_other e/sem?iid=$iid
 		else
 			_see_other .
@@ -123,31 +123,31 @@ sem_op() {
 }
 
 sem_source() {
-	if [[ $e_mode == 1 ]]; then
+	if test $e_mode == 1; then
 		SEM_PATH="$DOCUMENT_ROOT/sems/$iid"
 	else
 		SEM_PATH="$DOCUMENT_ROOT/sem/$iid"
 	fi
-	if [[ -z "$iid" ]]; then
+	if test -z "$iid"; then
 		iid="`echo $SCRIPT_NAME | awk -F'/' '{print $3}'`"
 		SEM_PATH="$DOCUMENT_ROOT/sem/$iid"
 		sem_script=1
 	fi
 	SEM_FILE="$SEM_PATH/data.txt"
 
-	if [[ -z "$iid" ]] ; then
+	if test -z "$iid" ; then
 		Fatal 404 Sem not found
 	fi
 
 	SEM_OWNER="`cat $SEM_PATH/.owner`"
 	SEM="$DOCUMENT_ROOT/usr/bin/sem"
 
-	if [[ ! -d "$SEM_PATH" ]]; then
+	if test ! -d "$SEM_PATH"; then
 		Fatal 404 Sem not found
 	fi
 
 	PRESENT="`access | grep $REMOTE_USER || echo`"
-	if [[ -z "$PRESENT" ]] && ! test $REMOTE_USER == quirinpa; then
+	if test -z "$PRESENT" && ! test $REMOTE_USER == quirinpa; then
 		Unauthorized
 	fi
 

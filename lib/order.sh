@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 OrderStateVendor() {
 	return_str="<input name=\"return\" type=\"hidden\" value=\"$1\"></input>"

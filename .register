@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 content() {
 	cat <<!
@@ -46,7 +46,7 @@ if invalid_password $password; then
 	Fatal 400 Not a valid password
 fi
 
-if [[ "$password" != "$password2" ]]; then
+if test "$password" != "$password2"; then
 	Fatal 400 The passwords don\'t match
 fi
 

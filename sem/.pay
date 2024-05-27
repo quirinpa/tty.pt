@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 pay_options() {
 	if im $SEM_OWNER; then
