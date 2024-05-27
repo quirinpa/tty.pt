@@ -33,7 +33,7 @@ case "$REQUEST_METHOD" in
 		# TODO im $CART_OWNER $SHOP_OWNER || Forbidden
 
 		Normal 200 shop/$shop_id/cart/edit
-		Scat .template/cart-edit
+		Cat cart-edit
 		;;
 	*) NotAllowed ;;
 esac

@@ -2,32 +2,28 @@
 
 . $DOCUMENT_ROOT/lib/very-common.sh
 
-Forbidden() {
-	NormalHead 403
-	_TITLE="`_ Forbidden`"
-	if test $# -ge 1; then
-		_TITLE="$_TITLE - $@"
+Fatal() {
+	local status_code=$1
+	shift 1
+	NormalHead $status_code
+	echo
+	export _TITLE="$status_code: `_ "$@"`"
+	if test "$HTTP_ACCEPT" = "text/plain"; then
+		echo $_TITLE
+		exit 1
 	fi
 	export _TITLE
-	echo
 	Head
 	export MENU="`Menu`"
-	Cat fatal
-	exit
+	CCat fatal
+}
+
+Forbidden() {
+	Fatal 403 Forbidden
 }
 
 NotAllowed() {
-	NormalHead 405 Method Not Allowed
-	_TITLE="`_ Method Not Allowed`"
-	if test $# -ge 1; then
-		_TITLE="$_TITLE - $@"
-	fi
-	export _TITLE
-	echo
-	Head
-	export MENU="`Menu`"
-	Cat fatal
-	exit
+	Fatal 405 "Method Not Allowed"
 }
 
 MustPost() {
@@ -35,17 +31,7 @@ MustPost() {
 }
 
 NotFound() {
-	NormalHead 404 Not Found
-	_TITLE="`_ Not Found`"
-	if test $# -ge 1; then
-		_TITLE="$_TITLE - $@"
-	fi
-	export _TITLE
-	echo
-	Head
-	export MENU="`Menu`"
-	Cat fatal
-	exit
+	Fatal 404 "Not Found"
 }
 
 bc() {
@@ -265,25 +251,6 @@ Whisper() {
 	rm $WHISPER_PATH
 }
 
-NotNormal() {
-	NormalHead "$1"
-	shift
-	echo "Link: <http://$HTTP_HOST$@>; rel=\"alternate\"; hreflang=\"x-default\""
-	echo
-	Head
-	Whisper
-	export MENU="`Menu`"
-}
-
-Normal() {
-	NormalHead "$1"
-	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
-	echo
-	Head
-	Whisper
-	export MENU="`Menu`"
-}
-
 UserNormal() {
 	NormalHead "$1"
 	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
@@ -293,28 +260,15 @@ UserNormal() {
 	export MENU="`Menu`"
 }
 
+Normal() {
+	UserNormal $@
+	echo "$HEAD"
+	echo "$WHISPER"
+}
+
 NormalCat() {
 	Normal 200 $SCRIPT $1
 	Cat $SCRIPT
-}
-
-Fatal() {
-	SC=$1
-	shift
-	allargs="$@"
-	export _TITLE="`_ "$allargs"`"
-
-	if test "$HTTP_ACCEPT" = "text/plain"; then
-		NormalHead $SC
-		echo
-		echo $_TITLE
-		exit 1
-	else
-		export _HEAD_TITLE="tty.pt - $SC - $_TITLE"
-		Normal $SC
-		Cat fatal
-		exit 1
-	fi
 }
 
 DF_USER=$REMOTE_USER
@@ -514,8 +468,7 @@ Index() {
 	export CONTENT
 	export FUNCTIONS
 	Normal 200 $typ
-	Scat $DOCUMENT_ROOT/components/common
-	exit 0
+	CCat common
 }
 
 SubIndex() {
@@ -537,8 +490,7 @@ SubIndex() {
 	export PRECLASS
 
 	Normal 200 ./$iid
-	Scat $DOCUMENT_ROOT/components/common
-	exit 0
+	CCat common
 }
 
 Add() {
@@ -556,7 +508,7 @@ Add() {
 		export SUBINDEX_ICON
 
 		Normal 200 ./add
-		Scat ../components/add
+		CCat add
 		return
 	fi
 

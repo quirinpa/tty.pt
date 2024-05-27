@@ -8,7 +8,7 @@ VERY_COMMON=y
 RES_CONTENT_TYPE="text/html; charset=utf-8"
 
 debug() {
-	echo 500 Internal Error
+	echo Status: 500 Internal Error
 	echo "Content-Type: text/plain; charset=utf-8"
 	echo
 	echo Sorry, I\'m currently debugging. Please wait.
@@ -28,7 +28,7 @@ NormalHead() {
 	esac
 	export STATUS_TEXT
 	export STATUS_CODE=$1
-	echo "$1 $STATUS_TEXT"
+	echo "Status: $1 $STATUS_TEXT"
 	echo "Content-Type: $RES_CONTENT_TYPE"
 	test -z "$HEADERS" || echo -n $HEADERS
 }
@@ -45,21 +45,23 @@ Head() {
 !
 }
 
-Scat() {
-	cat $1.html | envsubst
-	echo "</html>"
-	exit
-}
-
-Cat() {
+_Cat() {
 	if test $# -lt 1; then
 		envsubst
 	else
-		cat $DOCUMENT_ROOT/templates/$1.html | envsubst
+		cat $1.html | envsubst
 	fi
 	echo "</html>"
+	exit 0
 }
 
+Cat() {
+	_Cat .template/$1
+}
+
+CCat() {
+	_Cat $DOCUMENT_ROOT/components/$1
+}
 
 get_lang() {
 	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr '-' '_' | tr ';' ' ' | \
@@ -111,8 +113,7 @@ Unauthorized() {
 	echo
 	Head
 	export MENU="`Menu`"
-	Cat fatal
-	exit
+	CCat fatal
 }
 
 cookie=$HTTP_COOKIE

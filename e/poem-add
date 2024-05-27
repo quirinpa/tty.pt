@@ -28,7 +28,7 @@ case "$REQUEST_METHOD" in
 
 		if test ! -f $POEM_PATH/$lang.html; then
 			rm -rf $POEM_PATH
-			Fatal 400 You must submit a poem in your language
+			Fatal 400 "You must submit a poem in your language"
 		fi
 
 		see_other poem ?poem_id=$poem_id

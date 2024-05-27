@@ -58,5 +58,5 @@ export _SEM="`_ "Shared Expenses Manager"`"
 export _SOURCE_CODE="`_ "Source Code"`"
 export _TERMINAL="`_ "Terminal"`"
 export _COMMANDS="`_ "Commands"`"
-NotNormal 200 
-Scat template/index
+Normal 200 
+Cat index

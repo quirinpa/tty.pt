@@ -21,6 +21,6 @@ Command() {
 		export _TITLE="`_ Command` - $args"
 		export MENU="`Menu`"
 		export OUTPUT="`literal`"
-		Cat command
+		CCat command
 	fi
 }

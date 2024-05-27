@@ -75,7 +75,7 @@ case "$REQUEST_METHOD" in
 		export ID_OPTIONS="`pay_options | IdOptions`"
 		export TYPE_OPTIONS="`type_options | IdOptions`"
 		Normal 200 pay
-		Scat .template/pay
+		Cat pay
 
 		;;
 	*) NotAllowed ;;

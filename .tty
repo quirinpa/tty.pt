@@ -48,4 +48,4 @@ esac
 export _TITLE="`_ "Terminal"`"
 
 Normal 200 tty
-Scat template/tty
+Cat tty

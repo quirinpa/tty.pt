@@ -20,7 +20,7 @@ if im \$user; then
 	CONTENT="\$CONTENT<br />git clone https://tty.pt/~\$user/.git"
 fi
 UserNormal 200 ~\$user
-Scat index
+Cat index
 !
 	cat - > $path/index.html <<!
 \$HEAD

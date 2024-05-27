@@ -17,7 +17,7 @@ case "$REQUEST_METHOD" in
 		export SEM_MENU="`SemMenu start`"
 		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
 		Normal 200 start
-		Scat .template/start
+		Cat start
 
 		;;
 	*) NotAllowed ;;

@@ -29,7 +29,7 @@ case "$REQUEST_METHOD" in
 		export FROM_ID_OPTIONS="`transfer_from_options | IdOptions`"
 		export TO_ID_OPTIONS="`transfer_to_options | IdOptions`"
 		Normal 200 sem/$sem_id/transfer
-		Scat .template/transfer
+		Cat transfer
 
 		;;
 	*) NotAllowed ;;

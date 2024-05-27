@@ -22,7 +22,7 @@ case "$REQUEST_METHOD" in
 		export NOW="`date -u +"%Y-%m-%dT%H:%M:%S"`"
 		export ID_OPTIONS="`stop_options | IdOptions`"
 		Normal 200 stop
-		Scat .template/stop
+		Cat stop
 
 		;;
 	*) NotAllowed ;;

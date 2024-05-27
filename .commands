@@ -1,8 +1,6 @@
 #!/bin/sh
 
-[[ "$REQUEST_METHOD" == "GET" ]] || NotAllowed
-
 export _TITLE="Commands"
 export _NEVERDARK="`_ "Never Dark"`"
 Normal 200 commands
-Scat template/commands
+Cat commands

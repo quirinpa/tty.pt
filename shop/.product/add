@@ -26,7 +26,7 @@ case "$REQUEST_METHOD" in
 		export JS="`js`"
 
 		Normal 200 shop/$shop_id/add
-		Scat template/add
+		Cat add
 		;;
 	*) NotAllowed ;;
 esac
