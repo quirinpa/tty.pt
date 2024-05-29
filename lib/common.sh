@@ -447,7 +447,7 @@ Index() {
 
 	case "$1" in
 		"") ;;
-		add) shift; . ./.add $@ ; exit 0;;
+		add) shift; Add $@ ; exit 0;;
 		*)
 			INDEX_ICON="$SUBINDEX_ICON"
 			SUBINDEX_ICON=" "
@@ -501,6 +501,11 @@ SubIndex() {
 	CCat common
 }
 
+InvalidItem() {
+	rm -rf $ITEM_PATH
+	Fatal 400 Invalid item
+}
+
 Add() {
 	test ! -z "$REMOTE_USER" || Forbidden
 
@@ -511,13 +516,14 @@ Add() {
 		export _ID="`_ "ID"`"
 		export _DESCRIPTION
 		export _SUBMIT="`_ Submit`"
+		export FILES="<label>`_ Files`<input required type='file' name='file[]' multiple></input></label>"
+		export FILE="<label>`_ File`<input required type='file' name='file'></input></label>"
 		export ENCTYPE
-		export FORM_CONTENT
+		export FORM_CONTENT="`Cat add`"
 		export SUBINDEX_ICON
 
 		Normal 200 ./add
 		CCat add
-		return
 	fi
 
 	test "$REQUEST_METHOD" = "POST" || NotAllowed
@@ -533,12 +539,7 @@ Add() {
 	fmkdir $ITEM_PATH
 	echo $REMOTE_USER | fwrite $ITEM_PATH/.owner
 
-	process_post
-
-	if invalid_item; then
-		rm -rf $ITEM_PATH
-		Fatal 400 Invalid item
-	fi
+	. ./add
 
 	_see_other ./$iid
 }

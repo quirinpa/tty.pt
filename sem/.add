@@ -14,37 +14,17 @@ ginit() {
 	chmod +x $SEM_PATH/.git/hooks/post-update
 }
 
-case "$REQUEST_METHOD" in
-	POST)
-		sem_id="`cat $ROOT/tmp/mpfd/sem_id`"
-		sem_id="`urldecode $sem_id`"
+iid="`cat $ROOT/tmp/mpfd/iid`"
+iid="`urldecode $iid`"
 
-		if invalid_id $sem_id; then
-			Fatal 400 Not a valid ID
-		fi
+SEM_PATH="$ROOT/sem/$sem_id"
 
-		SEM_PATH="$ROOT/sem/$sem_id"
+fmkdir $SEM_PATH
+echo $REMOTE_USER | fwrite $SEM_PATH/.owner
 
-		fmkdir $SEM_PATH
-		echo $REMOTE_USER | fwrite $SEM_PATH/.owner
-
-		FILE_PATH=$ROOT/tmp/mpfd/file
-		if test -f $FILE_PATH; then
-			fbytes $FILE_PATH
-			mv $FILE_PATH $SEM_PATH/data.txt
-		fi
-		ginit >/dev/null
-
-		see_other sem ?sem_id=$sem_id
-		;;
-
-	GET)
-		export _TITLE="`_ "Add sem"`"
-		export _SEM_ID="`_ "Sem ID"`"
-		export _SUBMIT="`_ Submit`"
-
-		Normal 200 sem/add
-		Cat add
-		;;
-	*) NotAllowed ;;
-esac
+FILE_PATH=$ROOT/tmp/mpfd/file
+if test -f $FILE_PATH; then
+	fbytes $FILE_PATH
+	mv $FILE_PATH $SEM_PATH/data.txt
+fi
+ginit >/dev/null

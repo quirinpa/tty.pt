@@ -1,26 +1,9 @@
 #!/bin/sh
 
-form_content() {
-	cat <<!
-<label>
-	`_ Files`
-	<input required type="file" name="file[]" multiple></input>
-</label>
-!
-}
+mpfd-ls | while read FILE_PATH filename ; do
+	fbytes $FILE_PATH
+	cat $FILE_PATH | cslash > $ITEM_PATH
+	rm $FILE_PATH
+done
 
-process_post() {
-	mpfd-ls | while read FILE_PATH filename ; do
-		fbytes $FILE_PATH
-		cat $FILE_PATH | cslash > $ITEM_PATH
-		rm $FILE_PATH
-	done
-}
-
-invalid_item() {
-	test ! -f $ITEM_PATH
-}
-
-FORM_CONTENT=`form_content`
-
-Add
+test -f $ITEM_PATH || InvalidItem

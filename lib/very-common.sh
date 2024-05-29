@@ -48,7 +48,7 @@ Head() {
 _Cat() {
 	if test $# -lt 1; then
 		envsubst
-	else
+	elif test -f $1.html; then
 		cat $1.html | envsubst
 	fi
 	echo "</html>"
