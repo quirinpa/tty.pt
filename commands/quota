@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "`df_total`/`free_space`"

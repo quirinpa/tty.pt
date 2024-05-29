@@ -438,29 +438,38 @@ AddBtn() {
 Index() {
 	typ=$1
 	test $# -lt 1 || shift
+
+	if test -z "$SUBINDEX_ICON"; then
+		SUBINDEX_ICON="`test -f .icon && cat .icon || echo "🗂"`"
+	fi
+
+	test ! -f .lib/index.sh || . .lib/index.sh
+
 	case "$1" in
 		"") ;;
 		add) shift; . ./.add $@ ; exit 0;;
 		*)
 			INDEX_ICON="$SUBINDEX_ICON"
 			SUBINDEX_ICON=" "
-			_TITLE= . ./.sub-index $@
+			_TITLE=
+			. ./.sub-index $@
 			exit 0
 			;;
 	esac
 
 	test "$REQUEST_METHOD" = "GET" || return 0
 
-	export _TITLE
-
+	if test -z "$_TITLE"; then
+		TITLE="`test -f .title && cat .title || echo $typ`"
+		_TITLE="`_ "$TITLE"`"
+	fi
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
-	test ! -z "$SUBINDEX_ICON" || SUBINDEX_ICON="🗂"
-
 	test ! -z "$FUNCTIONS" || \
 		FUNCTIONS="`fun || test -z "$REMOTE_USER" || AddBtn`"
 	test ! -z "$CONTENT" || \
 		CONTENT="`content || ls_shown . | BigButtons $typ`"
 
+	export _TITLE
 	export INDEX_ICON
 	export SUBINDEX_ICON
 	export BOTTOM_CONTENT

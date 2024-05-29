@@ -1,9 +1,13 @@
 Chords|Acordes
+chords|acordes
 Songbooks|Cancionários
+songbooks|cancionários
 Commands|Comandos
 Never Dark|Nunca Sombrio
 Shops|Lojas
+shops|lojas
 Shared Expenses Manager|Gestor de Despesas Partilhadas
+shared expenses manager|gestor de despesas partilhadas
 
 
 
@@ -60,6 +64,7 @@ Please click the link sent to your e-mail to activate your account.|Por favor cl
 The account was not activated|A conta não foi activada
 No such user|Esse utilizador não existe
 Poems|Poemas
+poems|poemas
 programmers_poem|O poema do programador
 Cookie policy|Política de cookies
 Add poem|Adicionar poema

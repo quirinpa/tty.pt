@@ -1,6 +1,0 @@
-#!/bin/sh
-
-export _TITLE="Commands"
-export _NEVERDARK="`_ "Never Dark"`"
-Normal 200 commands
-Cat commands

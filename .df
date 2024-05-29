@@ -1,4 +1,0 @@
-#!/bin/sh
-. $DOCUMENT_ROOT/lib/command.sh
-
-df | Command

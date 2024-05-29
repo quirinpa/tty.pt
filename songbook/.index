@@ -1,4 +1,0 @@
-#!/bin/sh
-SUBINDEX_ICON=🎼
-_TITLE="`_ Songbook`"
-Index songbook $@

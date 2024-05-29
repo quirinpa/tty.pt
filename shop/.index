@@ -1,5 +1,0 @@
-#!/bin/sh
-. $DOCUMENT_ROOT/lib/shop.sh
-SUBINDEX_ICON=💰
-_TITLE="`_ Shops`"
-Index shop $@

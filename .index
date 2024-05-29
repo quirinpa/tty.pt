@@ -6,40 +6,27 @@
 if test ! -z "$1"; then
 	INDEX_ICON="🏠"
 	case "$1" in
-		login) shift; . ./.login;;
-		logout) shift; . ./.logout;;
-		register) shift; . ./.register;;
-		welcome) shift; . ./.welcome;;
-		confirm) shift; . ./.confirm;;
-		cookie) shift; . ./.cookie;;
-		commands) shift; . ./.commands;;
-		df) shift; . ./.df;;
-		diff) shift; . ./.diff;;
-		nd) shift; cd ./nd ; . ./.index $@;;
-		nd-diff) shift; . ./.nd-diff;;
-		quota) shift; . ./.quota;;
-		tty) shift; . ./.tty;;
-		user) shift; cd ./user ; . ./.index $@;;
-		poem) shift; cd ./poem ; . ./.index $@;;
-		chords) shift; cd ./chords ; . ./.index $@;;
-		songbook) shift; cd ./songbook ; . ./.index $@;;
-		shop) shift; cd ./shop ; . ./.index $@;;
-		sem) shift; cd ./sem ; . ./.index $@;;
-		winbuntu) shift; cd ./winbuntu ; . ./.index $@;;
-		e) shift; . ./.exec $@;;
+		e) . ./.exec $@;;
 		~*) . ./.tilde $@;;
 		*)
-			path=$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI
-			if test ! -f $path; then
-				test ! -z "$REMOTE_USER" || NotFound
-				path=$DOCUMENT_ROOT/home/$REMOTE_USER/$DOCUMENT_URI
-				# check perms (not applicable, for now)
-				# ls -al $path  | awk '{print $1}' | tail -c 4 | grep -q r
-				test -f $path || NotFound
+			if test -d ./$1; then
+				cd ./$1
+				test -f ./.index && . ./.index || Index $@
+			elif test -f  ./.$1; then
+				. ./.$1 $@
+			else
+				path=$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI
+				if test ! -f $path; then
+					test ! -z "$REMOTE_USER" || NotFound
+					path=$DOCUMENT_ROOT/home/$REMOTE_USER/$DOCUMENT_URI
+					# check perms (not applicable, for now)
+					# ls -al $path  | awk '{print $1}' | tail -c 4 | grep -q r
+					test -f $path || NotFound
+				fi
+				echo Status 200: Ok
+				echo
+				cat $path
 			fi
-			echo Status 200: Ok
-			echo
-			cat $path
 			;;
 	esac
 	NotAllowed
