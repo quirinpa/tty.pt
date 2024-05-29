@@ -1,4 +1,6 @@
-
+Chords|Acordes
+Songbooks|Cancionários
+Commands|Comandos
 Never Dark|Nunca Sombrio
 Shops|Lojas
 Shared Expenses Manager|Gestor de Despesas Partilhadas

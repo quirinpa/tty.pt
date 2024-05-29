@@ -31,7 +31,7 @@ EOF
 BOTTOM_CONTENT="`cat /tmp/comments-$iid`"
 
 content() {
-	echo "<pre class='v f'>`cat $ITEM_PATH`</pre>"
+	echo "<pre>`cat $ITEM_PATH`</pre>"
 }
 
 fun() {

@@ -1,5 +1,5 @@
 #!/bin/sh
-. $ROOT/lib/command.sh
+. $DOCUMENT_ROOT/lib/command.sh
 
-# git -C $ROOT/ fetch origin/main
-git -C $ROOT/ diff origin/main | Command
+# git -C $DOCUMENT_ROOT/ fetch origin/main
+git -C $DOCUMENT_ROOT/ diff origin/main | Command

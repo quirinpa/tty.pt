@@ -1,7 +1,7 @@
 #!/bin/sh
-. $ROOT/lib/command.sh
+. $DOCUMENT_ROOT/lib/command.sh
 
 # If i have to update from outside,
 # I will fetch manually
-# git -C $ROOT/htdocs/neverdark fetch origin master
-git -C $ROOT/htdocs/neverdark diff origin/master | Command
+# git -C $DOCUMENT_ROOT/htdocs/neverdark fetch origin master
+git -C $DOCUMENT_ROOT/htdocs/neverdark diff origin/master | Command

@@ -3,7 +3,7 @@
 test ! -z "$REMOTE_USER" || Forbidden
 test "$REQUEST_METHOD" == "GET" || NotAllowed
 
-rm $ROOT/sessions/$cookie
+rm $DOCUMENT_ROOT/sessions/$cookie
 
 echo 'Status: 303 See Other'
 echo "Set-Cookie: QSESSION=; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT"

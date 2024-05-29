@@ -50,19 +50,19 @@ if test "$password" != "$password2"; then
 	Fatal 400 The passwords don\'t match
 fi
 
-if grep -q "^$email$" $ROOT/.blacklist; then
+if grep -q "^$email$" $DOCUMENT_ROOT/.blacklist; then
 	Forbidden
 fi
 
-if grep -q "^$username:" $ROOT/.htpasswd; then
+if grep -q "^$username:" $DOCUMENT_ROOT/.htpasswd; then
 	Fatal 400 User already exists
 fi
 
-USER_DIR=$ROOT/users/$username
+USER_DIR=$DOCUMENT_ROOT/users/$username
 DF_USER=$username
 fmkdir $USER_DIR
 echo $email | fwrite $USER_DIR/email
-echo $username:$password | htpasswd -I $ROOT/.htpasswd
+echo $username:$password | htpasswd -I $DOCUMENT_ROOT/.htpasswd
 rand_str="`rand_str_1`"
 echo "$rand_str" | fwrite $USER_DIR/rcode2
 femail -f noreply@tty.pt $email 2>&1 <<!

@@ -26,20 +26,20 @@ MustPost
 username="`urldecode $username`"
 password="`urldecode $password`"
 
-hash="`grep "^$username:" $ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
-test -z "$REMOTE_USER" || rm $ROOT/sessions/$cookie
+hash="`grep "^$username:" $DOCUMENT_ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
+test -z "$REMOTE_USER" || rm $DOCUMENT_ROOT/sessions/$cookie
 test ! -z "$hash" || Fatal 400 No such user
 
 if crypt_checkpass "$password" "$hash"; then
 	Unauthorized
 fi
 
-test ! -f $ROOT/users/$username/rcode \
+test ! -f $DOCUMENT_ROOT/users/$username/rcode \
 	|| Fatal 400 The account was not activated
 
 TOKEN="`rand_str_1`"
-#test -d $ROOT/sessions || mkdir $ROOT/sessions
-echo $username > $ROOT/sessions/$TOKEN
+#test -d $DOCUMENT_ROOT/sessions || mkdir $DOCUMENT_ROOT/sessions
+echo $username > $DOCUMENT_ROOT/sessions/$TOKEN
 echo 'Status: 303 See Other'
 echo "Set-Cookie: QSESSION=$TOKEN; SameSite=Lax"
 echo "Location: /user"

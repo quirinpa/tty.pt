@@ -1,6 +1,6 @@
 #!/bin/sh
 
-USER_PATH=$ROOT/users/$REMOTE_USER
+USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
 
 Field() {
 	cat | cond || {

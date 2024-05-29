@@ -52,7 +52,7 @@ _Cat() {
 		cat $1.html | envsubst
 	fi
 	echo "</html>"
-	exit 0
+	exit 1
 }
 
 Cat() {

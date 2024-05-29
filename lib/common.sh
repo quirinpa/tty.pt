@@ -34,14 +34,13 @@ NotFound() {
 	Fatal 404 "Not Found"
 }
 
-bc() {
+_bc() {
 	read exp
-	#echo "BC='$exp'" >&2
-	echo "$exp" | $DOCUMENT_ROOT/bin/bc "$@"
+	echo "$exp" | bc -l
 }
 
 math() {
-	echo "$@" | bc
+	echo "$@" | _bc
 }
 
 _urldecode() {
@@ -90,7 +89,7 @@ esac
 counter_inc() {
 	current="`zcat $1`"
 	if test ! -z "$current"; then
-		next="`echo $current + 1 | bc`"
+		next="`math $current + 1`"
 		echo $next | tee $1
 	else
 		touch $1
@@ -101,7 +100,7 @@ counter_inc() {
 counter_dec() {
 	if test -f $1; then
 		current="`cat $1`"
-		next="`echo $current - $2 | bc`"
+		next="`math $current - $2`"
 		echo $next | tee $1
 	else
 		touch $1
@@ -174,13 +173,13 @@ df_total_exp() {
 
 df_total() {
 	# echo DF_TOTAL_EXP="`df_total_exp`" >&2
-	echo "`df_total_exp`" | bc
+	math "`df_total_exp`"
 }
 
 calcround() {
 	exp="`echo "$@" | tr -d '\'`"
 	#echo "CALCROUND=$exp" >&2
-	echo "$exp" | bc -l | xargs printf "%.0f"
+	math "$exp" | xargs printf "%.0f"
 }
 
 free_space() {
@@ -195,7 +194,7 @@ __fbytes() {
 	test -z "$DF_USER" && Fatal 400 Checking bytes of unknown user
 	OCCUPIED_SPACE="`df_total`"
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
-	CAN="`echo $CAN_EXP | bc -l`"
+	CAN="`math "$CAN_EXP"`"
 	test "$CAN" = "0"
 }
 
@@ -585,7 +584,6 @@ export REQUEST_METHOD
 git_backend() {
 	export GIT_PROJECT_ROOT="/"
 	export PATH_INFO="`echo $DOCUMENT_URI | sed 's|^/~|/home/|'`"
-	# echo PATH_INFO$PATH_INFO
 	$DOCUMENT_ROOT/usr/local/libexec/git/git-http-backend 2>&1
 	exit
 }
