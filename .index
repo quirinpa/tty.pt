@@ -1,4 +1,15 @@
-#!/bin/sh -x
+#!/bin/sh
+
+export REQ_PID=$$
+
+finito() {
+	test ! -f $DOCUMENT_ROOT/tmp/post || cat $DOCUMENT_ROOT/tmp/post
+	exit 1
+}
+
+trap finito 2
+
+rm -rf $DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
 
 . $DOCUMENT_ROOT/lib/optional-auth.sh
 . $DOCUMENT_ROOT/lib/common.sh
@@ -9,11 +20,12 @@ if test ! -z "$1"; then
 		e) . ./.exec $@;;
 		~*) . ./.tilde $@;;
 		*)
-			if test -d ./$1; then
-				cd ./$1
-				test -f ./.index && . ./.index || Index $@
-			elif test -f  ./.$1; then
-				. ./.$1 $@
+			if test -d ./items/$1; then
+				cd ./items/$1
+				Index $@
+			elif test -f  ./$1; then
+				Immediate $@
+				# . ./.$1 $@
 			else
 				path=$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI
 				if test ! -f $path; then
@@ -34,16 +46,11 @@ fi
 
 test "$REQUEST_METHOD" = "GET" || NotAllowed
 
-export _TITLE="tty.pt"
-export _POEMS="`_ Poems`"
-export _CHORDS="`_ Chords`"
-export _SONGBOOKS="`_ Songbooks`"
-export _NEVERDARK="`_ "Never Dark"`"
-export _SCHOOLS="`_ "Schools"`"
-export _SHOPS="`_ "Shops"`"
-export _SEM="`_ "Shared Expenses Manager"`"
-export _SOURCE_CODE="`_ "Source Code"`"
-export _TERMINAL="`_ "Terminal"`"
-export _COMMANDS="`_ "Commands"`"
 Normal 200 
-Cat index
+cat - <<!
+<body class="f fic tac v tsxl">
+	$MENU
+	<h2>tty.pt</h2>
+	`Buttons2 'cap tsxl' items`
+</body>
+!

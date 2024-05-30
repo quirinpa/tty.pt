@@ -3,7 +3,9 @@ chords|acordes
 Songbooks|Cancionários
 songbooks|cancionários
 Commands|Comandos
+commands|comandos
 Never Dark|Nunca Sombrio
+never dark|nunca sombrio
 Shops|Lojas
 shops|lojas
 Shared Expenses Manager|Gestor de Despesas Partilhadas

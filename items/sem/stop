@@ -1,0 +1,39 @@
+#!/bin/sh
+
+stop_options() {
+	if im $OWNER; then
+		$SEM -p < $SEM_FILE | awk '{ print $2 }'
+	else
+		echo $REMOTE_USER
+	fi
+}
+
+test "$REQUEST_METHOD" != "POST" || \
+	sem_op STOP `urldecode $ts` $id `urldecode $rest`
+
+SemMenu stop > $DOCUMENT_ROOT/tmp/fun
+
+cat <<!
+<form action="./stop" method="POST" class="v f">
+	<label>
+		`_ "Date / Time"`
+		<input required name="ts" type="datetime-local" value="`date -u +"%Y-%m-%dT%H:%M:%S"`" step="1"></input>
+	</label>
+
+	<label>
+		Id
+		<select required name="id">
+			`stop_options | IdOptions`
+		</select>
+	</label>
+
+	<label>
+		`_ "More information"`
+		<input name="rest"></input>
+	</label>
+
+	<input type="hidden" name="sem_id" value="$sem_id"></input>
+
+	<button>`_ Submit`</button>
+</form>
+!

@@ -6,6 +6,11 @@ set -e
 test -z "$VERY_COMMON" || return 0
 VERY_COMMON=y
 RES_CONTENT_TYPE="text/html; charset=utf-8"
+HEADERS=""
+
+header() {
+	HEADERS="$HEADERS$1\n"
+}
 
 debug() {
 	echo Status: 500 Internal Error
@@ -15,7 +20,12 @@ debug() {
 }
 
 zcat() {
-	test -f "$@" && cat $@ || true
+	if test -f "$@"; then
+		cat "$@"
+		true
+	else
+		false
+	fi
 }
 
 NormalHead() {
@@ -35,10 +45,11 @@ NormalHead() {
 
 Head() {
 	cat<<!
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 		<link rel="stylesheet" href="/vim.css" />
 		<title>$_TITLE</title>
 	</head>
@@ -47,20 +58,46 @@ Head() {
 
 _Cat() {
 	if test $# -lt 1; then
-		envsubst
+		htmlsh | envsubst
 	elif test -f $1.html; then
-		cat $1.html | envsubst
+		cat $1.html | htmlsh '. /lib/very-common.sh; ' | envsubst
 	fi
 	echo "</html>"
-	exit 1
 }
 
 Cat() {
-	_Cat .template/$1
+	_Cat template/$1
 }
 
 CCat() {
 	_Cat $DOCUMENT_ROOT/components/$1
+}
+
+_Fatal() {
+	local status_code=$1
+	shift 1
+	NormalHead $status_code
+	echo
+	export _TITLE="$status_code: `_ "$@"`"
+	if test "$HTTP_ACCEPT" = "text/plain"; then
+		echo $_TITLE
+		return 1
+		# exit 1
+	fi
+	export _TITLE
+	Head
+	export MENU="`Menu`"
+	CCat fatal
+}
+
+Fin() {
+	cat - > $DOCUMENT_ROOT/tmp/post
+	kill -2 $REQ_PID
+	exit 1
+}
+
+Fatal() {
+	_Fatal $@ | Fin
 }
 
 get_lang() {
@@ -88,7 +125,7 @@ _() {
 	test -z "$value" && echo $arg || echo $value
 }
 
-export RB="btn round p8 ts64"
+export RB="btn round p16 ts20"
 export RBS="btn round p8 ts17"
 export RBXS="btn round p4 tss"
 export SRB="btn round ps tsl"
@@ -100,20 +137,15 @@ Menu() {
 		user_name="<span class=\"ts\">$REMOTE_USER</span>"
 		user_icon="<a class=\"tsxl f h fic btn p8\" href=\"/user\"><span role=\"img\" aria-label=\"user\">🔑 </span><span> $user_name</span></a>"
 	else
-		user_icon="<a class=\"$RB\" href=\"/login\"><span role=\"img\" aria-label=\"login\">🔑 </span></a>"
+		user_icon="<a class=\"$RB\" href=\"/login?ret=$DOCUMENT_URI\"><span role=\"img\" aria-label=\"login\">🔑 </span></a>"
 	fi
 	echo $user_icon
 }
 
 Unauthorized() {
-	NormalHead 401
-	echo "Date: `TZ=GMT date '+%a, %d %b %Y %T %Z'`"
-	echo WWW-Authenticate: Basic realm="tty-pt"
-	export _TITLE="`_ Unauthorized`"
-	echo
-	Head
-	export MENU="`Menu`"
-	CCat fatal
+	header "Date: `TZ=GMT date '+%a, %d %b %Y %T %Z'`"
+	header "WWW-Authenticate: Basic realm='tty-pt'"
+	Fatal 401 Unauthorized
 }
 
 cookie=$HTTP_COOKIE
@@ -139,5 +171,5 @@ auth() {
 	TOKEN="`rand_str_1`"
 	#test -d $DOCUMENT_ROOT/sessions || mkdir $DOCUMENT_ROOT/sessions
 	echo $username > $DOCUMENT_ROOT/sessions/$TOKEN
-	HEADERS=$HEADERS"Set-Cookie: QSESSION=$TOKEN; SameSite=Lax\n"
+	header "Set-Cookie: QSESSION=$TOKEN; SameSite=Lax"
 }

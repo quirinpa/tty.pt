@@ -1,2 +1,0 @@
-#!/bin/sh
-git -C $DOCUMENT_ROOT/nd diff origin/master

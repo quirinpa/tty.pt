@@ -1,0 +1,55 @@
+#!/bin/sh
+
+transfer_from_options() {
+	if im $OWNER; then
+		$SEM -p < $SEM_FILE | awk '{ print $2 }'
+	else
+		echo $REMOTE_USER
+	fi
+}
+
+transfer_to_options() {
+	$SEM -p < $SEM_FILE | awk '{ print $2 }'
+}
+
+test "$REQUEST_METHOD" != "POST" || \
+	sem_op TRANSFER `urldecode $ts` $id `urldecode $to` `urldecode $value` `urldecode $rest`
+
+SemMenu transfer > $DOCUMENT_ROOT/tmp/fun
+
+cat <<!
+<form action="./transfer" method="POST" class="v f">
+	<label>
+		`_ "Date / Time"`
+		<input required name="ts" type="datetime-local" value="`date -u +"%Y-%m-%dT%H:%M:%S"`" step="1"></input>
+	</label>
+
+	<label>
+		Id
+		<select required name="id">
+			`transfer_from_options | IdOptions`
+		</select>
+	</label>
+
+	<label>
+		`_ To`
+		<select required name="to">
+			`transfer_to_options | IdOptions`
+		</select>
+	</label>
+
+	<label>
+		`_ Value`
+		<input required type="number" name="value" placeholder="33.33" step="0.01"></input>
+	</label>
+
+	<label>
+		`_ "More information"`
+		<textarea name="rest"></textarea>
+	</label>
+
+	<input type="hidden" name="iid" value="$iid"></input>
+
+	<button>`_ Submit`</button>
+</form>
+!

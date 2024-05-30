@@ -1,0 +1,78 @@
+#!/bin/sh
+
+SHOP_PATH=$ITEM_PATH
+USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
+USER_SHOPS_PATH=$USER_PATH/shops
+USER_SHOP_PATH=$USER_SHOPS_PATH/$iid
+CART_PATH=$USER_SHOP_PATH/cart
+
+case "$1" in
+	# cart) shift; . ./.cart ; exit 0 ;;
+	# prod) shift; . ./.product ; exit 0 ;;
+	# edit) shift; . ./.edit ; exit 0;;
+	order)
+		shift
+		cd .order
+		. ./index
+		exit 0
+		;;
+	*)
+		if test ! -z "$1"; then
+			cd .product
+			Index $iid $@ 2>&1
+			# . ./index $iid $@
+			exit 0
+		fi
+		;;
+esac
+
+lsshown() {
+	 find $1 -type d -mindepth 1 -maxdepth 1 -name "[!.]*" | sed "s|$1||" | sed "s/\/$//"
+}
+
+
+if test ! -z $REMOTE_USER; then
+	cat > $DOCUMENT_ROOT/tmp/fun <<!
+<a class="$RB" href="./add/">+</a>
+`EditBtn "./edit/"`
+<a class="$RB" href="./order/">🚚</a>
+<a class="$RB" href="./cart/">🛒</a>
+!
+fi
+
+# case "$action" in
+# 	delete)
+# 		PRODUCT_PATH=$SHOP_PATH/$product_id
+# 		if test -z "$product_id" || test ! -d "$PRODUCT_PATH"; then
+# 			Fatal 404 Product not found
+# 		fi
+
+# 		im $OWNER || Forbidden
+
+# 		rm -rf $SHOP_PATH/$product_id
+
+# 		_see_other shop/$iid
+# 		;;
+# 	*)
+# 		Fatal 400 Invalid action
+# 		;;
+# esac
+
+ls $SHOP_PATH/items | while read product_id; do
+	card_class=""
+
+	product_env $product_id
+
+	if test "$product_stock" == "0"; then
+		card_class="c0"
+	fi
+
+	cat <<!
+<a class="card f v8 b0 fic p $card_class" href="/shop/$iid/$product_id/">
+`PImage $product_image_path`
+<div class="tsl">$product_price€</div>
+<span class="tsxl">$product_title</span>
+`echo "$product_description" | csurround p`
+</a>
+!
+done | fw

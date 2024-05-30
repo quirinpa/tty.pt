@@ -1,0 +1,39 @@
+#!/bin/sh
+
+resume_options() {
+	if im $OWNER; then
+		$SEM -p < $SEM_FILE | grep '^A ' | awk '{ print $2 }'
+	elif test "$PRESENT" == "A $REMOTE_USER"; then
+		echo $REMOTE_USER
+	fi
+}
+
+test "$REQUEST_METHOD" != "POST" || \
+	sem_op RESUME `urldecode $ts` $id `urldecode $rest`
+
+SemMenu resume > $DOCUMENT_ROOT/tmp/fun
+
+cat <<!
+<form action="./resume" method="POST" class="v f">
+	<label>
+		`_ "Date / Time"`
+		<input required name="ts" type="datetime-local" value="`date -u +"%Y-%m-%dT%H:%M:%S"`" step="1"></input>
+	</label>
+
+	<label>
+		Id
+		<select required name="id">
+			`resume_options | IdOptions`
+		</select>
+	</label>
+
+	<label>
+		`_ "More information"`
+		<textarea name="rest"></textarea>
+	</label>
+
+	<input type="hidden" name="iid" value="$iid"></input>
+
+	<button>`_ Submit`</button>
+</form>
+!

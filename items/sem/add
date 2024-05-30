@@ -1,0 +1,22 @@
+#!/bin/sh
+
+ginit() {
+	mkdir $ITEM_PATH/.git
+	git -C $ITEM_PATH/.git init --bare
+	git --git-dir=$ITEM_PATH/.git --work-tree=$ITEM_PATH/. add $ITEM_PATH/data.txt
+	git --git-dir=$ITEM_PATH/.git --work-tree=$ITEM_PATH/. commit -m "First commit"
+	cat - >> $ITEM_PATH/.git/config <<!
+[http]
+	receivepack = true
+!
+	mkdir $ITEM_PATH/.git/hooks
+	cp $DOCUMENT_ROOT/etc/skel/hooks/user-post-update .git/hooks/post-update
+	chmod +x $ITEM_PATH/.git/hooks/post-update
+}
+
+FILE_PATH=$ROOT/tmp/mpfd/file
+if test -f $FILE_PATH; then
+	fbytes $FILE_PATH
+	mv $FILE_PATH $ITEM_PATH/data.txt
+fi
+ginit >/dev/null

@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "<pre>`git -C $DOCUMENT_ROOT/sem/$iid diff`</pre>"

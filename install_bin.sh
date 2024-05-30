@@ -5,8 +5,8 @@ DOCUMENT_ROOT=/var/www
 install_extra() {
 	line=$1
 	target_path="`dirname $line`"
-	test -d "$DOCUMENT_ROOT$target_path"; || mkdir -p $DOCUMENT_ROOT$target_path
-	if test ! -f "$DOCUMENT_ROOT$line";; then
+	test -d "$DOCUMENT_ROOT$target_path" || mkdir -p $DOCUMENT_ROOT$target_path
+	if test ! -f "$DOCUMENT_ROOT$line"; then
 		cp $line $DOCUMENT_ROOT$line
 		echo cp $line $DOCUMENT_ROOT$line
 	fi
@@ -28,7 +28,7 @@ install_bin() {
 	rm /tmp/$path
 }
 
-if test $# -lt 1;; then
+if test $# -lt 1; then
 	cat .install_bin | while read line; do install_bin "`which $line`"; done
 	cat .install_extra | while read line; do install_extra "$line"; done
 	exit

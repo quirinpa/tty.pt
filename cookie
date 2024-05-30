@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "<pre>"
+echo "I share this space of my own free will."
+echo "Everything that you share, in this space, you do of your own free wiil."
+echo "Here, I will do what I think is correct, if you don't agree with me,"
+echo "you can have your own space: https://github.com/quirinpa/tty.pt"
+echo "I pay for this space, but you have it for free."
+echo "Don't expect me to follow your rules."
+echo
+echo "Graveyard:"
+tail -n +2 "$DOCUMENT_ROOT/.blacklist"
+echo whois - the invisible one who ate his way to fame
+echo "</pre>"

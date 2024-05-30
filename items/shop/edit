@@ -1,0 +1,38 @@
+#!/bin/sh
+
+lsshown() {
+	 find $1 -type d -mindepth 1 -maxdepth 1 -name "[!.]*" | sed "s|$1||" | sed "s/\/$//"
+}
+
+cat > $DOCUMENT_ROOT/tmp/fun <<!
+<a class="$RB" href="./../order/">🚚</a>
+<a class="$RB" href="./../cart">🛒</a>
+`im $OWNER && echo "<a class='$RB' href='./../add/'>+</a>" || true`
+!
+
+# lsshown $ITEM_PATH	/ | while read product_id; do
+# qname=delete_$product_id
+# eval echo $product_id \$$qname
+# done | while read product_id state; do
+# 	test "$state" != "on" || product_rm $product_id
+# done
+
+# _see_other .
+_TITLE="`_ $shop_id` - `_ "Edit shop"`"
+echo "<button>`_ "Delete Products"`</button>" >> $DOCUMENT_ROOT/tmp/bottom
+SHOP_PATH=$ITEM_PATH
+
+ls $ITEM_PATH/items | while read product_id; do
+	if test "`cat $ITEM_PATH/items/$product_id/stock`" -gt 0; then
+		product_env $product_id
+		cat <<!
+<label class="card f v8 b0 fic p">
+	`PImage $product_image_path`
+	<div class="tsl">$product_price€</div>
+	<a class="tsxl" href="./../$product_id/">$product_title</a>
+	`echo "$product_description" | csurround p`
+	<input name="delete_$product_id" type="checkbox"></input>
+</label>
+!
+	fi
+done | fw

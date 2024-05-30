@@ -1,0 +1,101 @@
+#!/bin/sh
+
+test ! -z "$REMOTE_USER" || Unauthorized
+
+if test -z "$iid"; then
+	iid="`echo $SCRIPT_NAME | awk -F'/' '{print $3}'`"
+	sem_script=1
+fi
+
+SEM_FILE="$ITEM_PATH/data.txt"
+
+if test -z "$iid" ; then
+	Fatal 404 Sem not found
+fi
+
+SEM_OWNER="`cat $ITEM_PATH/.owner`"
+SEM="$DOCUMENT_ROOT/usr/bin/sem"
+
+if test ! -d "$ITEM_PATH"; then
+	Fatal 404 Sem not found
+fi
+
+PRESENT="`access | grep $REMOTE_USER || echo`"
+
+if test -z "$PRESENT" && ! test $REMOTE_USER == quirinpa; then
+	Unauthorized
+fi
+
+export iid
+
+options=""
+
+if test "$graph" = "on"; then
+	graph_checked=checked
+	options=$options"g"
+fi
+
+if test "$debug" = "on"; then
+	debug_checked=checked
+	options=$options"d"
+fi
+
+if test "$human" = "on"; then
+	human_checked=checked
+	options=$options"h"
+fi
+
+if test "$machine" = "on"; then
+	machine_checked=checked
+	options=$options"m"
+fi
+
+if test "$present" = "on"; then
+	present_checked=checked
+	options=$options"p"
+fi
+
+if test ! -z "$options"; then
+	options="-$options"
+fi
+
+SemMenu > $DOCUMENT_ROOT/tmp/fun
+echo "<div class='tac'>git clone https://tty.pt/sem/$iid/.git</div>" > $DOCUMENT_ROOT/tmp/bottom
+
+cat <<!
+<pre>`$SEM $options 2>&1 < $SEM_FILE`</pre>
+
+
+<form action="." method="GET" class="v tac">
+<div class="fw f h jcc">
+	<label class="h">
+		<input type="checkbox" name="graph" $graph_checked></input>
+		`_ Graph`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="debug" $debug_checked></input>
+		`_ Debug`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="human" $human_checked></input>
+		`_ Human`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="machine" $machine_checked></input>
+		`_ Machine`
+	</label>
+
+	<label class="h">
+		<input type="checkbox" name="present" $present_checked></input>
+		`_ Present`
+	</label>
+</div>
+<span class="h f fcc">
+	<button>`_ Submit`</button>
+	<a class="btn" href="./download">`_ Download`</a>
+</span>
+</form>
+!

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+mpfd-ls | while read FILE_PATH filename ; do
+	fbytes $FILE_PATH
+	cat $FILE_PATH | cslash > $ITEM_PATH/data.txt
+	rm $FILE_PATH
+done
+
+test -f $ITEM_PATH || InvalidItem

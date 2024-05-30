@@ -1,0 +1,41 @@
+#!/bin/sh
+
+im $OWNER || Forbidden
+
+test "$REQUEST_METHOD" != "POST" || \
+	sem_op START `urldecode $ts` $id `urldecode $tel` `urldecode $email` `urldecode $name`
+
+SemMenu start > $DOCUMENT_ROOT/tmp/fun
+
+cat <<!
+<form action="./start" method="POST" class="v f">
+	<label>
+		`_ "Date / Time"`
+		<input required name="ts" type="datetime-local" value="`date -u +"%Y-%m-%dT%H:%M:%S"`" step="1"></input>
+	</label>
+
+	<label>
+		Id
+		<input required name="id"></input>
+	</label>
+
+	<label>
+		`_ Telephone`
+		<input required type="tel" name="tel" pattern="\+[0-9]{12}"></input>
+	</label>
+
+	<label>
+		`_ Email`
+		<input required type="email" name="email"></input>
+	</label>
+
+	<label>
+		`_ Name`
+		<input required name="name"></input>
+	</label>
+
+	<input type="hidden" name="sem_id" value="$sem_id"></input>
+
+	<button>`_ Submit`</button>
+</form>
+!

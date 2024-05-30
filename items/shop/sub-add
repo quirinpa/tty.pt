@@ -1,0 +1,26 @@
+#!/bin/sh
+
+im $OWNER || Forbidden
+
+js() {
+	cat <<!
+`cat $ROOT/js/nfiles.js`
+
+nfiles( 'images',
+	document.getElementById('images'),
+	document.getElementById('submit'),
+	'`_ Submit`', 'file[]', '/e/image-add', '/e/images-edit');
+!
+}
+
+DF_USER=$OWNER
+
+urldecode `fd title` | fwrite $ITEM_PATH/title
+urldecode `fd description` | fwrite $ITEM_PATH/description
+images="`fd images`"
+images="`nfiles $images`"
+test -z "$images" || a2l $images | fwrite $ITEM_PATH/images
+fd price | fwrite $ITEM_PATH/price
+fd stock | fwrite $ITEM_PATH/stock
+
+_see_other ./..

@@ -1,7 +1,0 @@
-#!/bin/sh
-
-iid="`urldecode $iid`"
-
-fmkdir $ITEM_PATH
-echo $REMOTE_USER | fwrite $ITEM_PATH/.owner
-fmkdir $ITEM_PATH/.orders

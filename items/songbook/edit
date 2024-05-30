@@ -1,0 +1,40 @@
+#!/bin/sh
+
+im $OWNER || Forbidden
+
+if test $REQUEST_METHOD = POST; then
+	c=0
+	while test $c -lt $count; do
+		eval "csong=\${song_$c}"
+		eval "ct=\${t_$c}"
+		csong="`urldecode "$csong"`"
+		echo $csong:$ct
+		c=`math $c + 1`
+	done > $ITEM_PATH/data.txt
+
+	# _see_other ./
+fi
+
+proc() {
+	counter=0
+	while IFS=: read song t; do
+		path="$ROOT/items/chords/items/$song"
+		echo "<div class='f h'>"
+		echo "<select name='song_$counter'>"
+		ls $ROOT/items/chords/items/ | while read line; do
+			attr="`test "$song" != "$line" || echo selected`"
+			echo "<option $attr value='$line'>$line</option>"
+		done
+		echo "</select>"
+		echo "<input name='t_$counter' type='number' step='1' value='$t'></input>"
+		echo "<a class='$RB' href='/chords/`urlencode "$song"`?t=$t'>👁</a>"
+		echo "</div>"
+		counter="`math $counter + 1`"
+	done
+	echo "<input type='hidden' name='count' value='$counter'></input>"
+}
+
+echo "<form action='.' method='POST' class='v f fic'>"
+cat $ITEM_PATH/data.txt | proc
+echo "<button class='rs ps'>`_ Submit`</button>"
+echo "</form>"

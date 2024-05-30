@@ -1,0 +1,12 @@
+#!/bin/sh
+
+mpfd-ls | while read FILE_PATH filename ; do
+	file_lang="`echo $filename | sed 's/\.[^.]*$//'`"
+	if invalid_lang "$file_lang"; then
+		Fatal 400 Not a valid locale
+	fi
+	fbytes $FILE_PATH
+	cat $FILE_PATH | cslash > $ITEM_PATH/$file_lang.html
+	rm $FILE_PATH
+	touch $ITEM_PATH/comments.txt
+done

@@ -1,0 +1,24 @@
+<input type="hidden" name="iid" value="$iid" />
+<label>
+	${_ Title}
+	<input required name="title"></input>
+</label>
+<label>
+	${_ Description}
+	<textarea name="description"></textarea>
+</label>
+<label>
+	${_ Images}
+	<div id="images" class="h f fic">
+		<textarea type="url" name="images"></textarea>
+		<a class="$RB" href="/e/images" target="_blank">🔍</a>
+	</div>
+</label>
+<label>
+	${_ Stock}
+	<input required type="number" name="stock" min="0" value="1"></input>
+</label>
+<label>
+	${_ Price}
+	<input required type="number" name="price" min="0" step="0.01"></input>
+</label>

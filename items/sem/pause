@@ -1,0 +1,39 @@
+#!/bin/sh
+
+pause_options() {
+	if im $OWNER; then
+		$SEM -p < $SEM_FILE | grep '^P ' | awk '{ print $2 }'
+	elif test "$PRESENT" == "P $REMOTE_USER"; then
+		echo $REMOTE_USER
+	fi
+}
+
+test "$REQUEST_METHOD" != "POST" || \
+	sem_op PAUSE `urldecode $ts` $id `urldecode $rest`
+
+SemMenu pause > $DOCUMENT_ROOT/tmp/fun
+
+cat <<!
+<form action="./pause" method="POST" class="v f">
+	<label>
+		`_ "Date / Time"`
+		<input required name="ts" type="datetime-local" value="`date -u +"%Y-%m-%dT%H:%M:%S"`" step="1"></input>
+	</label>
+
+	<label>
+		Id
+		<select required name="id">
+			`pause_options | IdOptions`
+		</select>
+	</label>
+
+	<label>
+		`_ "More information"`
+		<textarea name="rest"></textarea>
+	</label>
+
+	<input type="hidden" name="iid" value="$iid"></input>
+
+	<button>`_ Submit`</button>
+</form>
+!

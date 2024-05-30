@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# ITEM_PATH=$ITEM_PATH/data.txt
+
+test -z "$b" || flags="-b"
+test -z "$l" || flags="$flags -l"
+if test -z "$c"; then
+	c=1
+	flags="$flags -C"
+else
+	c=
+fi
+
+EditBtn > $DOCUMENT_ROOT/tmp/fun
+
+RB "🎸" "?c=$c" >> $DOCUMENT_ROOT/tmp/fun
+
+index() {
+	local counter=0
+	while IFS=: read song t; do
+		path="$ROOT/items/chords/items/$song/data.txt"
+		echo "<div><a href='#$counter'>`cat "$path" | head -n 1`</a></div>"
+		counter="`math $counter + 1`"
+	done
+}
+
+cat >> $DOCUMENT_ROOT/tmp/fun <<!
+<label id="index" class="$RB menu">
+	≡
+	<input type="checkbox" />
+	<div class="abs v l p c0 ts btn ttc">
+		`cat $ITEM_PATH/data.txt | index`
+	</div>
+</label>
+!
+
+show() {
+	counter=0
+	while IFS=: read song t; do
+		path="$ROOT/items/chords/items/$song/data.txt"
+		echo "<div class='h f fic jcsb'><span id="$counter"><h1 class='tac'>`cat "$path" | head -n 1`</h1></span>`editbtn`</div>"
+		cat "$path" | tail -n +2 | transp -h $flags -t $t
+		counter="`math $counter + 1`"
+	done
+}
+
+echo "<pre class='v0 chords'>"
+cat $ITEM_PATH/data.txt | show
+echo "</pre>"
+echo "<pre class='v0 chords'>`cat $ITEM_PATH/data.txt | songbook`</pre>"

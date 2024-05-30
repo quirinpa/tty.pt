@@ -1,0 +1,77 @@
+#!/bin/sh
+
+if test $REQUEST_METHOD = GET; then
+	cat <<!
+<form action="register" method="post" class="v f fic">
+	<label>
+		`_ Username`: <input required name="username"></input>
+	</label>
+	<label>
+		`_ Password`: <input required type="password" name="password"></input>
+	</label>
+	<label>
+		`_ "Repeat password"`: <input required type="password" name="password2"></input>
+	</label>
+	<label>
+		`_ Email`: <input required type="email" name="email"></input>
+	</label>
+
+	<button>`_ Submit`</button>
+</form>
+
+<a class="btn c1" href="cookie">
+	`_ "Cookie policy"`
+</a>
+
+<a class="btn" href="login">
+	`_ Login`
+</a>
+!
+	exit 0
+fi
+
+username="`urldecode $username`"
+password="`urldecode $password`"
+password2="`urldecode $password2`"
+email="`urldecode $email`"
+
+if invalid_id $username || test "$username" == "www"; then
+	Fatal 400 Not a valid username
+fi
+
+if invalid_password $password; then
+	Fatal 400 Not a valid password
+fi
+
+if test "$password" != "$password2"; then
+	Fatal 400 The passwords don\'t match
+fi
+
+if grep -q "^$email$" $DOCUMENT_ROOT/.blacklist; then
+	Forbidden
+fi
+
+if grep -q "^$username:" $DOCUMENT_ROOT/.htpasswd; then
+	Fatal 400 User already exists
+fi
+
+USER_DIR=$DOCUMENT_ROOT/users/$username
+DF_USER=$username
+fmkdir $USER_DIR
+echo $email | fwrite $USER_DIR/email
+echo $username:$password | htpasswd -I $DOCUMENT_ROOT/.htpasswd
+rand_str="`rand_str_1`"
+echo "$rand_str" | fwrite $USER_DIR/rcode2
+femail -f noreply@tty.pt $email 2>&1 <<!
+Subject: `_ "Registration on tty.pt"`
+
+`_ "Welcome to tty.pt!"`
+
+`_ "To confirm that this e-mail address belongs to you, go to the page at:"`
+https://tty.pt/confirm?username=$username&rcode=$rand_str
+
+`_ "You will then be able to use your account."`
+
+`_ "Thank you!"`
+!
+_see_other welcome

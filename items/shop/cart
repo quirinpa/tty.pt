@@ -1,0 +1,88 @@
+#!/bin/sh
+
+case "$1" in
+	edit) shift; . ./.cart-edit ; exit 0 ;;
+esac
+
+
+EmptyContents() {
+	_EMPTY="`_ "Empty"`"
+	echo "<div class=\"tsxl tac\">$_EMPTY</div>"
+}
+
+Products() {
+	local product_id
+	while read product_id quantity; do
+		product_env $product_id
+		cat <<!
+<a class="card f v8 b0 fic p" href="/shop/$iid/$product_id">
+	`PImage $product_image_path`
+	<div class="tsxl">$product_title</div>
+	<div class="tsl">$quantity x $product_price€</div>
+	`echo "$product_description" | csurround p`
+</a>
+!
+	done
+}
+
+Contents() {
+	TOTAL_CART_EXP="`process_cart $CART_PATH`"
+	TOTAL="`echo "$TOTAL_CART_EXP" | bc -l`"
+	_SUBMIT="`_ Submit`"
+	PRODUCTS="`cat $CART_PATH | Products | fw`"
+
+	cat <<!
+$PRODUCTS
+
+<div class="tcv fic v">
+	<div class="tsxl">$TOTAL€</div>
+	<form action="/shop/$iid/order" method="POST">
+		<button>$_SUBMIT</Button>
+	</form>
+</div>
+!
+}
+
+if test -z "$iid" || test ! -d $SHOP_PATH; then
+	Fatal 404 Shop not found
+fi
+
+case "$REQUEST_METHOD" in
+	POST) ;;
+	GET)
+		if test -f "$CART_PATH" && test ! -z `cat $CART_PATH`; then
+			CONTENTS="`Contents`"
+			export EDIT_BTN="`EditBtn "/shop/$iid/cart/edit"`"
+
+		else
+			CONTENTS="`EmptyContents`"
+		fi
+		export CONTENTS
+
+		export _TITLE="`_ $iid` - `_ Cart`"
+
+		Normal 200 shop/$iid/cart
+		Cat cart
+		;;
+	*) NotAllowed ;;
+esac
+
+local PRODUCT_PATH=$SHOP_PATH/$product_id
+
+if test -z "$product_id" || test ! -d "$PRODUCT_PATH"; then
+	Fatal 404 Product not found
+fi
+
+product_env $product_id # TODO think twice about this use case
+
+if test -f $CART_PATH && cat $CART_PATH | grep -q $product_id; then
+	# only do something if this is not the case,
+	# otherwise just redir
+	echo -n ""
+elif test "$product_stock" != 0; then
+	echo $product_id 1 | fappend $CART_PATH
+else
+	Fatal 400 Not enough stock
+fi
+
+_see_other /shop/$iid/cart/edit

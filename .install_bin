@@ -82,3 +82,5 @@ passwd
 groups
 doas
 od
+kill
+flock

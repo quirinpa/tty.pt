@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo $REMOTE_USER | fwrite $ITEM_PATH/.owner
+fmkdir $ITEM_PATH/.orders

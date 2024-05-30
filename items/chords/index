@@ -1,0 +1,34 @@
+#!/bin/sh
+
+test -z "$t" && t=0 || true
+
+susi="b"
+susv="1"
+if test ! -z "$b"; then
+	flags="-b"
+	susi="#"
+	susv=""
+fi
+
+i18ni="l"
+i18nv="1"
+if test ! -z "$l"; then
+	flags="$flags -l"
+	i18ni="e"
+	i18nv=""
+fi
+
+_TITLE="`cat "$ITEM_PATH/data.txt" | head -n 1`"
+
+plus="`math $t + 1`"
+minus="`math $t - 1`"
+Functions "+ t=$plus&b=$b&l=$l" \
+	"- t=$minus&b=$b&l=$l" \
+	"$susi t=$t&b=$susv&l=$l" \
+	"$i18ni t=$t&b=$b&l=$i18nv"
+
+cat - <<!
+<pre class='v0 chords'>
+`cat $ITEM_PATH/data.txt | tail -n +3 | transp -t $t -h $flags`
+</pre>
+!

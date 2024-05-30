@@ -2,22 +2,6 @@
 
 . $DOCUMENT_ROOT/lib/very-common.sh
 
-Fatal() {
-	local status_code=$1
-	shift 1
-	NormalHead $status_code
-	echo
-	export _TITLE="$status_code: `_ "$@"`"
-	if test "$HTTP_ACCEPT" = "text/plain"; then
-		echo $_TITLE
-		exit 1
-	fi
-	export _TITLE
-	Head
-	export MENU="`Menu`"
-	CCat fatal
-}
-
 Forbidden() {
 	Fatal 403 Forbidden
 }
@@ -56,6 +40,11 @@ url2vars() {
 	exp="`echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1'`"
 	#exp="`echo $1 | tr '[A-Z]' '[a-z]'| tr '&' '\n'`"
 	eval "$exp"
+}
+
+fd() {
+	test ! -f $DOCUMENT_ROOT/tmp/mpfd/$1 || \
+		cat $DOCUMENT_ROOT/tmp/mpfd/$1
 }
 
 case "$REQUEST_METHOD" in
@@ -119,17 +108,19 @@ revlines() {
 }
 
 _see_other() {
-	echo '303 See Other'
-	echo "Location: $1"
-	echo
-	exit
+	Fin <<!
+Status: 303 See Other
+Location: $1
+
+!
 }
 
 see_other() {
-	echo '303 See Other'
-	echo "Location: /e/$1$2"
-	echo
-	exit
+	Fin <<!
+Status: 303 See Other
+Location: /e/$1$2
+
+!
 }
 
 no_html() {
@@ -142,29 +133,27 @@ format_df() {
 }
 
 df_dir() {
-	if test ! -d $DOCUMENT_ROOT/$1; then
-		return
-	fi
 	du_user="`du -c $DOCUMENT_ROOT/$1 | tail -1 | awk '{print $1}'`"
-	format_df $1 `calcround "$du_user * 1024"`
+	format_df "$1" "`calcround "$du_user * 1024"`"
 }
 
 dir_df() {
-	ls $DOCUMENT_ROOT/$1 | \
+	ls $DOCUMENT_ROOT/$1/items | \
 		while read line; do
-			path=$DOCUMENT_ROOT/$1/$line
-			OWNER="`cat $path/.owner`"
-			test "$OWNER" != "$DF_USER" || df_dir $1/$line
+			path="$DOCUMENT_ROOT/$1/items/$line"
+			local OWNER="`zcat "$path/.owner" || echo www`"
+			test "$OWNER" != "$DF_USER" || df_dir "$1/items/$line"
 		done
 }
 
 df() {
 	df_dir users/$DF_USER
 	df_dir htdocs/img/$DF_USER
-	dir_df shops
-	dir_df poems
-	dir_df sems
-	dir_df schools
+	ls $DOCUMENT_ROOT/items/ | while read item; do
+		test ! -d $DOCUMENT_ROOT/items/$item/items \
+			|| dir_df items/$item
+	done
+	# rm $DOCUMENT_ROOT/tmp/post || true
 }
 
 df_total_exp() {
@@ -213,6 +202,7 @@ fmkdir() {
 	if test ! -d "$1"; then
 		fbytes $DOCUMENT_ROOT/empty
 		mkdir -p "$1"
+		# chown $REMOTE_USER:www "$1" 2>&1
 	fi
 }
 
@@ -308,32 +298,40 @@ urlencode () {
 }'
 }
 
-Buttons() {
-	if test $e_mode = 1; then
-		while read id; do
-			_TITLE="`_ $id`"
-			where="$2"
-			extra="$3"
-			urlid="`urlencode "$id"`"
-			cat <<!
-<div><a class="btn $1" href="/e/$where?${where}_id=$urlid/$extra">
-	$_TITLE
+Buttons2() {
+	local cla="$1"
+	local path="$2"
+	local where="$3"
+	local extra="$4"
+	local sub
+	local id
+	ls $path | while read sub; do
+		test ! -f "$path/$sub/.hidden" || continue
+		id="`zcat $path/$sub/title || echo $sub | tr '_' ' '`"
+		_TITLE="`_ "$id"`"
+		urlid="`urlencode "$sub"`"
+		icon="`test ! -f "$path/$sub/icon" || cat "$path/$sub/icon"`"
+		test -z "$icon" || icon="<span>$icon</span>"
+		cat <<!
+<div><a class="btn wsnw h $cla" href="$urlid/$extra">
+	<span>$_TITLE</span>$icon
 </a></div>
 !
-		done
-	else
-		while read id; do
-			_TITLE="`_ $id`"
-			where="$2"
-			extra="$3"
-			urlid="`urlencode "$id"`"
-			cat <<!
+	done
+}
+
+Buttons() {
+	while read id; do
+		_TITLE="`_ $id`"
+		where="$2"
+		extra="$3"
+		urlid="`urlencode "$id"`"
+		cat <<!
 <div><a class="btn $1" href="/$where/$urlid/$extra">
 	$_TITLE
 </a></div>
 !
-		done
-	fi
+	done
 }
 
 BigButtons() {
@@ -401,6 +399,10 @@ Field() {
 !
 }
 
+RB() {
+	echo "<a class='$RB' href='$2'>$1</a>"
+}
+
 EditBtn() {
 	im $OWNER || return 0
 	echo "<a class='$RB' href='./edit/'>📝</a>"
@@ -417,16 +419,16 @@ Functions() {
 	while test $# -ge 1; do
 		echo $1 | _Functions
 		shift
-	done
+	done > $DOCUMENT_ROOT/tmp/fun
 }
 
 IsAllowedItemFound() {
 	set -- `echo $REQUEST_URI | tr '/' ' '`
-	local item_path="$DOCUMENT_ROOT/$1/$iid"
+	local item_path="`pwd`/items/$iid"
 	test ! -z "$ITEM_PATH" \
 		|| ITEM_PATH="$item_path"
 
-	if test -z "$iid" || test ! -f "$ITEM_PATH" && test ! -d "$ITEM_PATH"; then
+	if test ! -f "$ITEM_PATH" && test ! -d "$ITEM_PATH"; then
 		Fatal 404 Item not found
 	fi
 }
@@ -439,20 +441,22 @@ Index() {
 	typ=$1
 	test $# -lt 1 || shift
 
+	INDEX_PATH="`pwd`"
 	if test -z "$SUBINDEX_ICON"; then
-		SUBINDEX_ICON="`test -f .icon && cat .icon || echo "🗂"`"
+		SUBINDEX_ICON="`zcat icon || echo "🗂"`"
 	fi
 
 	test ! -f .lib/index.sh || . .lib/index.sh
 
 	case "$1" in
 		"") ;;
-		add) shift; Add $@ ; exit 0;;
+		add) shift; Add add $@ ; exit 0;;
 		*)
+			ITEM_PATH="`pwd`/items/$1"
 			INDEX_ICON="$SUBINDEX_ICON"
 			SUBINDEX_ICON=" "
 			_TITLE=
-			. ./.sub-index $@
+			SubIndex $@
 			exit 0
 			;;
 	esac
@@ -460,14 +464,14 @@ Index() {
 	test "$REQUEST_METHOD" = "GET" || return 0
 
 	if test -z "$_TITLE"; then
-		TITLE="`test -f .title && cat .title || echo $typ`"
+		TITLE="`zcat title || echo $typ`"
 		_TITLE="`_ "$TITLE"`"
 	fi
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
 	test ! -z "$FUNCTIONS" || \
-		FUNCTIONS="`fun || test -z "$REMOTE_USER" || AddBtn`"
+		FUNCTIONS="`fun || test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
 	test ! -z "$CONTENT" || \
-		CONTENT="`content || ls_shown . | BigButtons $typ`"
+		CONTENT="`zcat template/index.html || Buttons2 'tsxl cap' items`"
 
 	export _TITLE
 	export INDEX_ICON
@@ -477,17 +481,29 @@ Index() {
 	export FUNCTIONS
 	Normal 200 $typ
 	CCat common
+	exit 0
 }
 
-SubIndex() {
-	test "$REQUEST_METHOD" = "GET" || return 0
-	SUBINDEX_ICON=""
-	test ! -z "$_TITLE" || _TITLE="$iid"
-	test ! -z "$PRECLASS" || PRECLASS="v f fic"
-	test ! -z "$CONTENT" || CONTENT=`content || true`
-	test ! -z "$FUNCTIONS" || FUNCTIONS=`fun || true`
+owner_get() {
+	if test -f $1; then
+		ls -al $1 | awk '{print $3}'
+	else
+		cat $1/.owner
+	fi
+}
 
-	export iid
+Immediate() {
+	content="$1"
+	shift
+
+	SUBINDEX_ICON=""
+	test ! -z "$_TITLE" || _TITLE="$content"
+	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
+	CONTENT="`. ./$content $@`"
+	test ! -z "$PRECLASS" || PRECLASS="v f fic"
+	FUNCTIONS="`test ! -f $DOCUMENT_ROOT/tmp/fun || cat $DOCUMENT_ROOT/tmp/fun`"
+	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
+
 	export INDEX_ICON
 	export SUBINDEX_ICON
 	export FUNCTIONS
@@ -497,51 +513,86 @@ SubIndex() {
 	export _TITLE
 	export PRECLASS
 
-	Normal 200 ./$iid
+	Normal 200 ./$content
 	CCat common
+	exit 0
+}
+
+SubIndex() {
+	iid="$1"
+	IsAllowedItemFound $@
+	OWNER=`owner_get`
+
+	content="index"
+	shift
+
+	case "$1" in
+		"") ;;
+		add) shift; _TITLE= Add sub-add $@ ; exit 0;;
+		*)
+			if test -f ./$1; then
+				content=$1
+				_TITLE="`_ $1`"
+				Immediate $content $@
+				exit 0
+			else
+				SUB_ITEM_PATH="$ITEM_PATH/items/$1"
+				content=sub-index
+			fi
+			;;
+	esac
+
+	if test -z "$_TITLE"; then
+		_TITLE="`zcat $ITEM_PATH/title || echo $iid | tr '_' ' '`"
+	fi
+
+	Immediate $content $@
 }
 
 InvalidItem() {
-	rm -rf $ITEM_PATH
+	rm -rf "$ITEM_PATH"
 	Fatal 400 Invalid item
 }
 
 Add() {
+	local template=$1
+	shift
 	test ! -z "$REMOTE_USER" || Forbidden
 
 	if test "$REQUEST_METHOD" = "GET"; then
 		test ! -z "$_TITLE" || _TITLE="`_ "Add item"`"
-		test ! -z "$SUBINDEX_ICON" || SUBINDEX_ICON="🗂"
+		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
 
 		export _ID="`_ "ID"`"
 		export _DESCRIPTION
 		export _SUBMIT="`_ Submit`"
 		export FILES="<label>`_ Files`<input required type='file' name='file[]' multiple></input></label>"
 		export FILE="<label>`_ File`<input required type='file' name='file'></input></label>"
-		export ENCTYPE
-		export FORM_CONTENT="`Cat add`"
-		export SUBINDEX_ICON
+		export ENCTYPE="multipart/form-data"
+		export FORM_CONTENT="`Cat $template`"
+		export INDEX_ICON
 
 		Normal 200 ./add
 		CCat add
+		exit 0
 	fi
 
 	test "$REQUEST_METHOD" = "POST" || NotAllowed
 
-	iid="`cat $DOCUMENT_ROOT/tmp/mpfd/iid`"
+	item_id="`fd item_id`"
 
-	if invalid_id $iid; then
+	if invalid_id $item_id; then
 		Fatal 400 Not a valid ID
 	fi
 
-	ITEM_PATH="`pwd`/$iid"
+	ITEM_PATH="`test -z "$ITEM_PATH" && pwd || echo "$ITEM_PATH"`/items/$item_id"
 
 	fmkdir $ITEM_PATH
 	echo $REMOTE_USER | fwrite $ITEM_PATH/.owner
 
-	. ./add
+	. ./$template 2>&1
 
-	_see_other ./$iid
+	_see_other ./$item_id/
 }
 
 nfiles() {

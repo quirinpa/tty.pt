@@ -1,0 +1,116 @@
+#!/bin/sh
+
+pay_options() {
+	if im $OWNER; then
+		$SEM -p < $SEM_FILE | sed "/^. $REMOTE_USER$/d" | awk '{print $2}'
+	fi
+	echo $REMOTE_USER y
+}
+
+payments() {
+	cat $SEM_FILE | sed -n '/^PAY /p'
+}
+
+types="`payments | awk '{print $7; print $3}' | sort -u`"
+last_payment="`payments | sed -n "/^PAY [^ ]* $REMOTE_USER .* $type/p" | tail -n 1`"
+
+pay_info() {
+	cat $SEM_FILE | sed -n '/^PAY /p' | awk '{print $7 " " $3}'
+}
+
+type_options() {
+	echo $TYPE y
+	pay_info | awk '{ print $1 }' | sort -u | sed "/^$TYPE$/d"
+}
+
+date_get() {
+	local res="`date -j -f "%Y-%m-%dT%H:%M:%S" "$1" +"%Y-%m-%d" || true`"
+	if test -z "$res"; then
+		res="`date -j -f "%Y-%m-%d" "$1" +"%Y-%m-%d"`"
+	fi
+	echo $res
+}
+
+month_inc() {
+	read date
+	local year="`echo $date | awk '{print $1}'`"
+	local month="`echo $date | awk '{print $2}'`"
+	year="`echo | bc -e "if ( $month + 1 > 12 ) $year + 1 else $year"`"
+	year="`printf "%04u" $year`"
+	month="`echo | bc -e "if ( $month + 1 > 12 ) 1 else ( $month + 1 )"`"
+	month="`printf "%02u" $month`"
+	echo $year-$month-`echo $date | awk '{print $3}'`
+}
+
+set -- $last_payment
+export VALUE=$4
+export START="`date_get "$5" | tr '-' ' '`"
+export END="`date_get "$6" | tr '-' ' '` | "
+START="`echo $START | month_inc | tr ' ' '-'`T00:00:00"
+END="`echo $END | month_inc | tr ' ' '-'`T00:00:00"
+TYPE=$7
+if ! test -z "$type"; then
+	TYPE=$type
+fi
+export ENTITY=$8
+
+test "$REQUEST_METHOD" != "POST" || \
+	sem_op PAY `urldecode $ts` $id `urldecode $value` `urldecode $from` `urldecode $to` $type $entity $reference
+
+SemMenu pay > $DOCUMENT_ROOT/tmp/fun
+
+cat <<!
+<form action="./pay" method="POST" class="v f fic">
+	<label>
+		`_ "Date / Time"`
+		<input required name="ts" type="datetime-local" value="`date -u +"%Y-%m-%dT%H:%M:%S"`" step="1"></input>
+	</label>
+
+	<label>
+		Id
+		<select required name="id">
+			`pay_options | IdOptions`
+		</select>
+	</label>
+
+	<label>
+		`_ Value`
+		<input required type="number" name="value" placeholder="33.33" step="0.01" value="$VALUE"></input>
+	</label>
+
+	<label>
+		`_ "Start of billing period"`
+		<input required name="from" type="datetime-local" value="$START" step="1"></input>
+	</label>
+
+	<label>
+		`_ "End of billing period"`
+		<input required name="to" type="datetime-local" value="$END" step="1"></input>
+	</label>
+
+	<label>
+		`_ Type`
+		<select name="type">
+			`type_options | IdOptions`
+		</select>
+	</label>
+
+	<label>
+		`_ Entity`
+		<input required name="entity" pattern="[0-9]{5}" value="$ENTITY"></input>
+	</label>
+
+
+	<label>
+		`_ Reference`
+		<input required name="reference" pattern="[0-9]{9}"></input>
+	</label>
+
+	<input type="hidden" name="iid" value="$iid"></input>
+
+	<button>`_ Submit`</button>
+
+	<!-- <div id="reader" class="s_f"></div> -->
+	<video class="s_f"></video>
+</form>
+!
