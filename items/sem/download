@@ -1,6 +1,0 @@
-#!/bin/sh
-
-echo Status 200: Ok
-echo Content-Type: text
-echo
-cat $SEM_FILE

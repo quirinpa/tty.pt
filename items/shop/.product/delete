@@ -1,8 +1,0 @@
-#!/bin/sh
-test "$REQUEST_METHOD" == "POST" || NotAllowed
-
-local product_path=$SHOP_PATH/$iid
-SHOP_OWNER="`cat $SHOP_PATH/.owner`"
-im $SHOP_OWNER || Forbidden
-product_rm $iid
-_see_other /shop/$shop_id
