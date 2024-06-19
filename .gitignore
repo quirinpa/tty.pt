@@ -24,6 +24,6 @@
 /sbin
 /.blacklist
 /cgit
-/items/*/items/*
-/items/winbuntu/*
-!/items/winbuntu/.*
+/lib
+/lib64
+/items
