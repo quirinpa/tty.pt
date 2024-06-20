@@ -34,15 +34,49 @@ cat >> $DOCUMENT_ROOT/tmp/fun <<!
 </label>
 !
 
+if im $OWNER && test -z "$c"; then
+	shift_chords() {
+		local plus="`math $2 + 1`"
+		local minus="`math $2 - 1`"
+		cat - <<!
+<span class="f h">
+	`RB - "?c=1&n=$1&t=$minus#$1"`
+	`RB + "?c=1&n=$1&t=$plus#$1"`
+</span>
+!
+}
+else
+	shift_chords() {
+	}
+fi
+
 show() {
 	counter=0
 	while IFS=: read song t; do
 		path="$ROOT/items/chords/items/$song/data.txt"
-		echo "<div class='h f fic jcsb'><span id="$counter"><h1 class='tac'>`cat "$path" | head -n 1`</h1></span>`editbtn`</div>"
-		cat "$path" | tail -n +2 | transp -h $flags -t $t
+		cat - <<!
+<div class='h f fic jcsb'>
+	<span id="$counter"><h1 class='tac'>`cat "$path" | head -n 1`</h1></span>
+	`shift_chords $counter $t`
+</div>
+!
+		cat "$path" | tail -n +3 | transp -h $flags -t $t
 		counter="`math $counter + 1`"
 	done
 }
+
+if test ! -z "$n"; then
+	count="`wc -l $ITEM_PATH/data.txt`"
+	cn=0
+	cat $ITEM_PATH/data.txt | while IFS=: read song ct; do
+		if test $cn -eq $n; then
+			echo $song:$t
+		else
+			echo $song:$ct
+		fi
+		cn=`math $cn + 1`
+	done > $ITEM_PATH/data.txt
+fi
 
 echo "<pre class='v0 chords'>"
 cat $ITEM_PATH/data.txt | show

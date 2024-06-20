@@ -46,11 +46,5 @@ fi
 
 test "$REQUEST_METHOD" = "GET" || NotAllowed
 
-Normal 200 
-cat - <<!
-<body class="f fic tac v tsxl">
-	$MENU
-	<h2>tty.pt</h2>
-	`Buttons2 'cap tsxl' items`
-</body>
-!
+_TITLE=TTY.PT
+Buttons2 'f jcsb cap tsxl' items | Immediate -

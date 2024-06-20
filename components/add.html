@@ -1,11 +1,17 @@
-<body class="f fic v">
-	<header class="h f fw v fic fcc">
-		$MENU
-		<a class="$RB" href=".">$INDEX_ICON</a>
+<body class="f v0 fic rel svfv p0 m0">
+	<header class="h f fw v fic fcc p">
+		<span class="abs ah f fic h ov">
+			$INDEX_ICON
+			$MENU
+			$MENU_LEFT
+		</span>
+		<h1 class="cap tac">$_TITLE $SUBINDEX_ICON</h1>
+		<div class="abs ll f fic h ov">
+			$FUNCTIONS
+		</div>
 	</header>
 
-	<h1 class="tac">$_TITLE</h1>
-
+	<div class="fg oav v ph mj">
 	<form action="." method="POST" class="v f fic" enctype="$ENCTYPE">
 		<label>
 			$_ID
@@ -15,4 +21,5 @@
 		<div>$_DESCRIPTION</div>
 		<button>$_SUBMIT</button>
 	</form>
+	</div>
 </body>

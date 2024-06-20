@@ -468,6 +468,8 @@ Index() {
 		_TITLE="`_ "$TITLE"`"
 	fi
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
+	INDEX_ICON="`RB $INDEX_ICON ./..`"
+
 	test ! -z "$FUNCTIONS" || \
 		FUNCTIONS="`fun || test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
 	test ! -z "$CONTENT" || \
@@ -485,6 +487,8 @@ Index() {
 }
 
 owner_get() {
+	test -f $ITEM_PATH/.owner && cat $ITEM_PATH/.owner || echo quirinpa
+	return 0
 	if test -f $1; then
 		ls -al $1 | awk '{print $3}'
 	else
@@ -499,10 +503,13 @@ Immediate() {
 	SUBINDEX_ICON=""
 	test ! -z "$_TITLE" || _TITLE="$content"
 	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
-	CONTENT="`. ./$content $@`"
+	CONTENT="`test "$content" == "-" && cat - || . ./$content $@`"
 	test ! -z "$PRECLASS" || PRECLASS="v f fic"
 	FUNCTIONS="`test ! -f $DOCUMENT_ROOT/tmp/fun || cat $DOCUMENT_ROOT/tmp/fun`"
 	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
+
+	test -z "$INDEX_ICON" \
+		|| INDEX_ICON="`RB $INDEX_ICON ./..`"
 
 	export INDEX_ICON
 	export SUBINDEX_ICON
@@ -562,6 +569,7 @@ Add() {
 	if test "$REQUEST_METHOD" = "GET"; then
 		test ! -z "$_TITLE" || _TITLE="`_ "Add item"`"
 		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
+		INDEX_ICON="`RB $INDEX_ICON ./..`"
 
 		export _ID="`_ "ID"`"
 		export _DESCRIPTION
@@ -571,6 +579,7 @@ Add() {
 		export ENCTYPE="multipart/form-data"
 		export FORM_CONTENT="`Cat $template`"
 		export INDEX_ICON
+		export _TITLE
 
 		Normal 200 ./add
 		CCat add
