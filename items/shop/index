@@ -33,10 +33,10 @@ lsshown() {
 
 if test ! -z $REMOTE_USER; then
 	cat > $DOCUMENT_ROOT/tmp/fun <<!
-<a class="$RB" href="./add/">+</a>
+`RB + ./add/`
 `EditBtn "./edit/"`
-<a class="$RB" href="./order/">🚚</a>
-<a class="$RB" href="./cart/">🛒</a>
+`RB 🚚 ./order/`
+`RB 🛒 ./cart/`
 !
 fi
 

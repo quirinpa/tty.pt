@@ -5,9 +5,9 @@ lsshown() {
 }
 
 cat > $DOCUMENT_ROOT/tmp/fun <<!
-<a class="$RB" href="./../order/">🚚</a>
-<a class="$RB" href="./../cart">🛒</a>
-`im $OWNER && echo "<a class='$RB' href='./../add/'>+</a>" || true`
+`RB 🚚 ./../order`
+`RB 🛒 ./../cart`
+`im $OWNER && RB + ./../add/ || true`
 !
 
 # lsshown $ITEM_PATH	/ | while read product_id; do

@@ -400,19 +400,19 @@ Field() {
 }
 
 RB() {
-	echo "<a class='$RB' href='$2'>$1</a>"
+	echo "<a class='$RBS' href='$2'>$1</a>"
 }
 
 EditBtn() {
 	im $OWNER || return 0
-	echo "<a class='$RB' href='./edit/'>📝</a>"
+	RB 📝 ./edit/
 	# local i_edit="✎"
 	# echo $i_edit | surround a "href=\"$1/\"" "class=\"$RB\""
 }
 
 _Functions() {
 	read icon params
-	echo "<a class=\"$RBS\" href=\"$DOCUMENT_URI?$params\">$icon</a>"
+	RB $icon $DOCUMENT_URI?$params
 }
 
 Functions() {
@@ -434,7 +434,7 @@ IsAllowedItemFound() {
 }
 
 AddBtn() {
-	echo "<a class='$RB' href='./add'>+</a>"
+	RB + ./add/
 }
 
 Index() {
@@ -503,9 +503,13 @@ Immediate() {
 	SUBINDEX_ICON=""
 	test ! -z "$_TITLE" || _TITLE="$content"
 	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
-	CONTENT="`test "$content" == "-" && cat - || . ./$content $@`"
+	if test -f $content; then
+		CONTENT="`. ./$content $@`"
+	else
+		CONTENT="`cat -`"
+	fi
 	test ! -z "$PRECLASS" || PRECLASS="v f fic"
-	FUNCTIONS="`test ! -f $DOCUMENT_ROOT/tmp/fun || cat $DOCUMENT_ROOT/tmp/fun`"
+	FUNCTIONS="`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
 	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
 
 	test -z "$INDEX_ICON" \
@@ -569,20 +573,21 @@ Add() {
 	if test "$REQUEST_METHOD" = "GET"; then
 		test ! -z "$_TITLE" || _TITLE="`_ "Add item"`"
 		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
-		INDEX_ICON="`RB $INDEX_ICON ./..`"
 
-		export _ID="`_ "ID"`"
-		export _DESCRIPTION
-		export _SUBMIT="`_ Submit`"
 		export FILES="<label>`_ Files`<input required type='file' name='file[]' multiple></input></label>"
 		export FILE="<label>`_ File`<input required type='file' name='file'></input></label>"
-		export ENCTYPE="multipart/form-data"
-		export FORM_CONTENT="`Cat $template`"
-		export INDEX_ICON
-		export _TITLE
 
-		Normal 200 ./add
-		CCat add
+		Immediate - <<!
+<form action="." method="POST" class="v f fic" enctype="multipart/form-data">
+	<label>
+		`_ ID`
+		<input required name="item_id"></input>
+	</label>
+	`Cat $template`
+	<div>$_DESCRIPTION</div>
+	<button>`_ Submit`</button>
+</form>
+!
 		exit 0
 	fi
 

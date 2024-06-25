@@ -133,11 +133,11 @@ export SRB="btn round ps tsl"
 Menu() {
 	local user_name
 	local user_icon
+	echo $INDEX_ICON
 	if test ! -z "$REMOTE_USER"; then
-		user_name="<span class=\"ts\">$REMOTE_USER</span>"
-		user_icon="<a class=\"tsxl f h fic btn p8\" href=\"/user\"><span role=\"img\" aria-label=\"user\">🔑 </span><span> $user_name</span></a>"
+		user_icon="`RB 👤 /user`"
 	else
-		user_icon="<a class=\"$RB\" href=\"/login?ret=$DOCUMENT_URI\"><span role=\"img\" aria-label=\"login\">🔑 </span></a>"
+		user_icon="`RB 🔑 /login?ret=$DOCUMENT_URI`"
 	fi
 	echo $user_icon
 }

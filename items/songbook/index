@@ -5,15 +5,17 @@
 test -z "$b" || flags="-b"
 test -z "$l" || flags="$flags -l"
 if test -z "$c"; then
-	c=1
+	nc=1
 	flags="$flags -C"
 else
-	c=
+	nc=
 fi
-
-EditBtn > $DOCUMENT_ROOT/tmp/fun
-
-RB "🎸" "?c=$c" >> $DOCUMENT_ROOT/tmp/fun
+if test -z "$s"; then
+	ns=1
+else
+	ns=
+	flags="$flags -L"
+fi
 
 index() {
 	local counter=0
@@ -25,16 +27,19 @@ index() {
 }
 
 cat >> $DOCUMENT_ROOT/tmp/fun <<!
-<label id="index" class="$RB menu">
+<label id="index" class="$RBS menu">
 	≡
 	<input type="checkbox" />
 	<div class="abs v l p c0 ts btn ttc">
 		`cat $ITEM_PATH/data.txt | index`
 	</div>
 </label>
+`RB "🎸" "?s=$s&c=$nc"`
+`RB "👄" "?s=$ns&c=$c"`
+`EditBtn`
 !
 
-if im $OWNER && test -z "$c"; then
+if im $OWNER && test -z "$nc"; then
 	shift_chords() {
 		local plus="`math $2 + 1`"
 		local minus="`math $2 - 1`"
@@ -56,7 +61,7 @@ show() {
 		path="$ROOT/items/chords/items/$song/data.txt"
 		cat - <<!
 <div class='h f fic jcsb'>
-	<span id="$counter"><h1 class='tac'>`cat "$path" | head -n 1`</h1></span>
+	<span id="$counter"><h2 class='tac'>`cat "$path" | head -n 1`</h2></span>
 	`shift_chords $counter $t`
 </div>
 !
@@ -78,7 +83,6 @@ if test ! -z "$n"; then
 	done > $ITEM_PATH/data.txt
 fi
 
-echo "<pre class='v0 chords'>"
+echo "<pre lang='pt' class='v0 chords'>"
 cat $ITEM_PATH/data.txt | show
 echo "</pre>"
-echo "<pre class='v0 chords'>`cat $ITEM_PATH/data.txt | songbook`</pre>"

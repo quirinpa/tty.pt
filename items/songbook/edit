@@ -27,7 +27,7 @@ proc() {
 		done
 		echo "</select>"
 		echo "<input name='t_$counter' type='number' step='1' value='$t'></input>"
-		echo "<a class='$RB' href='/chords/`urlencode "$song"`?t=$t'>👁</a>"
+		RB 👁 "/chords/`urlencode "$song"`?t=$t"
 		echo "</div>"
 		counter="`math $counter + 1`"
 	done

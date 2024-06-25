@@ -72,8 +72,8 @@ SemMenu() {
 	fi
 
 	cat <<!
-<label id="sem_menu_cont" class="$RB rel c15 cf0 menu">
-	+
+<label id="sem_menu_cont" class="$RBS menu">
+	≡
 	<input type="checkbox" />
 	<div class="abs v l p c0 ts btn ttc">
 		$options

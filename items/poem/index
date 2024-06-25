@@ -15,17 +15,18 @@ ITEM_PATH="$poem_path/pt_PT.html"
 new_item_path="$poem_path/$lang.html"
 test ! -f $new_item_path || ITEM_PATH=$new_item_path
 
-cat > $DOCUMENT_ROOT/tmp/bottom <<EOF
+cat - > $DOCUMENT_ROOT/tmp/fun <<!
+`RB 💬 '#comments'`
+<div class='tac cf15 tsxl'>`counter_inc $poem_path/counter.txt`</div>
+!
+
+cat - <<!
+<pre>`cat $ITEM_PATH`</pre>
+<div>
 <form action="$iid" method="post" class="h f fic">
 	<input type="hidden" name="iid" value="$iid"></input>
 	<input class="fg" name="comment"></input>
 </form>
+</div>
 <pre id="comments">`cat $comments_path | revlines | no_html`</pre>
-EOF
-
-cat - > $DOCUMENT_ROOT/tmp/fun <<!
-<div class='width tac cf15 tsxl'>`counter_inc $poem_path/counter.txt`</div>
-<a href='#comments' class='$RB'>💬</a>
 !
-
-echo "<pre>`cat $ITEM_PATH`</pre>"
