@@ -1,31 +1,60 @@
 #!/bin/sh
 
-test ! -z "$DOCUMENT_ROOT" || DOCUMENT_ROOT="$PWD/"
+test ! -z "$DOCUMENT_ROOT" || DOCUMENT_ROOT="$PWD"
 
-install_extra_old() {
-	echo install_extra $@
-	line=$1
-	target_path="`echo $line | grep -q "^/" && dirname $line || echo /usr/bin`"
-	test -d "$DOCUMENT_ROOT$target_path" || mkdir -p $DOCUMENT_ROOT$target_path
-	if test ! -f "$DOCUMENT_ROOT$line"; then
-		# cp $line $DOCUMENT_ROOT$line
-		echo cp $line $DOCUMENT_ROOT$line
-	fi
-}
+options=`getopt -o dfv: --long help -- "$@"`
+
+dry=false
+noforce=true
+debug=0
+target=
+
+eval set -- "$options"
+
+while true; do
+	case "$1" in
+		# actions
+		-d) dry=true ;;
+		-f) noforce=false ;;
+		-v) debug=$2; shift ;;
+		--help)
+			cat <<!
+usage: install_bin [OPTIONS...] [FILE]
+
+DESCRIPTION:
+    This is for installing things into tty.pt chroot.
+
+OPTIONS:
+  -d 				dry run
+  -f				force
+  -v LEVEL			set verbosity (0, 1 or 2)
+!
+			;;
+		--) break ;;
+
+		*) target=$1 ;;
+	esac
+	shift
+done
+
+shift $OPTIND
+test $# -lt 1 || target="$1"
 
 install_extra() {
-	# echo install_extra $@
+	test $debug -lt 2 || echo install_extra $@
         local line=$1
-	local target_path="`echo $line | grep -q "^\/" && dirname $line || echo /usr/bin`"
+	local target_psuffix="`echo $line | grep -q "^\/" && dirname $line || echo /usr/bin`"
+	local target_path="$DOCUMENT_ROOT$target_psuffix"
+	test ! -z "$line" || return 0
 	local target_file="$target_path/`basename $line`"
-        test -d "$DOCUMENT_ROOT$target_path" || mkdir -p $DOCUMENT_ROOT$target_path
+        test -d "$target_path" || mkdir -p $target_path
 	local link="`readlink "$line" || true`"
 	if echo "$link" | grep -q "^\/"; then
 		install_extra "$link"
-		ln -srf $DOCUMENT_ROOT$link $DOCUMENT_ROOT$target_file
-		echo ln -srf $DOCUMENT_ROOT$link $DOCUMENT_ROOT$target_file
+		$dry || ln -srf $DOCUMENT_ROOT$link $target_file
+		test $debug -lt 1 || echo ln -srf $DOCUMENT_ROOT$link $target_file
 	elif test -z "$link"; then
-		if diff $DOCUMENT_ROOT$target_file $line; then
+		if $noforce && diff $target_file $line 2>/dev/null; then
 			return
 		fi
 		if test -d "$line"; then
@@ -33,41 +62,23 @@ install_extra() {
 				install_extra "$line/$file"
 			done
 		else
-			cp -r $line $DOCUMENT_ROOT/$target_file
-			echo cp -r $line $DOCUMENT_ROOT$target_file
+			$dry || cp -r $line $target_file
+			test $debug -lt 1 || echo cp -r $line $target_file
 		fi
 	else
-		install_extra "$target_path/$link"
-		ln -srf $DOCUMENT_ROOT$target_path/$link $DOCUMENT_ROOT$line
-		echo ln -srf $DOCUMENT_ROOT$target_path/$link $DOCUMENT_ROOT$line 
+		install_extra "$target_psuffix/$link"
+		$dry || ln -srf $target_path/$link $DOCUMENT_ROOT$line
+		test $debug -lt 1 || echo ln -srf $target_path/$link $DOCUMENT_ROOT$line
 	fi
-}
-
-ecp() {
-	local target_path="`echo $2 | grep -q "^\/" && dirname $2 || echo /usr/bin`"
-	mkdir -p $target_path 2>/dev/null || true
-	echo cp $1 $2
-	cp $1 $2
-}
-
-install_bin_old() {
-	path=$1
-	tmp=/tmp/$path
-	ecp $path /tmp/$path
-	ldd /tmp/$path | awk '{ print $7 }' | tail -n +4 | while read line; do
-		install_extra "$line"
-	done
-	install_extra $path
-	rm /tmp/$path
 }
 
 install_bin() {
         local path=$1
-	local target_path="`echo $path | grep -q "^/" && dirname $path || echo /usr/bin`"
+	local target_path="$DOCUMENT_ROOT`echo $path | grep -q "^\/" && dirname $path || echo /usr/bin`"
+	test $debug -lt 2 || echo install_bin $path
+	test ! -z "$1" || return 0
 	target_file="$target_path/`basename $path`"
-	# echo install_bin $@
-	diff $path $DOCUMENT_ROOT$target_file && return 0 || true
-        ldd $path | tail -n +1 | while read filename arrow ipath rest; do
+        ldd $path 2>/dev/null | tail -n +1 | while read filename arrow ipath rest; do
 		if test -z "$ipath"; then
 			echo "$filename" | grep -q "^\/" \
 				&& install_bin "$filename" \
@@ -76,14 +87,54 @@ install_bin() {
 		fi
                 install_bin "$ipath"
         done
+	$noforce && diff $path $target_file 2>/dev/null && return 0 || true
 	install_extra $path
 }
 
-if test $# -lt 1; then
-	cat .install_bin | while read line; do install_bin "`which $line`"; done
-	cat .install_extra | while read line; do install_extra "$line"; done
+if test ! -z "$target"; then
+	install_bin "`test -f "$target" && echo "$target" || which "$target"`"
+	echo "$target" >> .install_bin
 	exit
 fi
 
-install_bin "`which $1`"
-echo $1 >> .install_bin
+cat .install_bin | while read line; do install_bin "`which $line`"; done
+cat .install_extra | while read line; do install_extra "$line"; done
+
+cmount() {
+	local type=$1
+	shift
+	if ! mount | grep -q "on $DOCUMENT_ROOT/$type type"; then
+		mkdir -p $DOCUMENT_ROOT/$type 2>/dev/null || true
+		mount $@ $DOCUMENT_ROOT/$type
+	fi
+}
+
+cmknod() {
+	local mode=$1
+	local type=$2
+	local major=$3
+	local minor=$4
+	local path=$5
+	test -$2 $DOCUMENT_ROOT/$path && return 0 || true
+	mknod $DOCUMENT_ROOT/$path $type $major $minor $path
+	chmod $mode $DOCUMENT_ROOT/$path
+}
+
+cmount dev --bind /dev
+cmount sys --bind /sys
+cmount proc --bind /proc
+cmknod 666 c 5 2 dev/ptmx
+cmount dev/pts -t devpts devpts
+
+src_path="$DOCUMENT_ROOT/src"
+if test -d $src_path; then
+	cd $src_path
+	ls | while read bin_proj; do
+		cd $bin_proj || continue
+		make
+		make list | while read prog; do
+			install_bin $prog
+		done
+		cd - >/dev/null
+	done
+fi

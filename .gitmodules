@@ -1,3 +1,6 @@
 [submodule "neverdark"]
 	path = .items/nd
 	url = git@github.com:tty-pt/neverdark.git
+[submodule "src/htmlsh"]
+	path = src/htmlsh
+	url = git@github.com:tty-pt/htmlsh.git
