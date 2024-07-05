@@ -2,13 +2,10 @@
 
 test ! -z "$DOCUMENT_ROOT" || DOCUMENT_ROOT="$PWD"
 
-options=`getopt -o mdfv: --long help -- "$@"`
+options=`getopt -o v: --long help -- "$@"`
 
-dry=false
-noforce=true
 debug=0
 target=
-make=false
 
 uname="`uname`-`uname -v | awk '{print $1}'`"
 depend=$DOCUMENT_ROOT/.depend-$uname
@@ -23,24 +20,19 @@ rm -rf $tmp/umake-cp-tty-pt $tmp/umake-ln-tty-pt \
 
 while true; do
 	case "$1" in
-		# actions
-		-d) dry=true ;;
-		-f) noforce=false ;;
-		-m) noforce=false; make=true ;;
 		-v) debug=$2; shift ;;
 		--help)
 			cat <<!
-usage: install_bin [OPTIONS...] [FILE]
+usage: $0 [OPTIONS...] [FILE]
 
 DESCRIPTION:
     This is for installing things into tty.pt chroot.
 
 OPTIONS:
-  -d 				dry run
-  -f				force
-  -m				generate Makefile dependencies
   -v LEVEL			set verbosity (0, 1 or 2)
+  --help			this information
 !
+			exit
 			;;
 		--) break ;;
 
@@ -51,18 +43,12 @@ done
 
 shift $OPTIND
 test $# -lt 1 || target="$1"
-
-test ! -z "$target" || rm -rf $depend 2>/dev/null || true
+touch $depend
 
 link() {
 	origin=$1
 	target=$2
-	$make || $dry || ln -srf $DOCUMENT_ROOT/$origin $DOCUMENT_ROOT/$target
-	if $make; then
-		grep -q "^$target:" $depend || echo $target: $origin >> $tmp/umake-ln-tty-pt
-	else
-		test $debug -lt 1 || echo ln -srf $DOCUMENT_ROOT/$origin $DOCUMENT_ROOT/$target
-	fi
+	grep -q "^$target:" $depend || echo $target: $origin >> $tmp/umake-ln-tty-pt
 }
 
 install_extra() {
@@ -74,32 +60,20 @@ install_extra() {
 	test ! -z "$line" || return 0
 	local bname="`basename $line`"
 	local target_file="$target_path/$bname"
-	if $make; then
-		grep -q "^$target_prefix" $depend || echo $target_prefix >> $tmp/umake-mkdir-tty-pt
-	else
-		test -d "$target_path" || mkdir -p $target_path
-	fi
+	grep -q "^chroot_mkdir .* $target_prefix" $depend || echo $target_prefix >> $tmp/umake-mkdir-tty-pt
 	local link="`readlink "$1" || true`"
 	if echo "$link" | grep -q "^\/"; then
 		install_extra "$link"
 		link `echo $link | sed s/.//` $target_prefix/$bname
 	elif test -z "$link"; then
-		if $noforce && diff $target_file $1 2>/dev/null; then
-			return 0
-		fi
 		if test -d "$1"; then
 			ls $1 | while read file; do
 				install_extra "$1/$file"
 			done
 		else
-			$make || $dry || cp -r $1 $target_file
-			if $make; then
-				grep -q "^$target_prefix/$bname:" $depend \
-					|| test "$1" = "$target_prefix/$bname" || \
-					echo $target_prefix/$bname: $1 >> $tmp/umake-cp-tty-pt
-			else
-				test $debug -lt 1 || echo cp -r $1 $target_file
-			fi
+			grep -q "^$target_prefix/$bname:" $depend \
+				|| test "$1" = "$target_prefix/$bname" || \
+				echo $target_prefix/$bname: $1 >> $tmp/umake-cp-tty-pt
 		fi
 	else
 		install_extra "/$target_prefix/$link"
@@ -122,7 +96,6 @@ install_bin() {
 		fi
                 install_bin "$ipath"
         done
-	$noforce && diff $path $target_file 2>/dev/null && return 0 || true
 	install_extra $path
 }
 
@@ -148,25 +121,23 @@ if test -d $src_path; then
 fi
 
 cd $DOCUMENT_ROOT
-if $make; then
-	_how_to_make() {
-		tr ':' ' ' | awk '{print $1}' | tr '\n' ' '
-	}
+_how_to_make() {
+	tr ':' ' ' | awk '{print $1}' | tr '\n' ' '
+}
 
-	may_depend() {
-		test "$1" = "y" && tee -a $depend || cat -
-	}
+may_depend() {
+	test "$1" = "y" && tee -a $depend || cat -
+}
 
-	how_to_make() {
-		local var_name=$1
-		local dep=$2
-		shift 2
-		local chroot_deps="`sort -u $tmp/umake-$1-tty-pt | may_depend $dep | _how_to_make $@`"
-		rm $tmp/umake-$1-tty-pt
-		test -z "$chroot_deps" || echo $var_name += $chroot_deps >> $depend
-	}
+how_to_make() {
+	local var_name=$1
+	local dep=$2
+	shift 2
+	local chroot_deps="`sort -u $tmp/umake-$1-tty-pt | may_depend $dep | _how_to_make $@`"
+	rm $tmp/umake-$1-tty-pt
+	test -z "$chroot_deps" || echo $var_name += $chroot_deps >> $depend
+}
 
-	how_to_make chroot_cp y cp
-	how_to_make chroot_ln y ln
-	how_to_make chroot_mkdir n mkdir
-fi
+how_to_make chroot_cp y cp
+how_to_make chroot_ln y ln
+how_to_make chroot_mkdir n mkdir

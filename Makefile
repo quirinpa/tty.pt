@@ -15,7 +15,7 @@ ${mounts:%=%/}:
 	mkdir -p $@
 
 .depend-${uname}:
-	./install_bin.sh -m
+	./make_dep.sh -m
 
 .PHONY: ${mounts} ${subdirs} ${src-ls} chroot chroot-dirs all
 
