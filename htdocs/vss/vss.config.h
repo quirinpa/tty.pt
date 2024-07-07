@@ -1,6 +1,5 @@
 /*#define CONFIG_IPH 12px*/
 #define CONFIG_ROUND
-#define CONFIG_VARS
 #include "vss/vss.h"
 #define CF #c1c3da
 #define CM VAL(COLOR, 13)
@@ -21,6 +20,7 @@ FULL_SIZE
 /* CALL(FLEX_VERTICAL, SS) */
 CALL(ROUND_T, ALL_TEXT_SIZES)
 CALL(ROUND_EDGE, ALL_SIZES)
+ABS_DIST(8)
 ROUND_PADDING( 4, 14)
 ROUND_PADDING( 8, 17)
 ROUND_PADDING( 8, 20)
@@ -33,7 +33,7 @@ body {
 	color: #c1c3da;
 	background-color: #3c403c;
 	caret-color: #9589c5;
-	padding: var(--S);
+	padding: VAL(SIZE, 8);
 }
 h1,h2,h3,h4,h5,h6 { color: #f5f5f5; }
 img { color: #c1c3da; };
@@ -41,7 +41,7 @@ img { color: #c1c3da; };
 input,textarea {
 	border: solid thin #2c2c2c;
 	font-size: inherit;
-	padding: var(--Ss);
+	padding: VAL(SIZE, 8);
 }
 input:focus {
         border: solid thin #9589c5;
@@ -66,7 +66,7 @@ button, .btn {
 	font-size: inherit;
 	padding: VAL(SIZE, );
 	background-color: VAL(COLOR, 0);
-	color: var(--C15);
+	color: VAL(COLOR, 15);
 	border: none;
 	//border: solid thin black;
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
@@ -93,12 +93,12 @@ pre {
 .card {
 	text-decoration: none;
 	background-color: #4c504c;
-	//background-color: var(--C15);
-	//color: var(--C0);
+	//background-color: VAL(COLOR, 15);
+	//color: VAL(COLOR, 0);
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 }
 .card a {
-	//color: var(--C0);
+	//color: VAL(COLOR, 0);
 }
 
 .menu:not(.js) > div { display: none; }
@@ -110,8 +110,6 @@ pre {
 .pn { padding: 0; }
 .fix { position: fixed; }
 
-.j { bottom: var(--S); }
-.l { right: var(--S); }
 .cp { cursor: pointer; }
 .ttc { text-transform: capitalize; }
 
@@ -120,3 +118,8 @@ input.c0:focus {
         border: solid thin CM;
         outline: CM;
 }
+input[type="number"] {
+	width: 80px;
+}
+
+.btn.abs { box-sizing: content-box; }

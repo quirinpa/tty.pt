@@ -109,7 +109,7 @@ revlines() {
 
 _see_other() {
 	Fin <<!
-Status: 303 See Other
+${STATUS_STR}303 See Other
 Location: $1
 
 !
@@ -117,7 +117,7 @@ Location: $1
 
 see_other() {
 	Fin <<!
-Status: 303 See Other
+${STATUS_STR}303 See Other
 Location: /e/$1$2
 
 !
@@ -494,39 +494,6 @@ owner_get() {
 	else
 		cat $1/.owner
 	fi
-}
-
-Immediate() {
-	content="$1"
-	shift
-
-	SUBINDEX_ICON=""
-	test ! -z "$_TITLE" || _TITLE="$content"
-	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
-	if test -f $content; then
-		CONTENT="`. ./$content $@`"
-	else
-		CONTENT="`cat -`"
-	fi
-	test ! -z "$PRECLASS" || PRECLASS="v f fic"
-	FUNCTIONS="`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
-	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
-
-	test -z "$INDEX_ICON" \
-		|| INDEX_ICON="`RB $INDEX_ICON ./..`"
-
-	export INDEX_ICON
-	export SUBINDEX_ICON
-	export FUNCTIONS
-	export CONTENT
-	export MENU_LEFT
-	export BOTTOM_CONTENT
-	export _TITLE
-	export PRECLASS
-
-	Normal 200 ./$content
-	CCat common
-	exit 0
 }
 
 SubIndex() {

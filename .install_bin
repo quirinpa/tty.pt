@@ -68,3 +68,7 @@ wc
 which
 xargs
 xxd
+usr/bin/htmlsh
+usr/bin/mpfd
+usr/bin/sem
+usr/bin/transp

@@ -1,6 +1,7 @@
 #!/bin/sh
 
-test ! -z "$DOCUMENT_ROOT" || DOCUMENT_ROOT="$PWD"
+test ! -z "$DESTDIR" || DESTDIR="$PWD"
+cd $DESTDIR
 
 options=`getopt -o v: --long help -- "$@"`
 
@@ -8,9 +9,9 @@ debug=0
 target=
 
 uname="`uname`-`uname -v | awk '{print $1}'`"
-depend=$DOCUMENT_ROOT/.depend-$uname
+depend=$DESTDIR/.depend-$uname
 
-tmp=$DOCUMENT_ROOT/tmp
+tmp=$DESTDIR/tmp
 test -d $tmp || mkdir -p $tmp
 
 eval set -- "$options"
@@ -56,7 +57,7 @@ install_extra() {
 	test -e "$1" || return 0
         local line="`echo $1 | grep -q "^\/" && echo $1 | sed s/.// || echo $1`"
 	local target_prefix="`dirname $line`"
-	local target_path="$DOCUMENT_ROOT/$target_prefix"
+	local target_path="$DESTDIR/$target_prefix"
 	test ! -z "$line" || return 0
 	local bname="`basename $line`"
 	local target_file="$target_path/$bname"
@@ -83,7 +84,7 @@ install_extra() {
 
 install_bin() {
         local path=$1
-	local target_path="$DOCUMENT_ROOT`echo $path | grep -q "^\/" && dirname $path || echo /usr/bin`"
+	local target_path="$DESTDIR`echo $path | grep -q "^\/" && dirname $path || echo /usr/bin`"
 	test $debug -lt 2 || echo install_bin $path
 	test ! -z "$1" || return 0
 	target_file="$target_path/`basename $path`"
@@ -101,26 +102,12 @@ install_bin() {
 
 if test ! -z "$target"; then
 	install_bin "`test -f "$target" && echo "$target" || which "$target"`"
-	echo "$target" >> $DOCUMENT_ROOT/.install_bin
+	echo "$target" >> $DESTDIR/.install_bin
 else
-	cat $DOCUMENT_ROOT/.install_bin | while read line; do install_bin "`which $line`"; done
-	cat $DOCUMENT_ROOT/.install_extra | while read line; do install_extra "$line"; done
+	cat $DESTDIR/.install_bin | while read line; do install_bin "`which $line`"; done
+	cat $DESTDIR/.install_extra | while read line; do install_extra "$line"; done
 fi
 
-src_path="$DOCUMENT_ROOT/src"
-if test -d $src_path; then
-	cd $src_path
-	ls | while read bin_proj; do
-		cd $bin_proj || continue
-		make install
-		make list | while read prog; do
-			install_bin $prog
-		done
-		cd - >/dev/null
-	done
-fi
-
-cd $DOCUMENT_ROOT
 _how_to_make() {
 	tr ':' ' ' | awk '{print $1}' | tr '\n' ' '
 }
@@ -133,6 +120,7 @@ how_to_make() {
 	local var_name=$1
 	local dep=$2
 	shift 2
+	test -f $tmp/umake-$1-tty-pt || return 0
 	local chroot_deps="`sort -u $tmp/umake-$1-tty-pt | may_depend $dep | _how_to_make $@`"
 	rm $tmp/umake-$1-tty-pt
 	test -z "$chroot_deps" || echo $var_name += $chroot_deps >> $depend

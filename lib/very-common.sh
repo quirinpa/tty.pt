@@ -7,13 +7,16 @@ test -z "$VERY_COMMON" || return 0
 VERY_COMMON=y
 RES_CONTENT_TYPE="text/html; charset=utf-8"
 HEADERS=""
+STATUS_STR=""
+STATUS_CODE=200
+#STATUS_STR="Status: "
 
 header() {
 	HEADERS="$HEADERS$1\n"
 }
 
 debug() {
-	echo Status: 500 Internal Error
+	echo "$STATUS_STR"500 Internal Error
 	echo "Content-Type: text/plain; charset=utf-8"
 	echo
 	echo Sorry, I\'m currently debugging. Please wait.
@@ -38,7 +41,7 @@ NormalHead() {
 	esac
 	export STATUS_TEXT
 	export STATUS_CODE=$1
-	echo "Status: $1 $STATUS_TEXT"
+	echo "$STATUS_STR$1 $STATUS_TEXT"
 	echo "Content-Type: $RES_CONTENT_TYPE"
 	test -z "$HEADERS" || echo -n $HEADERS
 }
@@ -73,21 +76,52 @@ CCat() {
 	_Cat $DOCUMENT_ROOT/components/$1
 }
 
+Immediate() {
+	content="$1"
+	shift
+
+	SUBINDEX_ICON=""
+	test ! -z "$_TITLE" || _TITLE="$content"
+	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
+	if test -f $content; then
+		CONTENT="`. ./$content $@`"
+	else
+		CONTENT="`cat -`"
+	fi
+	test ! -z "$PRECLASS" || PRECLASS="v f fic"
+	FUNCTIONS="`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
+	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
+
+	test -z "$INDEX_ICON" \
+		|| INDEX_ICON="`RB $INDEX_ICON ./..`"
+
+	export INDEX_ICON
+	export SUBINDEX_ICON
+	export FUNCTIONS
+	export CONTENT
+	export MENU_LEFT
+	export BOTTOM_CONTENT
+	export _TITLE
+	export PRECLASS
+
+	Normal $STATUS_CODE ./$content
+	CCat common
+	exit 0
+}
+
 _Fatal() {
 	local status_code=$1
 	shift 1
-	NormalHead $status_code
-	echo
 	export _TITLE="$status_code: `_ "$@"`"
 	if test "$HTTP_ACCEPT" = "text/plain"; then
+		NormalHead $status_code
+		echo
 		echo $_TITLE
 		return 1
 		# exit 1
 	fi
 	export _TITLE
-	Head
-	export MENU="`Menu`"
-	CCat fatal
+	Immediate "" $@
 }
 
 Fin() {
