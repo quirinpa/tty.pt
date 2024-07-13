@@ -3,13 +3,14 @@
 test ! -z "$DESTDIR" || DESTDIR="$PWD"
 cd $DESTDIR
 
-options=`getopt -o v: --long help -- "$@"`
+options=`getopt -o v:C: --long help -- "$@"`
 
 debug=0
 target=
 
 uname="`uname`-`uname -v | awk '{print $1}'`"
 depend=$DESTDIR/.depend-$uname
+install_dir=$DESTDIR
 
 tmp=$DESTDIR/tmp
 test -d $tmp || mkdir -p $tmp
@@ -21,6 +22,7 @@ rm -rf $tmp/umake-cp-tty-pt $tmp/umake-ln-tty-pt \
 
 while true; do
 	case "$1" in
+		-C) install_dir=$2; shift ;;
 		-v) debug=$2; shift ;;
 		--help)
 			cat <<!
@@ -30,8 +32,10 @@ DESCRIPTION:
     This is for installing things into tty.pt chroot.
 
 OPTIONS:
-  -v LEVEL			set verbosity (0, 1 or 2)
   --help			this information
+  -v LEVEL			set verbosity (0, 1 or 2)
+  -C INSTALL_DIR		set INSTALL_DIR for where to find install and .depend
+				files (useful for modules)
 !
 			exit
 			;;
@@ -41,6 +45,8 @@ OPTIONS:
 	esac
 	shift
 done
+
+ilist=$install_dir/install
 
 shift $OPTIND
 test $# -lt 1 || target="$1"
@@ -52,8 +58,8 @@ link() {
 	grep -q "^$target:" $depend || echo $target: $origin >> $tmp/umake-ln-tty-pt
 }
 
-install_extra() {
-	test $debug -lt 2 || echo install_extra $@
+rinstall() {
+	test $debug -lt 2 || echo rinstall $@
 	test -e "$1" || return 0
         local line="`echo $1 | grep -q "^\/" && echo $1 | sed s/.// || echo $1`"
 	local target_prefix="`dirname $line`"
@@ -64,48 +70,50 @@ install_extra() {
 	grep -q "^chroot_mkdir .* $target_prefix" $depend || echo $target_prefix >> $tmp/umake-mkdir-tty-pt
 	local link="`readlink "$1" || true`"
 	if echo "$link" | grep -q "^\/"; then
-		install_extra "$link"
+		rinstall "$link"
 		link `echo $link | sed s/.//` $target_prefix/$bname
 	elif test -z "$link"; then
 		if test -d "$1"; then
+			test $debug -lt 2 || \
+				echo install_dir $1
 			ls $1 | while read file; do
-				install_extra "$1/$file"
+				rinstall "$1/$file"
 			done
 		else
+			if test -x "$1"; then
+				test $debug -lt 2 || \
+					echo install_bin $1
+				ldd $1 2>/dev/null | tail -n +1 | \
+					while read filename arrow ipath rest; do
+					if test -z "$ipath"; then
+						echo "$filename" | grep -q "^\/" \
+							&& rinstall "$filename" \
+							|| true
+						continue
+					fi
+					rinstall "$ipath"
+				done
+			fi
+
 			grep -q "^$target_prefix/$bname:" $depend \
 				|| test "$1" = "$target_prefix/$bname" || \
 				echo $target_prefix/$bname: $1 >> $tmp/umake-cp-tty-pt
 		fi
 	else
-		install_extra "/$target_prefix/$link"
+		rinstall "/$target_prefix/$link"
 		link $target_prefix/$link $line
 	fi
 }
 
-install_bin() {
-        local path=$1
-	local target_path="$DESTDIR`echo $path | grep -q "^\/" && dirname $path || echo /usr/bin`"
-	test $debug -lt 2 || echo install_bin $path
-	test ! -z "$1" || return 0
-	target_file="$target_path/`basename $path`"
-        ldd $path 2>/dev/null | tail -n +1 | while read filename arrow ipath rest; do
-		if test -z "$ipath"; then
-			echo "$filename" | grep -q "^\/" \
-				&& install_bin "$filename" \
-				|| true
-		       	continue
-		fi
-                install_bin "$ipath"
-        done
-	install_extra $path
-}
-
 if test ! -z "$target"; then
-	install_bin "`test -f "$target" && echo "$target" || which "$target"`"
-	echo "$target" >> $DESTDIR/.install_bin
-else
-	cat $DESTDIR/.install_bin | while read line; do install_bin "`which $line`"; done
-	cat $DESTDIR/.install_extra | while read line; do install_extra "$line"; done
+	if ! grep -q "^$target\$" $ilist; then
+		rinstall "`test -e "$target" && echo "$target" || which "$target"`"
+		echo "$target" >> $ilist
+	fi
+elif test -f $ilist; then
+	cat $ilist | while read line; do
+		rinstall "`test -e "$line" && echo "$line" || which "$line"`"
+	done
 fi
 
 _how_to_make() {

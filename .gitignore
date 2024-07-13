@@ -30,3 +30,4 @@
 /.modules
 /proc
 /sys
+/.depend*

@@ -448,6 +448,15 @@ Index() {
 
 	test ! -f .lib/index.sh || . .lib/index.sh
 
+	if test -f "$PWD/over-index"; then
+		if test -z "$_TITLE"; then
+			TITLE="`zcat title || echo $typ`"
+			_TITLE="`_ "$TITLE"`"
+		fi
+		Immediate over-index $@
+		exit 0
+	fi
+
 	case "$1" in
 		"") ;;
 		add) shift; Add add $@ ; exit 0;;
@@ -467,6 +476,7 @@ Index() {
 		TITLE="`zcat title || echo $typ`"
 		_TITLE="`_ "$TITLE"`"
 	fi
+
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
 	INDEX_ICON="`RB $INDEX_ICON ./..`"
 

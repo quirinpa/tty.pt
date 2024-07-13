@@ -51,7 +51,7 @@ rm
 sed
 sem
 seq
-sh
+/bin/sh
 sort
 ssh
 ssh-keygen
@@ -72,3 +72,7 @@ usr/bin/htmlsh
 usr/bin/mpfd
 usr/bin/sem
 usr/bin/transp
+usr/bin/passchk
+/usr/share/misc/bc.library
+/etc/ssl/openssl.cnf
+/etc/magic

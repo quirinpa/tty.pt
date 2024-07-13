@@ -21,7 +21,9 @@ ${mounts:%=%/}:
 	mkdir -p $@
 
 .depend-${uname}:
-	./make_dep.sh
+	@./make_dep.sh
+	@echo ${modules} | tr ' ' '\n' | while read module; do \
+		./make_dep.sh -C items/$$module; done
 
 include .depend-${uname}
 
@@ -70,12 +72,19 @@ ${modules:%=items/%/}:
 	@cat .modules | grep ${@:items/%/=%}.git | xargs git -C items clone --recursive
 
 ${modules:%=items-%-clean}:
-	@test ! -d ${@:items-%-clean=items/%}/src || ls ${@:items-%-clean=items/%}/src | while read line; do \
-		${MAKE} -C ${@:items-%-clean=items/%}/src/$$line clean; done
+	@cd ${@:items-%-clean=items/%} \
+	       test -f Makefile && \
+		${MAKE} clean || test ! -d src || \
+		ls src | while read line; do \
+		test ! -f src/$$line/Makefile || \
+		${MAKE} -C src/$$line clean; done
 
 ${modules:%=items/%}:
-	@test ! -d $@/src || ls $@/src | while read line; do \
-		${MAKE} -C $@/src/$$line install; done
+	@cd $@ && test -f Makefile && \
+		${MAKE} install || test ! -d src || \
+		ls src | while read line; do \
+		test ! -f src/$$line/Makefile || \
+		${MAKE} -C src/$$line install; done
 
 .PHONY: ${mounts} ${subdirs} ${src-ls} chroot chroot-dirs all modules ${modules:%=items/%} \
 	${modules:%=items-%-clean} ${src-ls:src/%=src-%-clean}
