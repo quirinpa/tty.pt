@@ -5,7 +5,7 @@ test ! -z "$REMOTE_USER" || Forbidden
 rm $DOCUMENT_ROOT/sessions/$cookie
 
 Fin <<!
-Status: 303 See Other
+${STATUS_STR}303 See Other
 Set-Cookie: QSESSION=; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT
 Location: /
 

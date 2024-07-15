@@ -184,7 +184,7 @@ __fbytes() {
 	OCCUPIED_SPACE="`df_total`"
 	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
 	CAN="`math "$CAN_EXP"`"
-	test "$CAN" = "0"
+	test $CAN -eq 0
 }
 
 _fbytes() {
@@ -193,8 +193,19 @@ _fbytes() {
 	fi
 }
 
+if test "`uname`" = "Linux"; then
+	fsize() {
+		stat --format %s $1
+	}
+
+else
+	fsize() {
+		stat -f%z $1
+	}
+fi
+
 fbytes() {
-	STAT="`stat -f%z $1`"
+	STAT="`fsize $1`"
 	_fbytes $STAT
 }
 

@@ -7,8 +7,9 @@ src-ls != ls src | while read line; do echo src/$$line; done
 INSTALL_DEP := ${PWD}/make_dep.sh
 MAKEFLAGS += INSTALL_DEP=${INSTALL_DEP} DESTDIR=${PWD}/
 modules != cat .modules | while read line; do basename $$line | sed s/\\..*//; done
+chroot_mkdir := empty
 
-all: chroot ${mounts} ${subdirs} ${src-ls} modules
+all: chroot ${mounts} ${subdirs} ${src-ls} modules .htpasswd
 chroot: chroot-dirs
 
 ${src-ls}:
@@ -85,6 +86,9 @@ ${modules:%=items/%}:
 		ls src | while read line; do \
 		test ! -f src/$$line/Makefile || \
 		${MAKE} -C src/$$line install; done
+
+.htpasswd: usr/bin/htpasswd
+	./usr/bin/htpasswd root root >> $@
 
 .PHONY: ${mounts} ${subdirs} ${src-ls} chroot chroot-dirs all modules ${modules:%=items/%} \
 	${modules:%=items-%-clean} ${src-ls:src/%=src-%-clean}

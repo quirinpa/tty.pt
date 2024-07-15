@@ -9,6 +9,7 @@ RES_CONTENT_TYPE="text/html; charset=utf-8"
 HEADERS=""
 STATUS_STR=""
 STATUS_CODE=200
+export LD_LIBRARY_PATH=/usr/local/lib
 #STATUS_STR="Status: "
 
 header() {
@@ -88,7 +89,7 @@ Immediate() {
 	else
 		CONTENT="`cat -`"
 	fi
-	test -f $DOCUMENT_ROOT/tmp/post && cat $DOCUMENT_ROOT/tmp/post && return 0 || true
+	test -f $DOCUMENT_ROOT/tmp/post && return 0 || true
 	test ! -z "$PRECLASS" || PRECLASS="v f fic"
 	FUNCTIONS="`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
 	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
@@ -126,7 +127,7 @@ _Fatal() {
 }
 
 Fin() {
-	cat - > $DOCUMENT_ROOT/tmp/post
+	cat > $DOCUMENT_ROOT/tmp/post
 	kill -2 $REQ_PID
 	exit 1
 }

@@ -77,3 +77,5 @@ usr/bin/passchk
 /etc/ssl/openssl.cnf
 /etc/magic
 usr/bin/htpasswd
+uname
+femail

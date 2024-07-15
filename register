@@ -35,7 +35,7 @@ password="`urldecode $password`"
 password2="`urldecode $password2`"
 email="`urldecode $email`"
 
-if invalid_id $username || test "$username" == "www"; then
+if invalid_id $username || test "$username" = "www"; then
 	Fatal 400 Not a valid username
 fi
 
@@ -56,13 +56,13 @@ if grep -q "^$username:" $DOCUMENT_ROOT/.htpasswd; then
 fi
 
 USER_DIR=$DOCUMENT_ROOT/users/$username
-DF_USER=$username
+DF_USER=anonymous
 fmkdir $USER_DIR
 echo $email | fwrite $USER_DIR/email
-echo $username:$password | htpasswd -I $DOCUMENT_ROOT/.htpasswd
+$DOCUMENT_ROOT/usr/bin/htpasswd "$username" "$password" >> $DOCUMENT_ROOT/.htpasswd
 rand_str="`rand_str_1`"
 echo "$rand_str" | fwrite $USER_DIR/rcode2
-femail -f noreply@tty.pt $email 2>&1 <<!
+which femail && femail -f noreply@tty.pt $email || true <<!
 Subject: `_ "Registration on tty.pt"`
 
 `_ "Welcome to tty.pt!"`
@@ -74,4 +74,5 @@ https://tty.pt/confirm?username=$username&rcode=$rand_str
 
 `_ "Thank you!"`
 !
+
 _see_other welcome

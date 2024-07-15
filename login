@@ -30,7 +30,7 @@ hash="`grep "^$username:" $DOCUMENT_ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $
 test -z "$REMOTE_USER" || rm $DOCUMENT_ROOT/sessions/$cookie
 test ! -z "$hash" || Fatal 400 No such user
 
-if crypt_checkpass "$password" "$hash"; then
+if ! htpasswd -v $DOCUMENT_ROOT/.htpasswd "$username" "$password"; then
 	Unauthorized
 fi
 
@@ -42,7 +42,7 @@ TOKEN="`rand_str_1`"
 #test -d $DOCUMENT_ROOT/sessions || mkdir $DOCUMENT_ROOT/sessions
 echo $username > $DOCUMENT_ROOT/sessions/$TOKEN
 Fin <<!
-Status: 303 See Other
+${STATUS_STR}303 See Other
 Set-Cookie: QSESSION=$TOKEN; SameSite=Lax
 Location: $ret
 

@@ -1,10 +1,5 @@
 #!/bin/sh
-content() {
-	cat <<!
+cat <<!
 <h1 class="tac">`_ "Registration complete"`</h1>
 <p>`_ "Please click the link sent to your e-mail to activate your account."`</p>
 !
-}
-
-SubIndex
-NotAllowed

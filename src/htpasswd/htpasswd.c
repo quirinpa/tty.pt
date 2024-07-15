@@ -43,9 +43,9 @@ int main(int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 	}
 
-	char *filename = argv[1];
-	char *login = argv[2];
-	char *password = argv[3];
+	char *filename = argv[2];
+	char *login = argv[3];
+	char *password = argv[4];
 	int fd = open(filename, O_RDONLY);
 
 	if (fstat(fd, &sb) == -1 || sb.st_size == 0)
