@@ -76,3 +76,4 @@ usr/bin/passchk
 /usr/share/misc/bc.library
 /etc/ssl/openssl.cnf
 /etc/magic
+usr/bin/htpasswd

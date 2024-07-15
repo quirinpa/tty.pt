@@ -1,14 +1,14 @@
 .PHONY: install clean
 
 UNAME != uname
-LDFLAGS-Linux := -lcrypt
-LDFLAGS += ${LDFLAGS-${UNAME}}
+LDFLAGS-Linux := -lcrypt -lqhash -g
+LDFLAGS += ${LDFLAGS-${UNAME}} -L/usr/local/lib
 LD=gcc
 
-EXE := passchk
+EXE := htpasswd
 PREFIX ?= usr
 
-passchk: ${EXE}.c
+$(EXE): ${EXE}.c
 	${LD} -o $@ $^ ${LDFLAGS}
 
 install: ${DESTDIR}${PREFIX}/bin/${EXE}
