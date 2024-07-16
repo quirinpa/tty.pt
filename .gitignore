@@ -13,8 +13,6 @@
 !/htdocs/vss
 /htdocs/vss/c.h
 /htdocs/vss/t.h
-/src/mpfd
-/src/crypt_checkpass
 /etc
 /cgi-bin
 /logs
