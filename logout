@@ -1,12 +1,7 @@
 #!/bin/sh
 
-test ! -z "$REMOTE_USER" || Forbidden
+test ! -z "$REMOTE_USER" \
+	|| rm $DOCUMENT_ROOT/sessions/$cookie
 
-rm $DOCUMENT_ROOT/sessions/$cookie
-
-Fin <<!
-${STATUS_STR}303 See Other
-Set-Cookie: QSESSION=; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT
-Location: /
-
-!
+header "Set-Cookie: QSESSION=; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+SeeOther /

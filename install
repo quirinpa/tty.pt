@@ -29,7 +29,6 @@ group_add
 groupadd
 groups
 head
-htpasswd
 jq
 kill
 ldd
@@ -79,3 +78,5 @@ usr/bin/passchk
 usr/bin/htpasswd
 uname
 femail
+/bin/ksh
+bin/nd

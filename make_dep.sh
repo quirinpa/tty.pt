@@ -1,9 +1,9 @@
 #!/bin/sh
 
-test ! -z "$DESTDIR" || DESTDIR="$PWD"
+DESTDIR="/var/www"
 cd $DESTDIR
 
-options=`getopt -o v:C: --long help -- "$@"`
+options=`getopt hv:C: $@`
 
 debug=0
 target=
@@ -24,7 +24,7 @@ while true; do
 	case "$1" in
 		-C) install_dir=$2; shift ;;
 		-v) debug=$2; shift ;;
-		--help)
+		-h)
 			cat <<!
 usage: $0 [OPTIONS...] [FILE]
 
@@ -58,6 +58,17 @@ link() {
 	grep -q "^$target:" $depend || echo $target: $origin >> $tmp/umake-ln-tty-pt
 }
 
+if test "`uname`" = "Linux"; then
+	pldd() {
+		ldd $1 2>/dev/null | tail -n +2 | awk '{print $1}'
+	}
+else
+	pldd() {
+		ldd $1 2>/dev/null | tail -n +4 | awk '{print $7}'
+	}
+fi
+
+
 rinstall() {
 	test $debug -lt 2 || echo rinstall $@
 	test -e "$1" || return 0
@@ -83,15 +94,8 @@ rinstall() {
 			if test -x "$1"; then
 				test $debug -lt 2 || \
 					echo install_bin $1
-				ldd $1 2>/dev/null | tail -n +1 | \
-					while read filename arrow ipath rest; do
-					if test -z "$ipath"; then
-						echo "$filename" | grep -q "^\/" \
-							&& rinstall "$filename" \
-							|| true
-						continue
-					fi
-					rinstall "$ipath"
+				pldd $1 | while read filename; do
+					rinstall "$filename"
 				done
 			fi
 
@@ -107,12 +111,12 @@ rinstall() {
 
 if test ! -z "$target"; then
 	if ! grep -q "^$target\$" $ilist; then
-		rinstall "`test -e "$target" && echo "$target" || which "$target"`"
+		rinstall "`test -f "$target" && echo "$target" || which "$target" 2>/dev/null || echo "$target"`"
 		echo "$target" >> $ilist
 	fi
 elif test -f $ilist; then
 	cat $ilist | while read line; do
-		rinstall "`test -e "$line" && echo "$line" || which "$line"`"
+		rinstall "`test -f "$line" && echo "$line" || which "$line" 2>/dev/null || echo "$line"`"
 	done
 fi
 

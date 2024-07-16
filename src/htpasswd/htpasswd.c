@@ -5,6 +5,8 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 char *crypt_it(const char *password) {
 	static char *result;
@@ -17,9 +19,7 @@ char *crypt_it(const char *password) {
 
 
 #ifdef __linux__
-#include <stdio.h>
 #include <errno.h>
-#include <string.h>
 int crypt_checkpass(const char *password, const char *hashed) {
 	return strcmp(crypt_it(password), hashed);
 }

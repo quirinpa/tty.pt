@@ -1,15 +1,9 @@
 #!/bin/sh
 
 export REQ_PID=$$
+export LD_LIBRARY_PATH=/usr/local/lib
 
-finito() {
-	test ! -f $DOCUMENT_ROOT/tmp/post || cat $DOCUMENT_ROOT/tmp/post
-	exit 1
-}
-
-trap finito 2
-
-rm -rf $DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
+rm -rf $DOCUMENT_ROOT/tmp/normal $DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
 
 . $DOCUMENT_ROOT/lib/optional-auth.sh
 . $DOCUMENT_ROOT/lib/common.sh

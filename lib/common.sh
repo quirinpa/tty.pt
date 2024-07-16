@@ -240,30 +240,11 @@ fappend() {
 
 ## COMPONENTS
 
-Whisper() {
-	WHISPER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER/.whisper
-	WHISPER="`zcat $WHISPER_PATH | no_html`"
-	if test -z "$WHISPER"; then
-		return
-	fi
-
-	echo "<pre>$WHISPER</pre>"
-	rm $WHISPER_PATH
-}
-
-UserNormal() {
-	NormalHead "$1"
-	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
-	echo
-	export HEAD="`Head`"
-	export WHISPER="`Whisper`"
-	export MENU="`Menu`"
-}
-
 Normal() {
-	UserNormal $@
-	echo "$HEAD"
-	echo "$WHISPER"
+	test ! -f $DOCUMENT_ROOT/tmp/normal || return 1
+	_Normal $@ >> $DOCUMENT_ROOT/tmp/normal
+	cat $DOCUMENT_ROOT/tmp/normal
+	return 0
 }
 
 NormalCat() {
@@ -408,10 +389,6 @@ Field() {
 	<span>$2</span>
 </div>
 !
-}
-
-RB() {
-	echo "<a class='$RBS' href='$2'>$1</a>"
 }
 
 EditBtn() {

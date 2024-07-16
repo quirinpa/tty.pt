@@ -10,7 +10,8 @@ HEADERS=""
 STATUS_STR=""
 STATUS_CODE=200
 export LD_LIBRARY_PATH=/usr/local/lib
-#STATUS_STR="Status: "
+test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
+	STATUS_STR="Status: "
 
 header() {
 	HEADERS="$HEADERS$1\n"
@@ -21,6 +22,10 @@ debug() {
 	echo "Content-Type: text/plain; charset=utf-8"
 	echo
 	echo Sorry, I\'m currently debugging. Please wait.
+}
+
+dcmd() {
+	sh -c "$@" 2>/tmp/debug
 }
 
 zcat() {
@@ -41,7 +46,7 @@ NormalHead() {
 		409) STATUS_TEXT="Conflict";;
 	esac
 	export STATUS_TEXT
-	export STATUS_CODE=$1
+	local status_code=$1
 	echo "$STATUS_STR$1 $STATUS_TEXT"
 	echo "Content-Type: $RES_CONTENT_TYPE"
 	test -z "$HEADERS" || echo -n $HEADERS
@@ -81,6 +86,15 @@ CCat() {
 	_Cat $DOCUMENT_ROOT/components/$1
 }
 
+SeeOther() {
+	header "Location: $1"
+	Fatal 303 "See Other"
+}
+
+RB() {
+	echo "<a class='$RBS' href='$2'>$1</a>"
+}
+
 Immediate() {
 	content="$1"
 	shift
@@ -93,7 +107,6 @@ Immediate() {
 	else
 		CONTENT="`cat -`"
 	fi
-	test -f $DOCUMENT_ROOT/tmp/post && return 0 || true
 	test ! -z "$PRECLASS" || PRECLASS="v f fic"
 	FUNCTIONS="`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
 	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
@@ -101,6 +114,7 @@ Immediate() {
 	test -z "$INDEX_ICON" \
 		|| INDEX_ICON="`RB $INDEX_ICON ./..`"
 
+	export MENU="`Menu`"
 	export INDEX_ICON
 	export SUBINDEX_ICON
 	export FUNCTIONS
@@ -110,7 +124,10 @@ Immediate() {
 	export _TITLE
 	export PRECLASS
 
-	Normal $STATUS_CODE ./$content
+	if test ! -z "$CONTENT"; then
+		Normal $STATUS_CODE "./$content" ||
+			cat $DOCUMENT_ROOT/tmp/normal
+	fi
 	CCat common
 	exit 0
 }
@@ -127,17 +144,19 @@ _Fatal() {
 		# exit 1
 	fi
 	export _TITLE
+	STATUS_CODE=$status_code
+	_Normal $STATUS_CODE "" > $DOCUMENT_ROOT/tmp/normal
 	Immediate "" $@
 }
 
 Fin() {
-	cat > $DOCUMENT_ROOT/tmp/post
-	kill -2 $REQ_PID
-	exit 1
+	cat -
+	exit 0
 }
 
 Fatal() {
-	_Fatal $@ | Fin
+	_Fatal $@
+	exit 0
 }
 
 get_lang() {
@@ -198,18 +217,49 @@ rand_str_1() {
 		    | tr -d = | tr + - | tr / _ | tr '[A-Z]' '[a-z]'
 }
 
+no_html() {
+	sed -e 's/</\&lt\;/g' -e 's/>/\&gt\;/g' 
+}
+
+Whisper() {
+	WHISPER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER/.whisper
+	WHISPER="`zcat $WHISPER_PATH | no_html`"
+	if test -z "$WHISPER"; then
+		return
+	fi
+
+	echo "<pre>$WHISPER</pre>"
+	rm $WHISPER_PATH
+}
+
+UserNormal() {
+	NormalHead "$1"
+	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
+	echo
+	export HEAD="`Head`"
+	export WHISPER="`Whisper`"
+	export MENU="`Menu`"
+}
+
+_Normal() {
+	UserNormal $@
+	echo "$HEAD"
+	echo "$WHISPER"
+}
+
 auth() {
 	username=$1
 	password=$2
 	hash="`grep "^$username:" $DOCUMENT_ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
 	test ! -z "$hash" || Fatal 400 No such user
-	if crypt_checkpass "$password" "$hash"; then
-		Unauthorized
-	fi
-	test ! -f $DOCUMENT_ROOT/users/$username/rcode || Fatal 400 The account was not activated
+	htpasswd -v $DOCUMENT_ROOT/.htpasswd "$username" "$password" \
+		|| Unauthorized
+	test ! -f $DOCUMENT_ROOT/users/$username/rcode \
+		|| Fatal 400 The account was not activated
 
 	TOKEN="`rand_str_1`"
 	#test -d $DOCUMENT_ROOT/sessions || mkdir $DOCUMENT_ROOT/sessions
 	echo $username > $DOCUMENT_ROOT/sessions/$TOKEN
 	header "Set-Cookie: QSESSION=$TOKEN; SameSite=Lax"
+	REMOTE_USER="$username"
 }
