@@ -12,7 +12,14 @@ INSTALL_DEP := ${PWD}/make_dep.sh
 MAKEFLAGS += INSTALL_DEP=${INSTALL_DEP} DESTDIR=${PWD}/
 MFLAGS := ${MAKEFLAGS}
 mod-y != cat .modules | while read line; do basename $$line | sed s/\\..*//; done
-chroot_mkdir := empty bin sessions
+mod-dirs := ${mod-y:%=items/%/}
+chown-user := www
+chown-group := www
+chown-dirs-OpenBSD := sessions
+chown-dirs := ${chown-dirs-${uname}}
+chroot_mkdir_Linux := ${chown-dirs}
+chroot_mkdir := empty bin ${chroot_mkdir_${uname}}
+www_dirs := sessions
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -51,9 +58,8 @@ mod-include := ${mod-y:%=items/%/include.mk}
 mod-bin := ${mod-bin:%=bin/%}
 
 all: ${deps} chroot_mkdir chroot ${mounts} ${subdirs} .htpasswd ${mod-bin}
-	${sudo} chown www:www sessions
 
-.depend-${unamec}: bin ${src-bin} ${mod-bin}
+.depend-${unamec}: bin ${src-bin} ${mod-dirs} ${mod-bin}
 	echo bin ${src-bin} ${mod-bin}
 	@./make_dep.sh
 
@@ -65,6 +71,10 @@ ${chroot_ln}:
 
 ${chroot_mkdir}:
 	mkdir -p $@
+
+${chown-dirs}:
+	mkdir -p $@
+	${sudo} chown ${chown-user}:${chown-group} $@
 
 chroot: ${chroot_mkdir} ${chroot_cp} ${chroot_ln}
 
@@ -94,9 +104,9 @@ clean: modules-clean
 		${sudo} umount ${sorted-mounts} || true
 	rm -rf ${chroot_mkdir} ${mounts} .depend-${unamec}
 
-chroot_mkdir: ${chroot_mkdir}
+chroot_mkdir: ${chroot_mkdir} ${www_dirs}
 
-${mod-y:%=items/%/}:
+$(mod-dirs):
 	@cat .modules | grep ${@:items/%/=%}.git | xargs git -C items clone --recursive
 
 modules-clean:

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DESTDIR="/var/www"
+test ! -z "$DESTDIR" || DESTDIR="/var/www"
 cd $DESTDIR
 
 options=`getopt hv:C: $@`
