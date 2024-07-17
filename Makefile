@@ -19,7 +19,6 @@ chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
 chroot_mkdir_Linux := ${chown-dirs}
 chroot_mkdir := empty bin ${chroot_mkdir_${uname}}
-www_dirs := sessions
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -57,10 +56,9 @@ mod-include := ${mod-y:%=items/%/include.mk}
 -include .depend-${unamec}
 mod-bin := ${mod-bin:%=bin/%}
 
-all: ${deps} chroot_mkdir chroot ${mounts} ${subdirs} .htpasswd ${mod-bin}
+all: ${deps} chroot_mkdir chroot ${mounts} ${subdirs} .htpasswd ${mod-bin} ${chown-dirs}
 
-.depend-${unamec}: bin ${src-bin} ${mod-dirs} ${mod-bin}
-	echo bin ${src-bin} ${mod-bin}
+.depend-${unamec}: items/ bin ${src-bin} ${mod-dirs} ${mod-bin}
 	@./make_dep.sh
 
 ${chroot_cp}:
@@ -69,7 +67,7 @@ ${chroot_cp}:
 ${chroot_ln}:
 	ln -srf $^ $@
 
-${chroot_mkdir}:
+items/ ${chroot_mkdir}:
 	mkdir -p $@
 
 ${chown-dirs}:
@@ -82,21 +80,21 @@ dev sys proc: dev/ sys/ proc/
 	@if ! mount | grep -q "on ${PWD}/$@ type"; then \
 		mkdir -p $@ 2>/dev/null || true ; \
 		echo ${sudo} mount --bind /$@ $@ ; \
-		echo ${sudo} mount --bind /$@ $@ ; \
+		${sudo} mount --bind /$@ $@ ; \
 		fi
 
 dev/pts:
 	@if ! mount | grep -q "on ${PWD}/$@ type"; then \
 		mkdir -p $@ 2>/dev/null || true ; \
 		echo ${sudo} mount -t devpts devpts $@ ; \
-		echo ${sudo} mount -t devpts devpts $@ ; \
+		${sudo} mount -t devpts devpts $@ ; \
 		fi
 
 dev/ptmx:
 	@if test ! -c $@; then \
 		cmd="mknod $@ c 5 2 $@ && chmod 666 $@" ; \
 		echo ${sudo} sh -c \"$$cmd\" ; \
-		echo ${sudo} sh -c \"$$cmd\" ; \
+		${sudo} sh -c \"$$cmd\" ; \
 		fi
 
 clean: modules-clean
@@ -104,7 +102,7 @@ clean: modules-clean
 		${sudo} umount ${sorted-mounts} || true
 	rm -rf ${chroot_mkdir} ${mounts} .depend-${unamec}
 
-chroot_mkdir: ${chroot_mkdir} ${www_dirs}
+chroot_mkdir: ${chroot_mkdir}
 
 $(mod-dirs):
 	@cat .modules | grep ${@:items/%/=%}.git | xargs git -C items clone --recursive
