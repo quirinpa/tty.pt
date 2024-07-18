@@ -4,7 +4,7 @@ unamev != uname -v | awk '{print $$1}'
 unamec := ${uname}-${unamev}
 mounts-Linux := dev sys proc dev/ptmx dev/pts
 mounts := ${mounts-${uname}}
-sorted-mounts != echo ${mounts-${uname}} | tr ' ' '\n' | sort
+sorted-mounts != echo ${mounts-${uname}} | tr ' ' '\n' | sort -r
 src-y != ls src
 DESTDIR := ${PWD}/
 PREFIX := usr
@@ -118,5 +118,8 @@ modules-clean:
 .htpasswd: bin/htpasswd
 	./bin/htpasswd root root >> $@
 
+run: all
+	./items/nd -C ${PWD}
+
 .PHONY: ${mounts} ${subdirs} chroot chroot_mkdir all \
-	modules-clean
+	modules-clean run

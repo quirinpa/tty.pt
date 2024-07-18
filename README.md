@@ -1,5 +1,10 @@
 # tty.pt site code
 
+# Running
+```sh
+make run
+```
+
 # Some modules
 - [chords](https://github.com/tty-pt/chords)
 - [commands](https://github.com/tty-pt/commands)
