@@ -17,7 +17,7 @@ chown-user := www
 chown-group := www
 chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
-chroot_mkdir_Linux := ${chown-dirs}
+chroot_mkdir_Linux := ${chown-dirs-OpenBSD}
 chroot_mkdir := empty bin ${chroot_mkdir_${uname}}
 sudo-Linux := sudo
 sudo-OpenBSD := doas
@@ -60,6 +60,9 @@ all: ${deps} chroot_mkdir chroot ${mounts} ${subdirs} .htpasswd ${mod-bin} ${cho
 
 .depend-${unamec}: items/ bin ${src-bin} ${mod-dirs} ${mod-bin}
 	@./make_dep.sh
+	@ls items | while read line; do \
+		test ! -f items/$$line/install \
+		|| ./make_dep.sh -C items/$$line; done
 
 ${chroot_cp}:
 	cp -rf $^ $@

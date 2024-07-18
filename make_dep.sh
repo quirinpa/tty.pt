@@ -60,7 +60,15 @@ link() {
 
 if test "`uname`" = "Linux"; then
 	pldd() {
-		ldd $1 2>/dev/null | tail -n +2 | awk '{print $1}'
+		ldd $1 2>/dev/null | tail -n +2 | while read filename arrow ipath rest; do
+			if test -z "$ipath"; then
+				echo "$filename" | grep -q "^\/" \
+					&& echo "$filename" \
+					|| true
+				continue
+			fi
+			echo "$ipath"
+		done
 	}
 else
 	pldd() {
