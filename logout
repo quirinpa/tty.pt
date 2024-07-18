@@ -1,7 +1,5 @@
 #!/bin/sh
 
-test ! -z "$REMOTE_USER" \
-	|| rm $DOCUMENT_ROOT/sessions/$cookie
-
+test -z "$cookie" || rm $DOCUMENT_ROOT/sessions/$cookie
 header "Set-Cookie: QSESSION=; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT"
 SeeOther /

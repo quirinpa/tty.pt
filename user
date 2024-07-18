@@ -72,6 +72,8 @@ export iban="`zcat $USER_PATH/iban`"
 export bicswift="`zcat $USER_PATH/bicswift`"
 
 cat <<!
+<div>User: $REMOTE_USER</div>
+
 <div class="h f fw v">
 	<div class="f v">
 		`zcat $USER_PATH/name | Field "$(_ Name)"`

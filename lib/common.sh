@@ -240,13 +240,6 @@ fappend() {
 
 ## COMPONENTS
 
-Normal() {
-	test ! -f $DOCUMENT_ROOT/tmp/normal || return 1
-	_Normal $@ >> $DOCUMENT_ROOT/tmp/normal
-	cat $DOCUMENT_ROOT/tmp/normal
-	return 0
-}
-
 NormalCat() {
 	Normal 200 $SCRIPT $1
 	Cat $SCRIPT

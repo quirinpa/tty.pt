@@ -70,6 +70,7 @@ Head() {
 }
 
 _Cat() {
+	cat $DOCUMENT_ROOT/tmp/normal
 	if test $# -lt 1; then
 		htmlsh | envsubst
 	elif test -f $1.html; then
@@ -127,10 +128,8 @@ Immediate() {
 	export _TITLE
 	export PRECLASS
 
-	if test ! -z "$CONTENT"; then
-		Normal $STATUS_CODE "./$content" ||
-			cat $DOCUMENT_ROOT/tmp/normal
-	fi
+	test -f "$DOCUMENT_ROOT/tmp/normal" || \
+		Normal $STATUS_CODE "./$content"
 	CCat common
 	exit 0
 }
@@ -148,8 +147,8 @@ _Fatal() {
 	fi
 	export _TITLE
 	STATUS_CODE=$status_code
-	_Normal $STATUS_CODE "" > $DOCUMENT_ROOT/tmp/normal
-	Immediate "" $@
+	Normal "$STATUS_CODE" $DOCUMENT_URI
+	echo $_TITLE
 }
 
 Fin() {
@@ -250,19 +249,18 @@ _Normal() {
 	echo "$WHISPER"
 }
 
+Normal() {
+	_Normal $@ > $DOCUMENT_ROOT/tmp/normal
+}
+
 auth() {
 	username=$1
 	password=$2
+	REMOTE_USER=""
 	hash="`grep "^$username:" $DOCUMENT_ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
-	test ! -z "$hash" || Fatal 400 No such user
-	htpasswd -v $DOCUMENT_ROOT/.htpasswd "$username" "$password" \
-		|| Unauthorized
-	test ! -f $DOCUMENT_ROOT/users/$username/rcode \
-		|| Fatal 400 The account was not activated
+	test ! -z "$hash" || return 0
+	htpasswd -v $DOCUMENT_ROOT/.htpasswd "$username" "$password" || return 0
+	test ! -f $DOCUMENT_ROOT/users/$username/rcode || return 0
 
-	TOKEN="`rand_str_1`"
-	#test -d $DOCUMENT_ROOT/sessions || mkdir $DOCUMENT_ROOT/sessions
-	echo $username > $DOCUMENT_ROOT/sessions/$TOKEN
-	header "Set-Cookie: QSESSION=$TOKEN; SameSite=Lax"
 	REMOTE_USER="$username"
 }

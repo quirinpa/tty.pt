@@ -9,5 +9,5 @@ elif ! test -z "$HTTP_AUTHORIZATION"; then
 	AUTH="`echo $HTTP_AUTHORIZATION | awk '{print $2}' | openssl base64 -d | tr ':' ' '`"
 	username="`echo $AUTH | awk '{print $1}'`"
 	password="`echo $AUTH | awk '{print $2}'`"
-	auth $username $password
+	auth $username $password || true
 fi
