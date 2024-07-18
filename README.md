@@ -1,5 +1,17 @@
 # tty.pt site code
 
+# Install dependencies
+```sh
+sudo apt install libxxhash-dev libdb-dev
+```
+
+# Running
+```sh
+make run
+# or https mode with
+make srun # as root
+```
+
 # Some modules
 - [chords](https://github.com/tty-pt/chords)
 - [commands](https://github.com/tty-pt/commands)

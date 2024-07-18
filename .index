@@ -2,6 +2,7 @@
 
 export REQ_PID=$$
 export LD_LIBRARY_PATH=/usr/local/lib
+export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/bin:$PATH
 
 rm -rf $DOCUMENT_ROOT/tmp/normal $DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
 

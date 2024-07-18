@@ -1,10 +1,10 @@
-subdirs := htdocs
+PWD != pwd
 uname != uname
 unamev != uname -v | awk '{print $$1}'
 unamec := ${uname}-${unamev}
 mounts-Linux := dev sys proc dev/ptmx dev/pts
 mounts := ${mounts-${uname}}
-sorted-mounts != echo ${mounts-${uname}} | tr ' ' '\n' | sort
+sorted-mounts != echo ${mounts-${uname}} | tr ' ' '\n' | sort -r
 src-y != ls src
 DESTDIR := ${PWD}/
 PREFIX := usr
@@ -22,6 +22,7 @@ chroot_mkdir := empty bin ${chroot_mkdir_${uname}}
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
+sudo-root := ${sudo}
 LDFLAGS := -L/usr/local/lib
 CFLAGS := -I/usr/local/include
 lcrypt-Linux := -lcrypt
@@ -33,8 +34,8 @@ all:
 
 chroot: chroot_mkdir
 
-${subdirs}:
-	@${MAKE} -C $@
+htdocs/vim.css:
+	@${MAKE} -C htdocs/vss
 
 ${mounts:%=%/}:
 	mkdir -p $@
@@ -56,7 +57,7 @@ mod-include := ${mod-y:%=items/%/include.mk}
 -include .depend-${unamec}
 mod-bin := ${mod-bin:%=bin/%}
 
-all: ${deps} chroot_mkdir chroot ${mounts} ${subdirs} .htpasswd ${mod-bin} ${chown-dirs}
+all: ${deps} chroot_mkdir chroot ${mounts} .htpasswd ${mod-bin} ${chown-dirs} htdocs/vim.css
 
 .depend-${unamec}: items/ bin ${src-bin} ${mod-dirs} ${mod-bin}
 	@./make_dep.sh
@@ -118,5 +119,18 @@ modules-clean:
 .htpasswd: bin/htpasswd
 	./bin/htpasswd root root >> $@
 
-.PHONY: ${mounts} ${subdirs} chroot chroot_mkdir all \
-	modules-clean
+run: bin/nd
+	${sudo-${USER}} ./bin/nd -C ${PWD} -p 8000
+
+srun: bin/nd ss_key.pem ss_cert.pem
+	${sudo} ./bin/nd -C ${PWD} -c ss_cert.pem -k ss_key.pem
+
+ss_key.pem:
+	openssl genpkey -algorithm RSA -out ss_key.pem -aes256
+
+ss_cert.pem: ss_key.pem
+	openssl req -new -key ss_key.pem -out ss_csr.pem
+	openssl req -x509 -key ss_key.pem -in ss_csr.pem -out ss_cert.pem -days 365
+
+.PHONY: ${mounts} chroot chroot_mkdir all \
+	modules-clean run srun
