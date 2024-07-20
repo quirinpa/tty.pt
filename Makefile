@@ -1,4 +1,3 @@
-PWD != pwd
 uname != uname
 unamev != uname -v | awk '{print $$1}'
 unamec := ${uname}-${unamev}
@@ -17,8 +16,7 @@ chown-user := www
 chown-group := www
 chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
-chroot_mkdir_Linux := ${chown-dirs-OpenBSD}
-chroot_mkdir := empty bin ${chroot_mkdir_${uname}}
+chroot_mkdir := empty sessions
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -37,9 +35,6 @@ chroot: chroot_mkdir
 htdocs/vim.css:
 	@${MAKE} -C htdocs/vss
 
-${mounts:%=%/}:
-	mkdir -p $@
-
 bin/htpasswd: src/htpasswd/htpasswd.c
 	${LINK.c} -o $@ src/htpasswd/htpasswd.c -lqhash ${lcrypt}
 
@@ -57,13 +52,20 @@ mod-include := ${mod-y:%=items/%/include.mk}
 -include .depend-${unamec}
 mod-bin := ${mod-bin:%=bin/%}
 
-all: ${deps} chroot_mkdir chroot ${mounts} .htpasswd ${mod-bin} ${chown-dirs} htdocs/vim.css
-
-.depend-${unamec}: items/ bin ${src-bin} ${mod-dirs} ${mod-bin}
+.depend-${unamec}: ${mod-dirs} ${mod-bin} ${src-bin}
 	@./make_dep.sh
 	@ls items | while read line; do \
 		test ! -f items/$$line/install \
 		|| ./make_dep.sh -C items/$$line; done
+
+${mounts:%=%/}:
+	mkdir -p $@
+
+bin/: FORCE
+	mkdir $@ || true
+
+all: bin/ .depend-${unamec} chroot_mkdir chroot \
+	${mounts} .htpasswd
 
 ${chroot_cp}:
 	cp -rf $^ $@
@@ -71,7 +73,7 @@ ${chroot_cp}:
 ${chroot_ln}:
 	ln -srf $^ $@
 
-items/ ${chroot_mkdir}:
+items/ ${chroot_mkdir:%=%/}:
 	mkdir -p $@
 
 ${chown-dirs}:
@@ -87,26 +89,12 @@ dev sys proc: dev/ sys/ proc/
 		${sudo} mount --bind /$@ $@ ; \
 		fi
 
-dev/pts:
-	@if ! mount | grep -q "on ${PWD}/$@ type"; then \
-		mkdir -p $@ 2>/dev/null || true ; \
-		echo ${sudo} mount -t devpts devpts $@ ; \
-		${sudo} mount -t devpts devpts $@ ; \
-		fi
-
-dev/ptmx:
-	@if test ! -c $@; then \
-		cmd="mknod $@ c 5 2 $@ && chmod 666 $@" ; \
-		echo ${sudo} sh -c \"$$cmd\" ; \
-		${sudo} sh -c \"$$cmd\" ; \
-		fi
-
 clean: modules-clean
-	test -z "${mounts}" || \
+	test -z "${sorted-mounts}" || \
 		${sudo} umount ${sorted-mounts} || true
 	rm -rf ${chroot_mkdir} ${mounts} .depend-${unamec}
 
-chroot_mkdir: ${chroot_mkdir}
+chroot_mkdir: ${chroot_mkdir:%=%/}
 
 $(mod-dirs):
 	@cat .modules | grep ${@:items/%/=%}.git | xargs git -C items clone --recursive
@@ -119,18 +107,7 @@ modules-clean:
 .htpasswd: bin/htpasswd
 	./bin/htpasswd root root >> $@
 
-run: bin/nd
-	${sudo-${USER}} ./bin/nd -C ${PWD} -p 8000
+FORCE:
 
-srun: bin/nd ss_key.pem ss_cert.pem
-	${sudo} ./bin/nd -C ${PWD} -c ss_cert.pem -k ss_key.pem
-
-ss_key.pem:
-	openssl genpkey -algorithm RSA -out ss_key.pem -aes256
-
-ss_cert.pem: ss_key.pem
-	openssl req -new -key ss_key.pem -out ss_csr.pem
-	openssl req -x509 -key ss_key.pem -in ss_csr.pem -out ss_cert.pem -days 365
-
-.PHONY: ${mounts} chroot chroot_mkdir all \
-	modules-clean run srun
+.PHONY: chroot chroot_mkdir all \
+	modules-clean run srun FORCE

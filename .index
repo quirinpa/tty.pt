@@ -12,7 +12,6 @@ rm -rf $DOCUMENT_ROOT/tmp/normal $DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun 
 if test ! -z "$1"; then
 	INDEX_ICON="🏠"
 	case "$1" in
-		e) . ./.exec $@;;
 		~*) . ./.tilde $@;;
 		*)
 			if test -d ./items/$1; then
