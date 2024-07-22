@@ -11,7 +11,7 @@ INSTALL_DEP := ${PWD}/make_dep.sh
 MAKEFLAGS += INSTALL_DEP=${INSTALL_DEP} DESTDIR=${PWD}/
 MFLAGS := ${MAKEFLAGS}
 mod-y != cat .modules | while read line; do basename $$line | sed s/\\..*//; done
-mod-dirs := ${mod-y:%=items/%/}
+mod-dirs := ${mod-y:%=items/%}
 chown-user := www
 chown-group := www
 chown-dirs-OpenBSD := sessions
@@ -35,6 +35,9 @@ chroot: chroot_mkdir
 htdocs/vim.css: FORCE
 	@${MAKE} -C htdocs/vss
 
+.htpasswd: bin/htpasswd
+	./bin/htpasswd root root >> $@
+
 bin/htpasswd: src/htpasswd/htpasswd.c
 	${LINK.c} -o $@ src/htpasswd/htpasswd.c -lqhash ${lcrypt}
 
@@ -52,20 +55,27 @@ mod-include := ${mod-y:%=items/%/include.mk}
 -include .depend-${unamec}
 mod-bin := ${mod-bin:%=bin/%}
 
-.depend-${unamec}: ${mod-dirs} ${mod-bin} ${src-bin}
+$(mod-dirs): items
+	@cat .modules | grep ${@:items/%=%}.git | while read line; do \
+		test -d $@ || git -C items clone --recursive `basename $@ | sed 's/\..*//'` ; \
+		done
+
+.depend-$(unamec): ${mod-dirs} ${mod-bin} ${src-bin}
 	@./make_dep.sh
 	@ls items | while read line; do \
 		test ! -f items/$$line/install \
 		|| ./make_dep.sh -C items/$$line; done
 
+depend: .depend-${unamec}
+
 ${mounts:%=%/}:
 	mkdir -p $@
 
-bin/: FORCE
+items bin/: FORCE
 	mkdir $@ || true
 
-all: bin/ .depend-${unamec} chroot_mkdir chroot htdocs/vim.css \
-	${mounts} .htpasswd
+all: bin/ chroot_mkdir chroot htdocs/vim.css ${mounts} .htpasswd
+	echo ${mounts}
 
 ${chroot_cp}:
 	cp -rf $^ $@
@@ -96,18 +106,12 @@ clean: modules-clean
 
 chroot_mkdir: ${chroot_mkdir:%=%/}
 
-$(mod-dirs):
-	@cat .modules | grep ${@:items/%/=%}.git | xargs git -C items clone --recursive
-
 modules-clean:
 	-ls items | while read line; do \
 		test ! -f items/$$line/Makefile || \
 		${MAKE} -C items/$$line clean ; done
 
-.htpasswd: bin/htpasswd
-	./bin/htpasswd root root >> $@
-
 FORCE:
 
 .PHONY: chroot chroot_mkdir all \
-	modules-clean run srun FORCE
+	modules-clean run srun FORCE ${mounts}
