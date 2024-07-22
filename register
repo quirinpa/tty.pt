@@ -51,7 +51,7 @@ if grep -q "^$email$" $DOCUMENT_ROOT/.blacklist; then
 	Forbidden
 fi
 
-if grep -q "^$username:" $DOCUMENT_ROOT/.htpasswd; then
+if grep -q "^$username:" $DOCUMENT_ROOT/etc/$shadow; then
 	Fatal 400 User already exists
 fi
 
@@ -59,7 +59,10 @@ USER_DIR=$DOCUMENT_ROOT/users/$username
 DF_USER=anonymous
 fmkdir $USER_DIR
 echo $email | fwrite $USER_DIR/email
-htpasswd "$username" "$password" >> $DOCUMENT_ROOT/.htpasswd
+nid="`awk -F: '{if ($3 >= 1000 && $3 < 65534) print $3}' /etc/passwd | sort -n | tail -1`"
+test $nid -lt 1000 || nid=1000
+echo `htpasswd "$username" "$password"`:$nid:$nid:www:0:0:$username:/home/$username:/bin/sh >> $DOCUMENT_ROOT/etc/$shadow
+test "$uname" != "OpenBSD" || pwd_mkdb $DOCUMENT_ROOT/etc/master.passwd
 rand_str="`rand_str_1`"
 echo "$rand_str" | fwrite $USER_DIR/rcode2
 which femail && femail -f noreply@tty.pt $email || true <<!

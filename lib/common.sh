@@ -172,7 +172,7 @@ calcround() {
 }
 
 free_space() {
-	N_USERS="`cat $DOCUMENT_ROOT/.htpasswd | wc -l | sed 's/ //g'`"
+	N_USERS="`cat $DOCUMENT_ROOT/etc/$shadow | wc -l | sed 's/ //g'`"
 	FREE_SPACE_EXP="(20000000000 / $N_USERS)"
 	calcround "$FREE_SPACE_EXP"
 }
@@ -193,7 +193,7 @@ _fbytes() {
 	fi
 }
 
-if test "`uname`" = "Linux"; then
+if test "$uname" = "Linux"; then
 	fsize() {
 		stat --format %s $1
 	}

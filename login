@@ -26,12 +26,12 @@ _TITLE="`_ Login`"
 username="`urldecode $username`"
 password="`urldecode $password`"
 
-hash="`grep "^$username:" $DOCUMENT_ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
+hash="`grep "^$username:" $DOCUMENT_ROOT/etc/$shadow | awk 'BEGIN{FS=":"} {print $2}'`"
 test -z "$REMOTE_USER" || \
 	rm $DOCUMENT_ROOT/sessions/$cookie
 test ! -z "$hash" \
 	|| Fatal 400 No such user
-htpasswd -v $DOCUMENT_ROOT/.htpasswd "$username" "$password" \
+htpasswd -v $DOCUMENT_ROOT/etc/$shadow "$username" "$password" \
 	|| Unauthorized
 test ! -f $DOCUMENT_ROOT/users/$username/rcode \
 	|| Fatal 400 The account was not activated

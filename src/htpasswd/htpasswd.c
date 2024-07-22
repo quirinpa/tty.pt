@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
 	for (int i = 0; i < sb.st_size; i++) {
 		char *s = &copy[i];
-		char *colon = strchr(s, ':'), *eol;
+		char *colon = strchr(s, ':'), *eoc, *eol;
 		if (!colon) {
 			fprintf(stderr, "input file missing colon\n");
 			return EXIT_FAILURE;
@@ -70,7 +70,11 @@ int main(int argc, char *argv[]) {
 			return EXIT_FAILURE;
 		}
 
-		*eol = '\0';
+		eoc = strchr(colon + 1, ':');
+		if (!eoc)
+			eoc = eol;
+
+		*eoc = '\0';
 		hash_put(pwd_hd, s, colon - s, colon + 1);
 		i += eol - s;
 	}

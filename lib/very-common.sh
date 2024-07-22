@@ -254,13 +254,17 @@ Normal() {
 	_Normal $@ > $DOCUMENT_ROOT/tmp/normal
 }
 
+uname=`uname`
+shadow=shadow
+test "$uname" != "OpenBSD" || shadow=master.passwd
+
 auth() {
 	username=$1
 	password=$2
 	REMOTE_USER=""
-	hash="`grep "^$username:" $DOCUMENT_ROOT/.htpasswd | awk 'BEGIN{FS=":"} {print $2}'`"
+	hash="`grep "^$username:" $DOCUMENT_ROOT/etc/$shadow | awk 'BEGIN{FS=":"} {print $2}'`"
 	test ! -z "$hash" || return 0
-	htpasswd -v $DOCUMENT_ROOT/.htpasswd "$username" "$password" || return 0
+	htpasswd -v $DOCUMENT_ROOT/etc/$shadow "$username" "$password" || return 0
 	test ! -f $DOCUMENT_ROOT/users/$username/rcode || return 0
 
 	REMOTE_USER="$username"

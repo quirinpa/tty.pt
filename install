@@ -82,3 +82,4 @@ femail
 /bin/bash
 bin/nd
 pwd_mkdb
+stty

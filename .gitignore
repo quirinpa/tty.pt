@@ -9,6 +9,9 @@
 /dev
 /tmp
 /var
+/root
+/home
+/cache
 /htdocs/*
 !/htdocs/vss
 /htdocs/vss/c.h

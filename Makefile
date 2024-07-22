@@ -1,9 +1,6 @@
 uname != uname
 unamev != uname -v | awk '{print $$1}'
 unamec := ${uname}-${unamev}
-mounts-Linux := dev sys proc dev/ptmx dev/pts
-mounts := ${mounts-${uname}}
-sorted-mounts != echo ${mounts-${uname}} | tr ' ' '\n' | sort -r
 src-y != ls src
 DESTDIR := ${PWD}/
 PREFIX := usr
@@ -16,7 +13,7 @@ chown-user := www
 chown-group := www
 chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
-chroot_mkdir := empty sessions users home
+chroot_mkdir := empty sessions
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -25,18 +22,23 @@ LDFLAGS := -L/usr/local/lib
 CFLAGS := -I/usr/local/include
 lcrypt-Linux := -lcrypt
 lcrypt := ${lcrypt-${uname}}
+all-Linux := etc/shadow
+all-OpenBSD := etc/pwd.db
+# please change the default if online
+root-password := unsafe
+shell-OpenBSD := /bin/ksh
+shell-Linux := /bin/bash
+shell := ${shell-${uname}}
+no-shell := /sbin/nologin
 
 deps := .depend-${unamec}
 
 all:
 
-chroot: chroot_mkdir
+chroot: users/ home/ chroot_mkdir
 
 htdocs/vim.css: FORCE
 	@${MAKE} -C htdocs/vss
-
-.htpasswd: bin/htpasswd
-	./bin/htpasswd root root >> $@
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	${LINK.c} -o $@ src/htpasswd/htpasswd.c -lqhash ${lcrypt}
@@ -68,14 +70,34 @@ $(mod-dirs): items
 
 depend: .depend-${unamec}
 
-${mounts:%=%/}:
-	mkdir -p $@
-
 items bin/: FORCE
 	mkdir $@ || true
 
-all: bin/ chroot_mkdir chroot htdocs/vim.css ${mounts} .htpasswd
-	echo ${mounts}
+all: bin/ chroot_mkdir chroot htdocs/vim.css \
+	${all-${uname}} etc/group etc/passwd
+
+etc/group:
+	echo "wheel:*:0:root" > $@
+	echo "_shadow:*:65:" >> $@
+	chmod 644 $@
+	${sudo} chown root:wheel $@
+
+etc/passwd:
+	echo "root:X:0:0:root:/root:${shell}" > $@
+	echo "daemon:*:1:1:root:/root:${no-shell}" >> $@
+	chmod 644 $@
+	${sudo} chown root:wheel $@
+
+etc/shadow etc/master.passwd:
+	test "${root-password}" != "unsafe" \
+		|| echo Warning: default password is unsafe >&2
+	echo "`./bin/htpasswd root ${root-password}`:0:0:daemon:0:0:Charlie &:/root:${shell}" > $@
+	echo "daemon:*:1:1::0:0:The devil will die:/root:/sbin/nologin" >> $@
+	chmod 600 $@
+	${sudo} chown root:wheel $@
+
+etc/pwd.db: etc/group etc/master.passwd
+	${sudo} chroot . pwd_mkdb /etc/master.passwd
 
 ${chroot_cp}:
 	cp -rf $^ $@
@@ -83,7 +105,7 @@ ${chroot_cp}:
 ${chroot_ln}:
 	ln -srf $^ $@
 
-items/ ${chroot_mkdir:%=%/}:
+items/ users/ home/ ${chroot_mkdir:%=%/}:
 	mkdir -p $@
 
 ${chown-dirs}:
@@ -92,19 +114,22 @@ ${chown-dirs}:
 
 chroot: ${chroot_mkdir} ${chroot_cp} ${chroot_ln}
 
-dev sys proc: dev/ sys/ proc/
+$(mount): dev/ sys/ proc/
 	@if ! mount | grep -q "on ${PWD}/$@ type"; then \
 		mkdir -p $@ 2>/dev/null || true ; \
 		echo ${sudo} mount --bind /$@ $@ ; \
 		${sudo} mount --bind /$@ $@ ; \
 		fi
 
-clean: modules-clean
-	test -z "${sorted-mounts}" || \
-		${sudo} umount ${sorted-mounts} || true
-	rm -rf ${chroot_mkdir} ${mounts} .depend-${unamec}
+clean: modules-clean mounts-clean
+	rm -rf ${chroot_mkdir} .depend-${unamec}
 
 chroot_mkdir: ${chroot_mkdir:%=%/}
+
+mounts-clean:
+	test -z "${sorted-mounts}" || \
+		${sudo} umount ${sorted-mounts}
+	rm -rf ${mounts}
 
 modules-clean:
 	-ls items | while read line; do \
@@ -113,5 +138,5 @@ modules-clean:
 
 FORCE:
 
-.PHONY: chroot chroot_mkdir all \
-	modules-clean run srun FORCE ${mounts}
+.PHONY: chroot chroot_mkdir all mounts-clean \
+	modules-clean run srun FORCE
