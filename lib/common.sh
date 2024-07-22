@@ -148,7 +148,7 @@ dir_df() {
 
 df() {
 	df_dir users/$DF_USER
-	df_dir htdocs/img/$DF_USER
+	# df_dir htdocs/img/$DF_USER
 	ls $DOCUMENT_ROOT/items/ | while read item; do
 		test ! -d $DOCUMENT_ROOT/items/$item/items \
 			|| dir_df items/$item

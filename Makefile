@@ -16,7 +16,7 @@ chown-user := www
 chown-group := www
 chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
-chroot_mkdir := empty sessions
+chroot_mkdir := empty sessions users home
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -32,7 +32,7 @@ all:
 
 chroot: chroot_mkdir
 
-htdocs/vim.css:
+htdocs/vim.css: FORCE
 	@${MAKE} -C htdocs/vss
 
 bin/htpasswd: src/htpasswd/htpasswd.c
@@ -64,7 +64,7 @@ ${mounts:%=%/}:
 bin/: FORCE
 	mkdir $@ || true
 
-all: bin/ .depend-${unamec} chroot_mkdir chroot \
+all: bin/ .depend-${unamec} chroot_mkdir chroot htdocs/vim.css \
 	${mounts} .htpasswd
 
 ${chroot_cp}:

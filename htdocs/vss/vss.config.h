@@ -34,6 +34,15 @@ body {
 	background-color: #3c403c;
 	caret-color: #9589c5;
 	padding: VAL(SIZE, 8);
+	font-family: "Noto Sans", sans-serif;
+	font-optical-sizing: auto;
+	font-size: 13px;
+}
+pre {
+	font-family: "Noto Sans Mono", monospace !important;
+}
+label > input {
+	display: block;
 }
 h1,h2,h3,h4,h5,h6 { color: #f5f5f5; }
 img { color: #c1c3da; };
@@ -121,5 +130,7 @@ input.c0:focus {
 input[type="number"] {
 	width: 80px;
 }
+.chords b { margin-top: 4px !important; display: inline-block; }
+.chords h2 { margin-top: 20px; }
 
 .btn.abs { box-sizing: content-box; }

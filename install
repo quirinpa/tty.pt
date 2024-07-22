@@ -79,4 +79,6 @@ usr/bin/htpasswd
 uname
 femail
 /bin/ksh
+/bin/bash
 bin/nd
+pwd_mkdb
