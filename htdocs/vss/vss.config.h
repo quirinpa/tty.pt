@@ -15,6 +15,9 @@ CALL(SIZE, ALL_SIZES)
 CALL(PADDING, ALL_SIZES)
 CALL(AXIS_horizontal, ALL_SIZES)
 CALL(AXIS_vertical, ALL_SIZES)
+CALL(TEXT_ALIGN, left, center, right)
+OVERFLOW(hidden)
+ABS_DIST_ALL(0)
 AXIS_0
 FULL_SIZE
 /* CALL(FLEX_VERTICAL, SS) */
@@ -22,11 +25,12 @@ CALL(ROUND_T, ALL_TEXT_SIZES)
 CALL(ROUND_EDGE, ALL_SIZES)
 ABS_DIST(8)
 ROUND_PADDING( 4, 14)
+ROUND_PADDING( 8, 8)
 ROUND_PADDING( 8, 17)
 ROUND_PADDING( 8, 20)
 ROUND_PADDING( 8, 26)
 
-.dn { display: none; }
+.dn { display: none !important; }
 .cf { background: #3c403c; }
 .cb { color: #c1c3da; }
 body {
@@ -37,6 +41,7 @@ body {
 	font-family: "Noto Sans", sans-serif;
 	font-optical-sizing: auto;
 	font-size: 13px;
+	box-sizing: border-box;
 }
 pre {
 	font-family: "Noto Sans Mono", monospace !important;
@@ -74,12 +79,15 @@ pre { font-family: monospace; }
 button, .btn {
 	font-size: inherit;
 	padding: VAL(SIZE, );
+	border: none;
+	text-decoration: none;
+}
+
+button:not(.transparent), .btn:not(.transparent) {
 	background-color: VAL(COLOR, 0);
 	color: VAL(COLOR, 15);
-	border: none;
-	//border: solid thin black;
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
-	text-decoration: none;
+	//border: solid thin black;
 }
 
 button > a, .btn > a, a.btn {
