@@ -426,6 +426,7 @@ Index() {
 	if test -z "$SUBINDEX_ICON"; then
 		SUBINDEX_ICON="`zcat icon || echo "🗂"`"
 	fi
+	test ! -z "$PINDEX_ICON" || PINDEX_ICON="`zcat icon`"
 
 	test ! -f .lib/index.sh || . .lib/index.sh
 
