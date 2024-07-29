@@ -35,18 +35,21 @@ deps := .depend-${unamec}
 
 all:
 
-chroot: users/ home/ chroot_mkdir
+chroot: users/ home/
 
 htdocs/vim.css: FORCE
 	@${MAKE} -C htdocs/vss
 
 bin/htpasswd: src/htpasswd/htpasswd.c
+	@mkdir bin 2>/dev/null || true
 	${LINK.c} -o $@ src/htpasswd/htpasswd.c -lqhash ${lcrypt}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
+	@mkdir bin 2>/dev/null || true
 	${LINK.c} -o $@ src/htmlsh/htmlsh.c
 
 bin/mpfd: src/mpfd/mpfd.c
+	@mkdir bin 2>/dev/null || true
 	${LINK.c} -o $@ src/mpfd/mpfd.c
 
 src-bin := htpasswd htmlsh mpfd
@@ -57,12 +60,14 @@ mod-include := ${mod-y:%=items/%/include.mk}
 -include .depend-${unamec}
 mod-bin := ${mod-bin:%=bin/%}
 
-$(mod-dirs): items
-	@cat .modules | grep ${@:items/%=%}.git | while read line; do \
-		test -d $@ || git -C items clone --recursive `basename $@ | sed 's/\..*//'` ; \
+mod-dirs:
+	@mkdir items 2>/dev/null || true
+	@cat .modules | while read line; do \
+		dir=`basename $$line | sed 's/\..*//'` ; \
+		test -d items/$$dir || git -C items clone --recursive $$dir ; \
 		done
 
-.depend-$(unamec): ${mod-dirs} ${mod-bin} ${src-bin}
+.depend-$(unamec): ${mod-bin} ${src-bin}
 	@./make_dep.sh
 	@ls items | while read line; do \
 		test ! -f items/$$line/install \
@@ -70,10 +75,10 @@ $(mod-dirs): items
 
 depend: .depend-${unamec}
 
-items bin/: FORCE
+items: FORCE
 	mkdir $@ || true
 
-all: bin/ chroot_mkdir chroot htdocs/vim.css \
+all: mod-dirs chroot htdocs/vim.css \
 	${all-${uname}} etc/group etc/passwd
 
 etc/group:
@@ -100,19 +105,21 @@ etc/pwd.db: etc/group etc/master.passwd
 	${sudo} chroot . pwd_mkdb /etc/master.passwd
 
 ${chroot_cp}:
+	@mkdir -p `dirname $@` || true
 	cp -rf $^ $@
 
 ${chroot_ln}:
+	@mkdir -p `dirname $@` || true
 	ln -srf $^ $@
 
-items/ users/ home/ ${chroot_mkdir:%=%/}:
+items/ users/ home/:
 	mkdir -p $@
 
 ${chown-dirs}:
 	mkdir -p $@
 	${sudo} chown ${chown-user}:${chown-group} $@
 
-chroot: ${chroot_mkdir} ${chroot_cp} ${chroot_ln}
+chroot: ${chroot_cp} ${chroot_ln}
 
 $(mount): dev/ sys/ proc/
 	@if ! mount | grep -q "on ${PWD}/$@ type"; then \
@@ -123,8 +130,6 @@ $(mount): dev/ sys/ proc/
 
 clean: modules-clean mounts-clean
 	rm -rf ${chroot_mkdir} .depend-${unamec}
-
-chroot_mkdir: ${chroot_mkdir:%=%/}
 
 mounts-clean:
 	test -z "${sorted-mounts}" || \
@@ -138,5 +143,5 @@ modules-clean:
 
 FORCE:
 
-.PHONY: chroot chroot_mkdir all mounts-clean \
-	modules-clean run srun FORCE
+.PHONY: chroot all mounts-clean \
+	modules-clean run srun FORCE mod-dirs
