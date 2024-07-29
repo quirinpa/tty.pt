@@ -90,6 +90,10 @@ button:not(.transparent), .btn:not(.transparent) {
 	//border: solid thin black;
 }
 
+.tr5 {
+	opacity: 0.5;
+}
+
 button > a, .btn > a, a.btn {
 	display: block;
 	text-decoration: none;
@@ -142,3 +146,4 @@ input[type="number"] {
 .chords h2 { margin-top: 20px; }
 
 .btn.abs { box-sizing: content-box; }
+.shad { text-shadow: 1px 1px 2px black, 2px -1px 3px black; }

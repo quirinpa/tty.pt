@@ -14,7 +14,7 @@ test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
 	STATUS_STR="Status: "
 
 header() {
-	HEADERS="$HEADERS$1\n"
+	echo "$@" >> $DOCUMENT_ROOT/tmp/headers
 }
 
 debug() {
@@ -49,7 +49,8 @@ NormalHead() {
 	local status_code=$1
 	echo "$STATUS_STR$1 $STATUS_TEXT"
 	echo "Content-Type: $RES_CONTENT_TYPE"
-	test -z "$HEADERS" || echo -n $HEADERS
+	test ! -f $DOCUMENT_ROOT/tmp/headers || \
+		cat $DOCUMENT_ROOT/tmp/headers
 }
 
 Head() {
@@ -168,7 +169,7 @@ get_lang() {
 			if grep "$alang" $DOCUMENT_ROOT/locale/langs; then
 				break
 			fi
-		done
+		done | head -n 1
 }
 
 lang="`get_lang`"

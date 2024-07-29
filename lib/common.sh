@@ -53,7 +53,7 @@ case "$REQUEST_METHOD" in
 			multipart/form-data*)
 				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
-				$DOCUMENT_ROOT/usr/bin/mpfd "$boundary" 2>&1
+				mpfd "$boundary" 2>&1
 				;;
 			application/x-www-form-urlencoded*)
 				read line1 || true
@@ -294,12 +294,14 @@ Buttons2() {
 		test ! -f "$path/$sub/.hidden" || continue
 		id="`zcat $path/$sub/title || echo $sub | tr '_' ' '`"
 		_TITLE="`_ "$id"`"
+		echo $sub $_TITLE
+	done | sort -V | while read sub title; do
 		urlid="`urlencode "$sub"`"
 		icon="`test ! -f "$path/$sub/icon" || cat "$path/$sub/icon"`"
 		test -z "$icon" || icon="<span>$icon</span>"
 		cat <<!
 <div><a class="btn wsnw h $cla" href="$urlid/$extra">
-	<span>$_TITLE</span>$icon
+	<span>$title</span>$icon
 </a></div>
 !
 	done
@@ -563,9 +565,8 @@ Add() {
 	fmkdir $ITEM_PATH
 	echo $REMOTE_USER | fwrite $ITEM_PATH/.owner
 
-	. ./$template 2>&1
-
-	_see_other ./$item_id/
+	. ./$template
+	SeeOther ../$item_id/ | Immediate - $@
 }
 
 nfiles() {
