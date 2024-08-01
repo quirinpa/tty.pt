@@ -23,13 +23,13 @@ if test ! -z "$1"; then
 				Immediate $@
 				# . ./.$1 $@
 			else
-				path=$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI
-				if test ! -f $path; then
+				path="$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI"
+				if test ! -f "$path"; then
 					test ! -z "$REMOTE_USER" || NotFound
-					path=$DOCUMENT_ROOT/home/$REMOTE_USER/$DOCUMENT_URI
+					path="$DOCUMENT_ROOT/home/$REMOTE_USER/$DOCUMENT_URI"
 					# check perms (not applicable, for now)
 					# ls -al $path  | awk '{print $1}' | tail -c 4 | grep -q r
-					test -f $path || NotFound
+					test -f "$path" || NotFound
 				fi
 				echo Status 200: Ok
 				echo

@@ -106,7 +106,7 @@ Immediate() {
 	test ! -z "$_TITLE" || _TITLE="$content"
 	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
 	if test -f $content; then
-		CONTENT="`. ./$content $@`"
+		CONTENT="`INCEPTION=true . ./$content $@`"
 	else
 		CONTENT="`cat -`"
 	fi
@@ -136,6 +136,7 @@ Immediate() {
 	exit 0
 }
 
+INCEPTION=false
 _Fatal() {
 	local status_code=$1
 	shift 1
@@ -145,12 +146,11 @@ _Fatal() {
 		echo
 		echo $_TITLE
 		return 1
-		# exit 1
 	fi
 	export _TITLE
 	STATUS_CODE=$status_code
 	Normal "$STATUS_CODE" $DOCUMENT_URI
-	echo $_TITLE
+	$INCEPTION && echo $_TITLE || Immediate - $@
 }
 
 Fin() {
