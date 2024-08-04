@@ -35,11 +35,14 @@ urldecode() {
 	echo $@ | _urldecode
 }
 
+san_param() {
+	echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1' | while IFS='=' read name value; do
+		echo HTTP_PARAM_$name=$value
+	done
+}
+
 url2vars() {
-	# lowercase keys
-	exp="`echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1'`"
-	#exp="`echo $1 | tr '[A-Z]' '[a-z]'| tr '&' '\n'`"
-	eval "$exp"
+	eval "`san_param $@`"
 }
 
 fd() {
@@ -62,7 +65,7 @@ case "$REQUEST_METHOD" in
 		esac
 		;;
 	GET)
-		url2vars $QUERY_STRING
+		url2vars "$QUERY_STRING"
 		;;
 	*)
 		;;
@@ -465,7 +468,7 @@ Index() {
 	INDEX_ICON="`RB $INDEX_ICON ./..`"
 
 	test ! -z "$FUNCTIONS" || \
-		FUNCTIONS="`fun || test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
+		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
 	test ! -z "$CONTENT" || \
 		CONTENT="`zcat template/index.html || Buttons2 'tsxl cap' items`"
 

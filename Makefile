@@ -67,7 +67,7 @@ mod-dirs:
 		test -d items/$$dir || git -C items clone --recursive $$dir ; \
 		done
 
-.depend-$(unamec): ${mod-bin} ${src-bin}
+.depend-$(unamec): ${mod-bin} ${src-bin} install ${mod-install}
 	@./make_dep.sh
 	@ls items | while read line; do \
 		test ! -f items/$$line/install \

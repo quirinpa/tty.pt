@@ -30,10 +30,10 @@ if test $REQUEST_METHOD = GET; then
 	exit 0
 fi
 
-username="`urldecode $username`"
-password="`urldecode $password`"
+username="`urldecode $HTTP_PARAM_username`"
+password="`urldecode $HTTP_PARAM_password`"
 password2="`urldecode $password2`"
-email="`urldecode $email`"
+email="`urldecode $HTTP_PARAM_email`"
 
 if invalid_id $username || test "$username" = "www"; then
 	Fatal 400 Not a valid username

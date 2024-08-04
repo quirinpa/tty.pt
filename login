@@ -23,8 +23,8 @@ fi
 
 _TITLE="`_ Login`"
 
-username="`urldecode $username`"
-password="`urldecode $password`"
+username="`urldecode $HTTP_PARAM_username`"
+password="`urldecode $HTTP_PARAM_password`"
 
 hash="`grep "^$username:" $DOCUMENT_ROOT/etc/$shadow | awk 'BEGIN{FS=":"} {print $2}'`"
 test -z "$REMOTE_USER" || \
@@ -36,7 +36,8 @@ htpasswd -v $DOCUMENT_ROOT/etc/$shadow "$username" "$password" \
 test ! -f $DOCUMENT_ROOT/users/$username/rcode \
 	|| Fatal 400 The account was not activated
 
-test ! -z "$ret" && ret="`urldecode $ret`" || ret=/user
+test ! -z "$HTTP_PARAM_ret" \
+	&& ret="`urldecode $HTTP_PARAM_ret`" || ret=/user
 TOKEN="`rand_str_1`"
 echo $username > $DOCUMENT_ROOT/sessions/$TOKEN
 header "Set-Cookie: QSESSION=$TOKEN; SameSite=Lax"

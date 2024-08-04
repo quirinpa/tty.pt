@@ -3,6 +3,8 @@
 export REQ_PID=$$
 export LD_LIBRARY_PATH=/usr/local/lib
 export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/bin:$PATH
+echo $REQUEST_METHOD $DOCUMENT_URI >&2
+trap 'echo "Error line $LINENO" >&2; exit 1' ERR
 
 rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
 	$DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun \
