@@ -6,6 +6,11 @@ export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/bin:$PATH
 echo $REQUEST_METHOD $DOCUMENT_URI >&2
 trap 'echo "Error line $LINENO" >&2; exit 1' ERR
 
+if ! echo $DOCUMENT_URI | grep -q '/$'; then
+	echo $DOCUMENT_URI | tr ' ' '\n' | tail -n 1 | grep -q '.' \
+		|| DOCUMENT_URI="$DOCUMENT_URI/"
+fi
+
 rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
 	$DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun \
 	$DOCUMENT_ROOT/tmp/bottom $DOCUMENT_ROOT/tmp/ncat || true

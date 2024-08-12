@@ -32,7 +32,7 @@ fi
 
 username="`urldecode $HTTP_PARAM_username`"
 password="`urldecode $HTTP_PARAM_password`"
-password2="`urldecode $password2`"
+password2="`urldecode $HTTP_PARAM_password2`"
 email="`urldecode $HTTP_PARAM_email`"
 
 if invalid_id $username || test "$username" = "www"; then
@@ -66,7 +66,7 @@ echo $username:*:$nid:$nid:$username:/home/$username:/bin/sh >> $DOCUMENT_ROOT/e
 echo $username:*:$nid >> $DOCUMENT_ROOT/etc/group
 test "$uname" != "OpenBSD" || pwd_mkdb $DOCUMENT_ROOT/etc/master.passwd
 rand_str="`rand_str_1`"
-echo "$rand_str" | fwrite $USER_DIR/rcode2
+echo "$rand_str" | fwrite $USER_DIR/rcode
 which femail && femail -f noreply@tty.pt $email || true <<!
 Subject: `_ "Registration on tty.pt"`
 

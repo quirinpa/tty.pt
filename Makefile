@@ -79,7 +79,7 @@ items: FORCE
 	mkdir $@ || true
 
 all: mod-dirs chroot htdocs/vim.css \
-	${all-${uname}} etc/group etc/passwd
+	${all-${uname}} etc/group etc/passwd etc/resolv.conf
 
 etc/group:
 	echo "wheel:*:0:root" > $@
@@ -110,7 +110,7 @@ ${chroot_cp}:
 
 ${chroot_ln}:
 	@mkdir -p `dirname $@` || true
-	ln -srf $^ $@
+	ln -sf /$^ $@
 
 items/ users/ home/:
 	mkdir -p $@
@@ -140,6 +140,9 @@ modules-clean:
 	-ls items | while read line; do \
 		test ! -f items/$$line/Makefile || \
 		${MAKE} -C items/$$line clean ; done
+
+etc/resolv.conf: /etc/resolv.conf
+	cp /etc/resolv.conf $@
 
 FORCE:
 

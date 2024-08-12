@@ -17,6 +17,9 @@ doas
 du
 env
 envsubst
+sendmail
+smtpctl
+/usr/lib/libevent.so.4.1
 femail
 file
 find

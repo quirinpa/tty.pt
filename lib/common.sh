@@ -303,7 +303,7 @@ Buttons2() {
 		icon="`test ! -f "$path/$sub/icon" || cat "$path/$sub/icon"`"
 		test -z "$icon" || icon="<span>$icon</span>"
 		cat <<!
-<div><a class="btn wsnw h $cla" href="$urlid/$extra">
+<div><a class="btn wsnw h $cla" href="$where$urlid/$extra">
 	<span>$title</span>$icon
 </a></div>
 !
@@ -470,7 +470,7 @@ Index() {
 	test ! -z "$FUNCTIONS" || \
 		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
 	test ! -z "$CONTENT" || \
-		CONTENT="`zcat template/index.html || Buttons2 'tsxl cap' items`"
+		CONTENT="`zcat template/index.html || Buttons2 'tsxl cap' items $DOCUMENT_URI`"
 
 	export _TITLE
 	export INDEX_ICON

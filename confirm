@@ -1,13 +1,11 @@
 #!/bin/sh
 
-test "$REQUEST_METHOD" == "GET" || NotAllowed
-
-USER_PATH=$DOCUMENT_ROOT/users/$username
+USER_PATH=$DOCUMENT_ROOT/users/$HTTP_PARAM_username
 USER_RCODE="`cat $USER_PATH/rcode`"
 
-if test "$rcode" != "$USER_RCODE"; then
+if test "$HTTP_PARAM_rcode" != "$USER_RCODE"; then
 	Fatal 401 "You can not do that"
 fi
 
 rm $USER_PATH/rcode
-_see_other login
+SeeOther /login
