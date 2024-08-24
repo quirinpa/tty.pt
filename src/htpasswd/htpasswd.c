@@ -21,7 +21,7 @@ char *crypt_it(const char *password) {
 #ifdef __linux__
 #include <errno.h>
 int crypt_checkpass(const char *password, const char *hashed) {
-	return strcmp(crypt_it(password), hashed);
+	return strncmp(crypt_it(password), hashed, 61);
 }
 #endif
 
@@ -75,12 +75,12 @@ int main(int argc, char *argv[]) {
 			eoc = eol;
 
 		*eoc = '\0';
-		hash_put(pwd_hd, s, colon - s, colon + 1);
+		hash_cput(pwd_hd, s, colon - s, colon + 1, 62);
 		i += eol - s;
 	}
 
-	char *hash = SHASH_GET(pwd_hd, login);
-	if (!hash)
+	char hash[62];
+	if (hash_cget(pwd_hd, &hash, login, strlen(login)) == -1)
 		return EXIT_FAILURE;
 
 	return crypt_checkpass(password, hash)

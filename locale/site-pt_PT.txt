@@ -1,7 +1,7 @@
 Chords|Acordes
 chords|acordes
-Songbooks|Cancionários
-songbooks|cancionários
+Songbooks|Cancioneiros
+songbooks|cancioneiros
 Commands|Comandos
 commands|comandos
 Never Dark|Nunca Sombrio
