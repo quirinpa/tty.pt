@@ -10,8 +10,9 @@ CALL(TEXT_SIZE, ALL_TEXT_SIZES)
 CALL(BACKGROUND_COLOR, ALL_COLORS)
 CALL(COLOR, ALL_COLORS)
 CALL(BORDER, ALL_COLORS)
-CALL(SIZE, SS)
 CALL(SIZE, ALL_SIZES)
+CALL(SIZE, ALL_SIZES)
+CALL(MARGIN, ALL_SIZES)
 CALL(PADDING, ALL_SIZES)
 CALL(AXIS_horizontal, ALL_SIZES)
 CALL(AXIS_vertical, ALL_SIZES)
@@ -124,9 +125,10 @@ pre {
 
 .menu:not(.js) > div { display: none; }
 .menu input[type="checkbox"] { display: none; }
-.menu :checked + div { display: block; }
+.menu :checked + div { display: block; min-width: 300px; }
 .menu a { text-decoration: none; }
 .menu a:hover { color: white; }
+.menu > div
 
 .pn { padding: 0; }
 .fix { position: fixed; }
@@ -143,7 +145,6 @@ input[type="number"] {
 	width: 80px;
 }
 .chords b { margin-top: 4px !important; display: inline-block; }
-.chords h2 { margin-top: 20px; }
 
 .btn.abs { box-sizing: content-box; }
 .shad { text-shadow: 1px 1px 2px black, 2px -1px 3px black; }
