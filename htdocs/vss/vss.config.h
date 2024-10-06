@@ -50,7 +50,7 @@ pre {
 label > input {
 	display: block;
 }
-h1,h2,h3,h4,h5,h6 { color: #f5f5f5; }
+h1,h2,h3,h4,h5,h6 { color: #f5f5f5; margin: 0; }
 img { color: #c1c3da; };
 .modal a { color: #9589c5; }
 input,textarea {

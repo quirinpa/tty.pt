@@ -75,12 +75,12 @@ int main(int argc, char *argv[]) {
 			eoc = eol;
 
 		*eoc = '\0';
-		hash_cput(pwd_hd, s, colon - s, colon + 1, 62);
+		hash_put(pwd_hd, s, colon - s, colon + 1, 62);
 		i += eol - s;
 	}
 
 	char hash[62];
-	if (hash_cget(pwd_hd, &hash, login, strlen(login)) == -1)
+	if (hash_get(pwd_hd, &hash, login, strlen(login)))
 		return EXIT_FAILURE;
 
 	return crypt_checkpass(password, hash)

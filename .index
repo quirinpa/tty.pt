@@ -38,13 +38,13 @@ if test ! -z "$1"; then
 					# ls -al $path  | awk '{print $1}' | tail -c 4 | grep -q r
 					test -f "$path" || NotFound
 				fi
-				echo Status 200: Ok
+				echo "$STATUS_STR"200 Ok
 				echo
-				cat $path
+				cat "$path"
 			fi
 			;;
 	esac
-	NotAllowed
+	exit 0
 fi
 
 test "$REQUEST_METHOD" = "GET" || NotAllowed

@@ -42,7 +42,7 @@ htdocs/vim.css: FORCE
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.c} -o $@ src/htpasswd/htpasswd.c -lqhash ${lcrypt}
+	${LINK.c} -o $@ src/htpasswd/htpasswd.c -lqhash -ldb ${lcrypt}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
@@ -106,11 +106,11 @@ etc/pwd.db: etc/group etc/master.passwd
 
 ${chroot_cp}:
 	@mkdir -p `dirname $@` || true
-	cp -rf $^ $@
+	cp -rf ${@:%=/%} $@
 
 ${chroot_ln}:
 	@mkdir -p `dirname $@` || true
-	ln -sf /$^ $@
+	ln -sf /$< $@
 
 items/ users/ home/:
 	mkdir -p $@
