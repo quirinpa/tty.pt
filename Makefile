@@ -31,8 +31,6 @@ shell-Linux := /bin/bash
 shell := ${shell-${uname}}
 no-shell := /sbin/nologin
 
-deps := .depend-${unamec}
-
 all:
 
 chroot: users/ home/
@@ -57,7 +55,7 @@ src-bin := ${src-bin:%=bin/%}
 
 mod-include := ${mod-y:%=items/%/include.mk}
 -include ${mod-include}
--include .depend-${unamec}
+-include .all-install
 mod-bin := ${mod-bin:%=bin/%}
 
 mod-dirs:
@@ -67,19 +65,20 @@ mod-dirs:
 		test -d items/$$dir || git -C items clone --recursive $$dir ; \
 		done
 
-.depend-$(unamec): ${mod-bin} ${src-bin} install ${mod-install}
-	@./make_dep.sh
-	@ls items | while read line; do \
-		test ! -f items/$$line/install \
-		|| ./make_dep.sh -C items/$$line; done
-
-depend: .depend-${unamec}
+.all-install: .links
+	@cp install .all-install
+	@ls items | while read module; do \
+		test ! -f items/$$module/install || cat items/$$module/install; \
+		done >> .all-install
+	@cat .all-install | while read dep ign; do \
+		test -f $$dep && echo $$dep || which $$dep 2>/dev/null; \
+		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
 items: FORCE
 	mkdir $@ || true
 
-all: mod-dirs chroot htdocs/vim.css \
-	${all-${uname}} etc/group etc/passwd etc/resolv.conf
+all: .all-install mod-dirs chroot htdocs/vim.css ${all-${uname}} etc/group etc/passwd \
+	etc/resolv.conf ${mod-bin} ${src-bin}
 
 etc/group:
 	echo "wheel:*:0:root" > $@
@@ -104,22 +103,22 @@ etc/shadow etc/master.passwd:
 etc/pwd.db: etc/group etc/master.passwd
 	${sudo} chroot . pwd_mkdb /etc/master.passwd
 
-${chroot_cp}:
+${chroot-cp}:
 	@mkdir -p `dirname $@` || true
 	cp -rf ${@:%=/%} $@
 
-${chroot_ln}:
+${chroot-ln}:
 	@mkdir -p `dirname $@` || true
-	ln -sf /$< $@
+	@./sln $@
 
-items/ users/ home/:
+items/ users/ home/ .links:
 	mkdir -p $@
 
 ${chown-dirs}:
 	mkdir -p $@
 	${sudo} chown ${chown-user}:${chown-group} $@
 
-chroot: ${chroot_cp} ${chroot_ln}
+chroot: ${chroot-cp} ${chroot-ln}
 
 $(mount): dev/ sys/ proc/
 	@if ! mount | grep -q "on ${PWD}/$@ type"; then \
@@ -129,7 +128,7 @@ $(mount): dev/ sys/ proc/
 		fi
 
 clean: modules-clean mounts-clean
-	rm -rf ${chroot_mkdir} .depend-${unamec}
+	rm -rf ${chroot_mkdir} .all-install .links
 
 mounts-clean:
 	test -z "${sorted-mounts}" || \

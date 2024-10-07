@@ -33,3 +33,5 @@
 /.depend*
 /.pnpm-store
 /*.pem
+/.all-install
+/.links

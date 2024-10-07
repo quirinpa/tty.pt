@@ -1,0 +1,15 @@
+#!/bin/sh
+source=`echo $1 | tr '/' '_'`
+source=`cat .links/$source`
+dir1="`dirname "$1"`"
+rel=""
+
+while test "$dir1" != "."; do
+    dir1="`dirname "$dir1"`"
+    rel="../$rel"
+done
+
+
+rel="$rel$source"
+ln -sf $rel $1
+echo ln -sf $rel $1
