@@ -54,10 +54,14 @@ src-bin := htpasswd htmlsh mpfd
 src-bin := ${src-bin:%=bin/%}
 
 mod-include := ${mod-y:%=items/%/include.mk}
--include ${mod-include}
 -include .all-install
 mod-bin := ${mod-bin:%=bin/%}
 
+mod-bin:
+	@echo ${mod-y} | tr ' ' '\n' | while read mod; do \
+		${MAKE} module=$$mod DESTDIR=${PWD}/ \
+		-f ${PWD}/module.mk; done
+		
 mod-dirs:
 	@mkdir items 2>/dev/null || true
 	@cat .modules | while read line; do \
@@ -78,7 +82,7 @@ items: FORCE
 	mkdir $@ || true
 
 all: .all-install mod-dirs chroot htdocs/vim.css ${all-${uname}} etc/group etc/passwd \
-	etc/resolv.conf ${mod-bin} ${src-bin}
+	etc/resolv.conf mod-bin ${src-bin}
 
 etc/group:
 	echo "wheel:*:0:root" > $@
@@ -146,4 +150,4 @@ etc/resolv.conf: /etc/resolv.conf
 FORCE:
 
 .PHONY: chroot all mounts-clean \
-	modules-clean run srun FORCE mod-dirs
+	modules-clean run srun FORCE mod-dirs mod-bin

@@ -1,12 +1,14 @@
-pwd := items/$(module)/src/$(exe)
-$(exe)-path := ${pwd}
-source := $(pwd)/$(exe)
+-include items/${module}/include.mk
+exedir ?= ${exe}
+pwd := items/$(module)/src/$(exedir)
+bin := ${exe:%=bin/%}
 
-$(source): FORCE
-	${MAKE} -C `dirname $@`
+all: ${bin}
 
-bin/$(exe): $(pwd)/$(exe)
-	@mkdir bin 2>/dev/null || true
-	cp ${${@:bin/%=%}-path}/${@:bin/%=%} $@
+$(bin): FORCE
+	@${MAKE} -C ${pwd} exe=${@:bin/%=%} DESTDIR=${DESTDIR} \
+		-f ${DESTDIR}/include.mk install
+
+FORCE:
 
 mod-bin := $(mod-bin) $(exe)
