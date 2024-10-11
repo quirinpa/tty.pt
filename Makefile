@@ -1,6 +1,4 @@
-uname != uname
-unamev != uname -v | awk '{print $$1}'
-unamec := ${uname}-${unamev}
+include common.mk
 src-y != ls src
 DESTDIR := ${PWD}/
 PREFIX := usr
@@ -53,7 +51,6 @@ bin/mpfd: src/mpfd/mpfd.c
 src-bin := htpasswd htmlsh mpfd
 src-bin := ${src-bin:%=bin/%}
 
-mod-include := ${mod-y:%=items/%/include.mk}
 -include .all-install
 mod-bin := ${mod-bin:%=bin/%}
 
@@ -69,7 +66,7 @@ mod-dirs:
 		test -d items/$$dir || git -C items clone --recursive $$dir ; \
 		done
 
-.all-install: .links
+.all-install: .links install
 	@cp install .all-install
 	@ls items | while read module; do \
 		test ! -f items/$$module/install || cat items/$$module/install; \
@@ -146,6 +143,10 @@ modules-clean:
 
 etc/resolv.conf: /etc/resolv.conf
 	cp /etc/resolv.conf $@
+
+$(mod-y):
+	@echo ${MAKEFLAGS}
+	${MAKE} module=$@ ${MAKEFLAGS} -f ${PWD}/module.mk ${TARGET}
 
 FORCE:
 

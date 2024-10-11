@@ -1,3 +1,4 @@
+include common.mk
 -include items/${module}/include.mk
 exedir ?= ${exe}
 pwd := items/$(module)/src/$(exedir)
