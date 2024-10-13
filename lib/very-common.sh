@@ -56,7 +56,7 @@ NormalHead() {
 Head() {
 	cat<<!
 <!DOCTYPE html>
-<html>
+<html lang="$htmllang">
 	<head>
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
@@ -66,7 +66,7 @@ Head() {
 		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&display=swap" rel="stylesheet">
-		<link rel='canonical' href='.' />
+		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
 		<title>$PINDEX_ICON $_TITLE</title>
 	</head>
 !
@@ -174,6 +174,7 @@ get_lang() {
 }
 
 lang="`get_lang`"
+htmllang="`echo $lang | tr '_' ' ' | awk '{print $1}'`"
 export lang
 export LANG=$lang
 if test -z "$LANG"; then

@@ -13,15 +13,14 @@ case "$REQUEST_METHOD" in
 
 		POEM_PATH="$DOCUMENT_ROOT/poems/$poem_id"
 
-		fmkdir $POEM_PATH
-		echo $REMOTE_USER | fwrite $POEM_PATH/.owner
+		mkdir -p $POEM_PATH
+		echo $REMOTE_USER > $POEM_PATH/.owner
 
 		mpfd_ls | while read FILE_PATH filename ; do
 			file_lang="`echo $filename | sed 's/\.[^.]*$//'`"
 			if invalid_lang "$file_lang"; then
 				Fatal 400 Not a valid locale
 			fi
-			fbytes $FILE_PATH
 			cat $FILE_PATH | cslash > $POEM_PATH/$file_lang.html
 			rm $FILE_PATH
 		done

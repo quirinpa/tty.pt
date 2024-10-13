@@ -175,26 +175,12 @@ calcround() {
 }
 
 free_space() {
-	N_USERS="`cat $DOCUMENT_ROOT/etc/$shadow | wc -l | sed 's/ //g'`"
+	N_USERS="`cat $DOCUMENT_ROOT/etc/passwd | wc -l | sed 's/ //g'`"
 	FREE_SPACE_EXP="(20000000000 / $N_USERS)"
 	calcround "$FREE_SPACE_EXP"
 }
 
 FREE_SPACE="`free_space`"
-
-__fbytes() {
-	test -z "$DF_USER" && Fatal 400 Checking bytes of unknown user
-	OCCUPIED_SPACE="`df_total`"
-	CAN_EXP="($FREE_SPACE - $OCCUPIED_SPACE) >= $1"
-	CAN="`math "$CAN_EXP"`"
-	test $CAN -eq 0
-}
-
-_fbytes() {
-	if __fbytes $1; then
-		Fatal 400 No available space
-	fi
-}
 
 if test "$uname" = "Linux"; then
 	fsize() {
@@ -206,40 +192,6 @@ else
 		stat -f%z $1
 	}
 fi
-
-fbytes() {
-	STAT="`fsize $1`"
-	_fbytes $STAT
-}
-
-fmkdir() {
-	if test ! -d "$1"; then
-		fbytes $DOCUMENT_ROOT/empty
-		mkdir -p "$1"
-		# chown $REMOTE_USER:www "$1" 2>&1
-	fi
-}
-
-fwrite() {
-	cat - > $1
-	local count="`cat $1 | wc | awk '{print $3}'`"
-	if __fbytes $count; then
-		rm $1
-		Fatal 400 No available space
-	fi
-}
-
-fappend() {
-	cat - > $DOCUMENT_ROOT/tmp/append
-	local count="`cat $DOCUMENT_ROOT/tmp/append | wc | awk '{print $3}'`"
-	if __fbytes $count; then
-		rm $DOCUMENT_ROOT/tmp/append
-		Fatal 400 No available space
-	else
-		cat $DOCUMENT_ROOT/tmp/append >> $1
-		rm $DOCUMENT_ROOT/tmp/append
-	fi
-}
 
 ## COMPONENTS
 
@@ -305,6 +257,22 @@ Buttons2() {
 		cat <<!
 <div><a class="btn wsnw h $cla" href="$where$urlid/$extra">
 	<span>$title</span>$icon
+</a></div>
+!
+	done
+}
+
+Buttons3() {
+	local cla="$1"
+	local path="$2"
+	local where="$3"
+	local extra="$4"
+	local sub
+	local title
+	qhash -l items/index.db | sort -Vk1 | while read sub title; do
+		cat <<!
+<div><a class="btn wsnw h $cla" href="$where$sub/$extra">
+	$title
 </a></div>
 !
 	done
@@ -470,7 +438,7 @@ Index() {
 	test ! -z "$FUNCTIONS" || \
 		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
 	test ! -z "$CONTENT" || \
-		CONTENT="`zcat template/index.html || Buttons2 'tsxl cap' items $DOCUMENT_URI`"
+		CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items $DOCUMENT_URI`"
 
 	export _TITLE
 	export INDEX_ICON
@@ -518,7 +486,7 @@ SubIndex() {
 	esac
 
 	if test -z "$_TITLE"; then
-		_TITLE="`zcat $ITEM_PATH/title || echo $iid | tr '_' ' '`"
+		_TITLE="`qhash -g $iid $INDEX_PATH/items/index.db`"
 	fi
 
 	Immediate $content $@
@@ -544,8 +512,8 @@ Add() {
 		Immediate - <<!
 <form action="." method="POST" class="v f fic" enctype="multipart/form-data">
 	<label>
-		`_ ID`
-		<input required name="item_id"></input>
+		`_ Title`
+		<input required name="title"></input>
 	</label>
 	`Cat $template`
 	<div>$_DESCRIPTION</div>
@@ -557,16 +525,14 @@ Add() {
 
 	test "$REQUEST_METHOD" = "POST" || NotAllowed
 
-	item_id="`fd item_id`"
-
-	if invalid_id $item_id; then
-		Fatal 400 Not a valid ID
-	fi
+	title="`fd title`"
+	item_id="`qhash -p "$title" items/index.db`"
 
 	ITEM_PATH="`test -z "$ITEM_PATH" && pwd || echo "$ITEM_PATH"`/items/$item_id"
 
-	fmkdir $ITEM_PATH
-	echo $REMOTE_USER | fwrite $ITEM_PATH/.owner
+	mkdir -p $ITEM_PATH
+	echo $REMOTE_USER > $ITEM_PATH/.owner
+	echo "$title" > $ITEM_PATH/title
 
 	. ./$template
 	SeeOther ../$item_id/ | Immediate - $@

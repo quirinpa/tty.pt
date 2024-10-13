@@ -7,13 +7,13 @@ USER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER
 
 case "$REQUEST_METHOD" in
 	POST)
-		urldecode $name | fwrite $USER_PATH/name
-		urldecode $address_line_1 | fwrite $USER_PATH/address_line_1
-		urldecode $address_line_2 | fwrite $USER_PATH/address_line_2
-		urldecode $zip | fwrite $USER_PATH/zip
-		urldecode $phone_number | fwrite $USER_PATH/phone_number
-		urldecode $iban | fwrite $USER_PATH/iban
-		urldecode $bicswift | fwrite $USER_PATH/bicswift
+		urldecode $name > $USER_PATH/name
+		urldecode $address_line_1 > $USER_PATH/address_line_1
+		urldecode $address_line_2 > $USER_PATH/address_line_2
+		urldecode $zip > $USER_PATH/zip
+		urldecode $phone_number > $USER_PATH/phone_number
+		urldecode $iban > $USER_PATH/iban
+		urldecode $bicswift > $USER_PATH/bicswift
 
 		see_other user
 		;;

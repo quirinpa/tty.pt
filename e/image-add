@@ -17,7 +17,6 @@ case "$REQUEST_METHOD" in
 		file_count="`cat $DOCUMENT_ROOT/tmp/mpfd/file-count`"
 		for i in `seq 0 $file_count`; do
 			FILE_PATH=$DOCUMENT_ROOT/tmp/mpfd/file$i
-			fbytes $FILE_PATH
 			IMAGE_ID="`counter_inc $DOCUMENT_ROOT/public/img-counter`"
 			ext="`file -i $FILE_PATH | awk '{print $2}' | tr '/' ' ' | awk '{print $2}'`"
 			mv $FILE_PATH $USER_IMAGES_PATH/$IMAGE_ID.$ext

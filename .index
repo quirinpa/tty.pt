@@ -39,6 +39,7 @@ if test ! -z "$1"; then
 					test -f "$path" || NotFound
 				fi
 				echo "$STATUS_STR"200 Ok
+				echo "Cache-Control: max-age=5184000"
 				echo
 				cat "$path"
 			fi

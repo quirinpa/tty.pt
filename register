@@ -57,8 +57,8 @@ fi
 
 USER_DIR=$DOCUMENT_ROOT/users/$username
 DF_USER=anonymous
-fmkdir $USER_DIR
-echo $email | fwrite $USER_DIR/email
+mkdir -p $USER_DIR
+echo $email > $USER_DIR/email
 nid="`awk -F: '{if ($3 >= 1000 && $3 < 65534) print $3}' /etc/master.passwd | sort -n | tail -1`"
 test $nid -lt 1000 || nid=1000
 echo `htpasswd "$username" "$password"`:$nid:$nid:www:0:0:$username:/home/$username:/bin/sh >> $DOCUMENT_ROOT/etc/$shadow
@@ -66,7 +66,7 @@ echo $username:*:$nid:$nid:$username:/home/$username:/bin/sh >> $DOCUMENT_ROOT/e
 echo $username:*:$nid >> $DOCUMENT_ROOT/etc/group
 test "$uname" != "OpenBSD" || pwd_mkdb $DOCUMENT_ROOT/etc/master.passwd
 rand_str="`rand_str_1`"
-echo "$rand_str" | fwrite $USER_DIR/rcode
+echo "$rand_str" > $USER_DIR/rcode
 which femail && femail -f noreply@tty.pt $email || true <<!
 Subject: `_ "Registration on tty.pt"`
 
