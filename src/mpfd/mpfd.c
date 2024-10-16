@@ -57,6 +57,7 @@ int main(int argc, char * argv[]) {
 				if (!file)
 					linelen -= EOL_AMOUNT;
 				fwrite(line, 1, linelen, fp);
+				fputc('\n', fp);
 				/* printf("BODY=%s\n", line); */
 			}	
 		} else {

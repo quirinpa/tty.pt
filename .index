@@ -4,7 +4,7 @@ export REQ_PID=$$
 export LD_LIBRARY_PATH=/usr/local/lib
 export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/bin:$PATH
 echo $REQUEST_METHOD $DOCUMENT_URI >&2
-trap 'echo "Error line $LINENO" >&2; exit 1' ERR
+trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
 
 if ! echo $DOCUMENT_URI | grep -q '/$'; then
 	echo $DOCUMENT_URI | tr ' ' '\n' | tail -n 1 | grep -q '.' \
@@ -16,6 +16,7 @@ rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
 	$DOCUMENT_ROOT/tmp/bottom $DOCUMENT_ROOT/tmp/ncat || true
 
 . $DOCUMENT_ROOT/lib/optional-auth.sh
+. $DOCUMENT_ROOT/lib/very-common.sh
 . $DOCUMENT_ROOT/lib/common.sh
 
 if test ! -z "$1"; then

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. $DOCUMENT_ROOT/lib/very-common.sh
-
 Forbidden() {
 	Fatal 403 Forbidden
 }
@@ -144,7 +142,8 @@ dir_df() {
 	ls $DOCUMENT_ROOT/$1/items | \
 		while read line; do
 			path="$DOCUMENT_ROOT/$1/items/$line"
-			local OWNER="`zcat "$path/.owner" || echo www`"
+
+			local OWNER="`owner_get`"
 			test "$OWNER" != "$DF_USER" || df_dir "$1/items/$line"
 		done
 }
@@ -373,7 +372,7 @@ Functions() {
 	while test $# -ge 1; do
 		echo $1 | _Functions
 		shift
-	done > $DOCUMENT_ROOT/tmp/fun
+	done >> $DOCUMENT_ROOT/tmp/fun
 }
 
 IsAllowedItemFound() {
@@ -452,12 +451,11 @@ Index() {
 }
 
 owner_get() {
-	test -f $ITEM_PATH/.owner && cat $ITEM_PATH/.owner || echo quirinpa
-	return 0
-	if test -f $1; then
-		ls -al $1 | awk '{print $3}'
+	local path=items/$iid
+	if test -f $path/.owner; then
+		cat $path/.owner
 	else
-		cat $1/.owner
+		ls -al $path | awk '{print $3}'
 	fi
 }
 
@@ -472,6 +470,7 @@ SubIndex() {
 	case "$1" in
 		"") ;;
 		add) shift; _TITLE= Add sub-add $@ ; exit 0;;
+		delete) shift; _TITLE= Delete delete $@ ; exit 0;;
 		*)
 			if test -f ./$1; then
 				content=$1
@@ -487,6 +486,13 @@ SubIndex() {
 
 	if test -z "$_TITLE"; then
 		_TITLE="`qhash -g $iid $INDEX_PATH/items/index.db`"
+	fi
+
+	if im $OWNER; then
+	cat > $DOCUMENT_ROOT/tmp/fun <<!
+`RB 📝 ./edit/`
+`RB "🗑" ./delete/`
+!
 	fi
 
 	Immediate $content $@
@@ -536,6 +542,38 @@ Add() {
 
 	. ./$template
 	SeeOther ../$item_id/ | Immediate - $@
+}
+
+Delete() {
+	shift
+	test ! -z "$REMOTE_USER" || Forbidden
+
+	if test "$REQUEST_METHOD" = "GET"; then
+		test ! -z "$_TITLE" || _TITLE="`_ "Delete item"`"
+		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
+
+		Immediate - <<!
+<form action="." method="POST" class="v f fic">
+	<div class="f v fic">
+		<div>Are you sure you wish to delete this item?</div>
+		<div class="h tac">
+			<button class='cf15 c9'>`_ Yes`</button>
+			<a href="./.."><button type='button'>`_ No`</button></a>
+		</div>
+	</div>
+</form>
+!
+		exit 0
+	fi
+
+	test "$REQUEST_METHOD" = "POST" || NotAllowed
+
+	test ! -f delete || . ./delete
+
+	qhash -d "$iid" items/index.db >/dev/null
+	rm -rf items/$iid
+
+	SeeOther ../../
 }
 
 nfiles() {
