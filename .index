@@ -2,7 +2,7 @@
 
 export REQ_PID=$$
 export LD_LIBRARY_PATH=/usr/local/lib
-export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/bin:$PATH
+export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/bin:$PATH:$DOCUMENT_ROOT/usr/sbin:$DOCUMENT_ROOT/usr/local/sbin
 echo $REQUEST_METHOD $DOCUMENT_URI >&2
 trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
 

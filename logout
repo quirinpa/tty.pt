@@ -1,5 +1,5 @@
 #!/bin/sh
 
-test -z "$cookie" || rm $DOCUMENT_ROOT/sessions/$cookie
+test -z "$cookie" || rm $DOCUMENT_ROOT/sessions/$cookie || true
 header "Set-Cookie: QSESSION=; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT"
 SeeOther /

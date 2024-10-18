@@ -198,7 +198,6 @@ export SRB="btn round ps tsl"
 Menu() {
 	local user_name
 	local user_icon
-	echo $INDEX_ICON
 	if test ! -z "$REMOTE_USER"; then
 		user_icon="`RB 👤 /user`"
 	else
