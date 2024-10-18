@@ -54,6 +54,7 @@ case "$REQUEST_METHOD" in
 			multipart/form-data*)
 				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
+				rm $DOCUMENT_ROOT/tmp/mpfd/*
 				mpfd "$boundary" 2>&1
 				;;
 			application/x-www-form-urlencoded*)
@@ -191,6 +192,12 @@ else
 		stat -f%z $1
 	}
 fi
+
+id_query() {
+	local ids="`awk '{print $1}' | tr '\n' ' ' | sed 's/.$//' | sed "s/ /$2 -$1/g"`"
+	test ! -z "$ids" || return 0
+	echo -$1$ids$2
+}
 
 ## COMPONENTS
 
@@ -485,7 +492,7 @@ SubIndex() {
 	esac
 
 	if test -z "$_TITLE"; then
-		_TITLE="`qhash -g $iid $INDEX_PATH/items/index.db`"
+		_TITLE="`qhash -g $iid $INDEX_PATH/items/index.db | cut -d' ' -f2-`"
 	fi
 
 	if im $OWNER; then
