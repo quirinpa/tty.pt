@@ -54,6 +54,7 @@ case "$REQUEST_METHOD" in
 			multipart/form-data*)
 				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
+				rm $DOCUMENT_ROOT/tmp/mpfd/* 2>/dev/null || true
 				mpfd "$boundary" 2>&1
 				;;
 			application/x-www-form-urlencoded*)
@@ -192,6 +193,12 @@ else
 	}
 fi
 
+id_query() {
+	awk '{print $1}' | while read line; do
+		echo "-$1$line$2"
+	done
+}
+
 ## COMPONENTS
 
 NormalCat() {
@@ -268,9 +275,10 @@ Buttons3() {
 	local extra="$4"
 	local sub
 	local title
-	qhash -l items/index.db | sort -Vk1 | while read sub title; do
+	qhash -a items/index.db -l items/links.db | sort -Vk1 | while read sub link title; do
+		test $sub != "-1" || continue;
 		cat <<!
-<div><a class="btn wsnw h $cla" href="$where$sub/$extra">
+<div><a class="btn wsnw h $cla" href="$where$link/$extra">
 	$title
 </a></div>
 !
@@ -485,7 +493,7 @@ SubIndex() {
 	esac
 
 	if test -z "$_TITLE"; then
-		_TITLE="`qhash -g $iid $INDEX_PATH/items/index.db`"
+		_TITLE="`cat items/$iid/title`"
 	fi
 
 	if im $OWNER; then
@@ -501,6 +509,10 @@ SubIndex() {
 InvalidItem() {
 	rm -rf "$ITEM_PATH"
 	Fatal 400 Invalid item
+}
+
+translate() {
+	iconv -t ascii//TRANSLIT | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 ]//g' | sed 's/ /_/g'
 }
 
 Add() {
@@ -521,7 +533,7 @@ Add() {
 		`_ Title`
 		<input required name="title"></input>
 	</label>
-	`Cat $template`
+	`. ./$template`
 	<div>$_DESCRIPTION</div>
 	<button>`_ Submit`</button>
 </form>
@@ -533,10 +545,14 @@ Add() {
 
 	title="`fd title`"
 	item_id="`qhash -p "$title" items/index.db`"
+	link="`echo "$title" | translate`"
+	qhash -p"$link" items/links.db >/dev/null
 
 	ITEM_PATH="`test -z "$ITEM_PATH" && pwd || echo "$ITEM_PATH"`/items/$item_id"
 
-	mkdir -p $ITEM_PATH
+	mkdir -p items/$item_id
+	echo ln -sf $item_id items/$link >&2
+	ln -sf $item_id items/$link
 	echo $REMOTE_USER > $ITEM_PATH/.owner
 	echo "$title" > $ITEM_PATH/title
 
@@ -570,8 +586,14 @@ Delete() {
 
 	test ! -f delete || . ./delete
 
-	qhash -d "$iid" items/index.db >/dev/null
-	rm -rf items/$iid
+	nid="`qhash -g "$iid" items/links.db | awk '{print $1}'`"
+	if test "$nid" = "-1"; then
+		nid="$iid"
+		iid="`qhash -rg "$nid" items/links.db | cut -d' ' -f2-`"
+	fi
+	qhash -rd "$nid" items/links.db >/dev/null || true
+	qhash -rd "$nid" items/index.db >/dev/null || true
+	rm -rf items/$iid items/$nid
 
 	SeeOther ../../
 }

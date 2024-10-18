@@ -1,4 +1,5 @@
 Chords|Acordes
+choirs|coros
 chords|acordes
 Songbooks|Cancioneiros
 songbooks|cancioneiros

@@ -43,6 +43,7 @@ body {
 	font-optical-sizing: auto;
 	font-size: 13px;
 	box-sizing: border-box;
+	max-width: 100%;
 }
 pre {
 	font-family: "Noto Sans Mono", monospace !important;
@@ -91,6 +92,10 @@ button:not(.transparent), .btn:not(.transparent) {
 	//border: solid thin black;
 }
 
+.c01 {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
 .tr5 {
 	opacity: 0.5;
 }
@@ -123,12 +128,16 @@ pre {
 	//color: VAL(COLOR, 0);
 }
 
+.al.menu.btn.round > * { right: -16px; }
+.menu.btn.round > .center { transform: translateX(-25%); margin-left: -32px; }
+.menu.btn.round > .center > form { margin-top: -16px; }
+.menu.btn.round > * { margin-top: 8px; }
+.menu.extended > * { right: 16px; min-width: 300px; }
 .menu:not(.js) > div { display: none; }
 .menu input[type="checkbox"] { display: none; }
-.menu :checked + div { display: block; min-width: 300px; }
+.menu :checked + div { display: block }
 .menu a { text-decoration: none; }
 .menu a:hover { color: white; }
-.menu > div
 
 .pn { padding: 0; }
 .fix { position: fixed; }
@@ -142,7 +151,7 @@ input.c0:focus {
         outline: CM;
 }
 input[type="number"] {
-	width: 80px;
+	width: 60px;
 }
 .chords b { margin-top: 4px !important; display: inline-block; }
 

@@ -45,6 +45,7 @@ rinstall() {
 				done
 			fi
 
+			echo $line: $1
 			echo chroot-cp += $line
 		fi
 	else

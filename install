@@ -87,3 +87,4 @@ pwd_mkdb
 stty
 qhash
 whoami
+iconv
