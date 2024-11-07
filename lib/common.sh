@@ -55,7 +55,7 @@ case "$REQUEST_METHOD" in
 				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
 				rm $DOCUMENT_ROOT/tmp/mpfd/* 2>/dev/null || true
-				mpfd "$boundary" 2>&1
+				mpfd "$boundary"
 				;;
 			application/x-www-form-urlencoded*)
 				read line1 || true
@@ -269,14 +269,17 @@ Buttons2() {
 }
 
 Buttons3() {
+	local db="`test -f items/index-$LANG.db && echo -$LANG`"
 	local cla="$1"
 	local path="$2"
 	local where="$3"
 	local extra="$4"
+	local aflags="$5"
+	test ! -z "$aflags" || aflags="1"
 	local sub
 	local title
-	qhash -a items/index.db -l items/links.db | sort -Vk1 | while read sub link title; do
-		test $sub != "-1" || continue;
+	qhash -l items/index$db.db | sort -Vk1 | while read sub link flags title; do
+	test $sub != "-1" && test $(($flags & ~$aflags)) = 0 || continue;
 		cat <<!
 <div><a class="btn wsnw h $cla" href="$where$link/$extra">
 	$title
@@ -544,9 +547,8 @@ Add() {
 	test "$REQUEST_METHOD" = "POST" || NotAllowed
 
 	title="`fd title`"
-	item_id="`qhash -p "$title" items/index.db`"
 	link="`echo "$title" | translate`"
-	qhash -p"$link" items/links.db >/dev/null
+	item_id="`qhash -p "$link 0 $title" items/index.db`"
 
 	ITEM_PATH="`test -z "$ITEM_PATH" && pwd || echo "$ITEM_PATH"`/items/$item_id"
 
@@ -557,7 +559,7 @@ Add() {
 	echo "$title" > $ITEM_PATH/title
 
 	. ./$template
-	SeeOther ../$item_id/ | Immediate - $@
+	SeeOther ../$link/ | Immediate - $@
 }
 
 Delete() {
@@ -586,12 +588,11 @@ Delete() {
 
 	test ! -f delete || . ./delete
 
-	nid="`qhash -g "$iid" items/links.db | awk '{print $1}'`"
+	nid="`readlink items/$iid`"
 	if test "$nid" = "-1"; then
 		nid="$iid"
-		iid="`qhash -rg "$nid" items/links.db | cut -d' ' -f2-`"
+		iid="`qhash -rg "$nid" items/index.db | cut -d' ' -f2-`"
 	fi
-	qhash -rd "$nid" items/links.db >/dev/null || true
 	qhash -rd "$nid" items/index.db >/dev/null || true
 	rm -rf items/$iid items/$nid
 

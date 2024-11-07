@@ -59,12 +59,9 @@ USER_DIR=$DOCUMENT_ROOT/users/$username
 DF_USER=anonymous
 mkdir -p $USER_DIR
 echo $email > $USER_DIR/email
-nid="`awk -F: '{if ($3 >= 1000 && $3 < 65534) print $3}' /etc/passwd | sort -n | tail -1`"
-test $nid -gt 1000 && nid="`math $nid + 1`" || nid=1000
-echo `htpasswd "$username" "$password"`:$nid:$nid:www:0:0:$username:/home/$username:/bin/sh >> $DOCUMENT_ROOT/etc/$shadow
-echo $username:*:$nid:$nid:$username:/home/$username:/bin/sh >> $DOCUMENT_ROOT/etc/passwd
-echo $username:*:$nid >> $DOCUMENT_ROOT/etc/group
-test "$uname" != "OpenBSD" || pwd_mkdb $DOCUMENT_ROOT/etc/master.passwd
+mkdir -p $DOCUMENT_ROOT/home/$username
+enc="`htpasswd $username $password | sed 's/.*://'`"
+useradd -Gwww -p"$enc" $username
 rand_str="`rand_str_1`"
 echo "$rand_str" > $USER_DIR/rcode
 which femail && femail -f noreply@tty.pt $email || true <<!

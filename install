@@ -88,3 +88,9 @@ stty
 qhash
 whoami
 iconv
+qhash
+id
+userdel
+groupdel
+readlink
+expr

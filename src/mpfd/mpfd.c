@@ -40,7 +40,6 @@ int main(int argc, char * argv[]) {
 
 	while ((linelen = getline(&line, &linesize, stdin)) >= 0) {
 		/* continue; */
-		/* fprintf(stderr, "INPUT=%s", line); */
 		if (body) {
 			if (!strncmp(line, boundary, boundarylen)) {
 				body = 0;
@@ -65,8 +64,6 @@ int main(int argc, char * argv[]) {
 			if (!strcmp(line, "")) {
 				body = 1;
 			} else {
-				/* printf("HEADER '%s'\n", line); */
-				/* printf("CD '%s'\n", CD); */
 				if (!strncmp(CD, line, sizeof(CD) - 1)) {
 				 	char *limit; 
 					strncpy(key, line + sizeof(CD) - 1, sizeof(key));
@@ -89,7 +86,6 @@ int main(int argc, char * argv[]) {
 						file = 1;
 						limit = strchr(filename, '"');
 						*limit = '\0';
-						/* printf("FILENAME: '%s'\n", filename); */
 						// filename
 						if (keyf)
 							snprintf(mpfd_file_path, sizeof(mpfd_file_path),

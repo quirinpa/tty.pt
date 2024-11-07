@@ -19,6 +19,8 @@ rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
 . $DOCUMENT_ROOT/lib/very-common.sh
 . $DOCUMENT_ROOT/lib/common.sh
 
+counter_inc $DOCUMENT_ROOT/counter.txt >/dev/null
+
 if test ! -z "$1"; then
 	INDEX_ICON="🏠"
 	case "$1" in
@@ -51,5 +53,6 @@ fi
 
 test "$REQUEST_METHOD" = "GET" || NotAllowed
 
-_TITLE=TTY.PT
-Buttons2 'f jcsb cap tsxl' items | Immediate -
+_TITLE=$HTTP_HOST
+ttyf="`test $HTTP_HOST = tty.pt && echo 1 || echo 2`"
+Buttons3 'f jcsb cap tsxl' items "" "" "$ttyf" | Immediate -

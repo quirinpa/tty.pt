@@ -1,13 +1,16 @@
-index=index
+translate() {
+	iconv -t ascii//TRANSLIT | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 ]//g' | sed 's/ /_/g'
+}
 
-rm index.db >&2 || true
+rm index.db
 ls | sort -V | while read line; do
-	fname="`basename $line`"
-	if test -h $fname; then
-		rm $fname
+	id="`basename $line`"
+	if test -h $id; then
 		continue
 	fi
-	test -f $fname/title || continue
-	echo -p"$fname:`cat $fname/title`"
-done | xargs -I {} qhash {} index.db >&2
-/var/www/mklinks.sh
+	test -f $id/title || continue
+	title="`cat $id/title`"
+	link="`echo "$title" | translate`"
+	ln -sf $id $link >/dev/null
+	echo "-p'$id:$link 0 $title'"
+done | xargs -I {} qhash {} index.db
