@@ -35,3 +35,5 @@
 /*.pem
 /.all-install
 /.links
+/certs.txt
+/counter.txt

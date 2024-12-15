@@ -1,0 +1,8 @@
+#!/bin/ksh
+
+daemon="/var/www/items/nd/nd"
+daemon_flags="-C /var/www -K /var/www/certs.txt"
+
+. /etc/rc.d/rc.subr
+
+rc_cmd $1

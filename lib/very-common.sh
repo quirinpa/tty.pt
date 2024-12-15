@@ -5,7 +5,7 @@ set -e
 
 test -z "$VERY_COMMON" || return 0
 VERY_COMMON=y
-RES_CONTENT_TYPE="text/html; charset=utf-8"
+RES_CONTENT_TYPE="text/html; charset=UTF-8"
 HEADERS=""
 STATUS_STR=""
 STATUS_CODE=200
@@ -19,7 +19,7 @@ header() {
 
 debug() {
 	echo "$STATUS_STR"500 Internal Error
-	echo "Content-Type: text/plain; charset=utf-8"
+	echo "Content-Type: text/plain; charset=UTF-8"
 	echo
 	echo Sorry, I\'m currently debugging. Please wait.
 }

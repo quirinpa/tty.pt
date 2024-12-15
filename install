@@ -94,3 +94,4 @@ userdel
 groupdel
 readlink
 expr
+paste
