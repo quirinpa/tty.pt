@@ -25,7 +25,6 @@
 /sbin
 /.blacklist
 /cgit
-/lib
 /lib64
 /items
 /proc

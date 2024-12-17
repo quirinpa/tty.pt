@@ -1,0 +1,17 @@
+/.git
+/home
+/dev
+/usr
+/bin
+/sbin
+/cache
+/root
+/tmp
+/var
+/htdocs
+!items
+!.index
+/etc/master.passwd
+/etc/spwd.db
+/cgi-bin/
+

@@ -71,12 +71,6 @@ case "$REQUEST_METHOD" in
 esac
 
 
-# export $lang
-
-#. gettext.sh
-
-#alias _=eval_gettext
-
 counter_inc() {
 	current="`zcat $1`"
 	if test ! -z "$current"; then
@@ -105,6 +99,7 @@ sum_lines_exp() {
 	echo -n ')'
 }
 
+# poem only
 revlines() {
 	rev | tr '\n' '~' | rev | tr '~' '\n'
 }
@@ -124,63 +119,6 @@ Location: /e/$1$2
 
 !
 }
-
-no_html() {
-	sed -e 's/</\&lt\;/g' -e 's/>/\&gt\;/g' 
-}
-
-format_df() {
-	#printf "%-40.40s %s\n" "$1" "$2"
-	echo "$1 $2"
-}
-
-df_dir() {
-	du_user="`du -c $DOCUMENT_ROOT/$1 | tail -1 | awk '{print $1}'`"
-	format_df "$1" "`calcround "$du_user * 1024"`"
-}
-
-dir_df() {
-	ls $DOCUMENT_ROOT/$1/items | \
-		while read line; do
-			path="$DOCUMENT_ROOT/$1/items/$line"
-
-			local OWNER="`owner_get`"
-			test "$OWNER" != "$DF_USER" || df_dir "$1/items/$line"
-		done
-}
-
-df() {
-	df_dir users/$DF_USER
-	# df_dir htdocs/img/$DF_USER
-	ls $DOCUMENT_ROOT/items/ | while read item; do
-		test ! -d $DOCUMENT_ROOT/items/$item/items \
-			|| dir_df items/$item
-	done
-	# rm $DOCUMENT_ROOT/tmp/post || true
-}
-
-df_total_exp() {
-	df | awk '{ print $2 }' | sum_lines_exp
-}
-
-df_total() {
-	# echo DF_TOTAL_EXP="`df_total_exp`" >&2
-	math "`df_total_exp`"
-}
-
-calcround() {
-	exp="`echo "$@" | tr -d '\'`"
-	#echo "CALCROUND=$exp" >&2
-	math "$exp" | xargs printf "%.0f"
-}
-
-free_space() {
-	N_USERS="`cat $DOCUMENT_ROOT/etc/passwd | wc -l | sed 's/ //g'`"
-	FREE_SPACE_EXP="(20000000000 / $N_USERS)"
-	calcround "$FREE_SPACE_EXP"
-}
-
-FREE_SPACE="`free_space`"
 
 if test "$uname" = "Linux"; then
 	fsize() {
@@ -206,7 +144,6 @@ NormalCat() {
 	Cat $SCRIPT
 }
 
-DF_USER=$REMOTE_USER
 SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $2}'`"
 ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
 set -- `echo $DOCUMENT_URI | tr '/' ' '`
@@ -236,36 +173,12 @@ invalid_lang() {
 	! grep -q "$lang" $DOCUMENT_ROOT/locale/langs
 }
 
-urlencode () {
+urlencode() {
 	echo -n "$1" | od -t d1 | awk '{
 	for (i = 2; i <= NF; i++) {
 		printf(($i>=48 && $i<=57) || ($i>=65 && $i<=90) || ($i>=97 && $i<=122) || $i==45 || $i==46 || $i==95 || $i==126 ?  "%c" : "%%%02x", $i)
 	}
 }'
-}
-
-Buttons2() {
-	local cla="$1"
-	local path="$2"
-	local where="$3"
-	local extra="$4"
-	local sub
-	local id
-	ls $path | while read sub; do
-		test ! -f "$path/$sub/.hidden" || continue
-		id="`zcat $path/$sub/title || echo $sub | tr '_' ' '`"
-		_TITLE="`_ "$id"`"
-		echo $sub $_TITLE
-	done | sort -V | while read sub title; do
-		urlid="`urlencode "$sub"`"
-		icon="`test ! -f "$path/$sub/icon" || cat "$path/$sub/icon"`"
-		test -z "$icon" || icon="<span>$icon</span>"
-		cat <<!
-<div><a class="btn wsnw h $cla" href="$where$urlid/$extra">
-	<span>$title</span>$icon
-</a></div>
-!
-	done
 }
 
 Buttons3() {
@@ -285,40 +198,6 @@ Buttons3() {
 	$title
 </a></div>
 !
-	done
-}
-
-Buttons() {
-	while read id; do
-		_TITLE="`_ $id`"
-		where="$2"
-		extra="$3"
-		urlid="`urlencode "$id"`"
-		cat <<!
-<div><a class="btn $1" href="/$where/$urlid/$extra">
-	$_TITLE
-</a></div>
-!
-	done
-}
-
-BigButtons() {
-	Buttons "tsxl" "$1" "$2"
-}
-
-SmallButtons() {
-	Buttons "c0 ps rs" "$1" "$2"
-}
-
-for_each_in() {
-	path="$1"
-	target="$2"
-	find_id="$3"
-
-	ls $path | while read id; do
-		if grep -q "$find_id" "$path/$id/$target"; then
-			echo $id
-		fi
 	done
 }
 
@@ -343,6 +222,7 @@ cond() {
 	test -z "`cat $contents$1`"
 }
 
+# shop only
 surround() {
 	echo "<$@>"
 	cat -
@@ -370,8 +250,6 @@ Field() {
 EditBtn() {
 	im $OWNER || return 0
 	RB 📝 ./edit/
-	# local i_edit="✎"
-	# echo $i_edit | surround a "href=\"$1/\"" "class=\"$RB\""
 }
 
 _Functions() {
@@ -553,7 +431,6 @@ Add() {
 	ITEM_PATH="`test -z "$ITEM_PATH" && pwd || echo "$ITEM_PATH"`/items/$item_id"
 
 	mkdir -p items/$item_id
-	echo ln -sf $item_id items/$link >&2
 	ln -sf $item_id items/$link
 	echo $REMOTE_USER > $ITEM_PATH/.owner
 	echo "$title" > $ITEM_PATH/title
@@ -633,14 +510,6 @@ mpfd_ls() {
 
 literal() {
 	sed 's/</\&lt\;/g'
-}
-
-ls_shown() {
-	ls $1 | while read line; do
-		if test ! -f "$1/$line/.hidden"; then
-			echo $line
-		fi
-	done
 }
 
 export GIT_HTTP_EXPORT_ALL=1
