@@ -393,7 +393,7 @@ InvalidItem() {
 }
 
 translate() {
-	iconv -t ascii//TRANSLIT | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 ]//g' | sed 's/ /_/g'
+	iconv -f utf-8 -t ascii//TRANSLIT | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 ]//g' | sed 's/ /_/g'
 }
 
 Add() {
@@ -436,7 +436,7 @@ Add() {
 	echo "$title" > $ITEM_PATH/title
 
 	. ./$template
-	SeeOther ../$link/ | Immediate - $@
+	SeeOther ../$link/edit/ | Immediate - $@
 }
 
 Delete() {
