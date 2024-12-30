@@ -32,11 +32,14 @@ shell := ${shell-${uname}}
 no-shell := /sbin/nologin
 npm-root != npm root
 npm-lib := @tty-pt/qhash
-npm-lib := ${npm-lib:%=${npm-root}/%}
-npm-lib != echo ${npm-lib} | tr ' ' '\n' | while read lib; do realpath $$lib; done | tr '\n' ' '
-CFLAGS += ${npm-lib:%=-I%/include}
-LDFLAGS	+= ${npm-lib:%=-L%} ${npm-lib:%=-Wl,-rpath,%}
-LINK.bin := ${LINK.c} ${CFLAGS} ${LDFLAGS}
+-include $(npm-lib:%=node_modules/%/include.mk)
+npm-bin := ${${npm-lib:%=%-bin}}
+npm-rlib := ${${npm-lib:%=%-lib}}
+npm-ilib := ${npm-rlib:%=usr/local/lib/%}
+abs-npm-lib := ${npm-lib:%=${npm-root}/%}
+CFLAGS += ${abs-npm-lib:%=-I%/include}
+LDFLAGS	+= ${abs-npm-lib:%=-L%} ${abs-npm-lib:%=-Wl,-rpath,%}
+LINK.bin := ${LINK.c} ${CFLAGS}
 
 all:
 
@@ -47,15 +50,15 @@ htdocs/vim.css: FORCE
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqhash -ldb ${lcrypt}
+	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqhash -ldb ${lcrypt} ${LDFLAGS}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.bin} -o $@ src/htmlsh/htmlsh.c
+	${LINK.bin} -o $@ src/htmlsh/htmlsh.c ${LDFLAGS}
 
 bin/mpfd: src/mpfd/mpfd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.bin} -o $@ src/mpfd/mpfd.c
+	${LINK.bin} -o $@ src/mpfd/mpfd.c ${LDFLAGS}
 
 src-bin := htpasswd htmlsh mpfd
 src-bin := ${src-bin:%=bin/%}
@@ -72,26 +75,42 @@ mod-dirs:
 		dir=`basename $$line | sed 's/\..*//'` ; \
 		test -d items/$$dir || git -C items clone --recursive $$line $$dir ; \
 		done
+	@test -d node_modules || pnpm i
+
+$(npm-bin:%=usr/local/bin/%): ${npm-ilib}
+	${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}} bin
+	${sudo} chroot . ${MAKE} -C \
+		node_modules/${npm-${@:usr/local/bin/%=%}} install-bin
+
+$(npm-lib:%=%-bin): ${npm-ilib}
+	${MAKE} -C node_modules/${@:%-bin=%} bin
+
+npm-lib-bin: ${npm-bin:%=usr/local/bin/%}
+
+$(npm-ilib):
+	${MAKE} -C node_modules/${npm-${@:usr/local/lib/%=%}}
+	${sudo} chroot . ${MAKE} -C node_modules/${npm-${@:usr/local/lib/%=%}} install
 
 items/index.db:
 	cd items && ./../mk-main-index.sh && ./../mk-main-index-pt.sh
 
-.all-install: items .links install
-	@cp install .all-install
+.all-install: items .links .install
+	@cp .install .all-install
 	@ls items | while read module; do \
 		test ! -f items/$$module/install || cat items/$$module/install; \
 		done >> .all-install
-	cp .all-install /tmp/.all-install
+	@cp .all-install /tmp/.all-install
 	@cat /tmp/.all-install | while read dep ign; do \
 		test -f $$dep && echo $$dep || which $$dep 2>/dev/null; \
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
-all: .all-install mod-dirs items/index.db chroot htdocs/vim.css ${all-${uname}} etc/group etc/passwd \
-	etc/resolv.conf mod-bin ${src-bin}
+all: .all-install mod-dirs chroot ${npm-lib:%=node_modules/%/include.mk} npm-lib-bin \
+	items/index.db htdocs/vim.css ${all-${uname}} etc/group etc/passwd etc/resolv.conf mod-bin ${src-bin}
 
 etc/group:
 	echo "${wheel}:*:0:root" > $@
 	echo "_shadow:*:65:" >> $@
+	echo "www:*:67:root" >> $@
 	chmod 644 $@
 	${sudo} chown root:${wheel} $@
 
@@ -110,7 +129,7 @@ etc/shadow etc/master.passwd:
 	${sudo} chown root:${wheel} $@
 
 etc/pwd.db: etc/group etc/master.passwd
-	${sudo} chroot . pwd_mkdb /etc/master.passwd
+	${sudo} chroot . sh -c "pwd_mkdb /etc/master.passwd && passwd root"
 
 ${chroot-cp}:
 	@mkdir -p `dirname $@` || true
@@ -120,7 +139,7 @@ ${chroot-ln}:
 	@mkdir -p `dirname $@` || true
 	@./sln $@
 
-items/ users/ home/ .links $(chroot_mkdir):
+items users/ home/ .links $(chroot_mkdir):
 	mkdir -p $@
 
 ${chown-dirs}:
@@ -151,9 +170,11 @@ modules-clean:
 etc/resolv.conf: /etc/resolv.conf
 	cp /etc/resolv.conf $@
 
-$(mod-y): ${chroot_mkdir-${uname}}
-	@echo ${MAKEFLAGS}
+$(mod-y): all ${chroot_mkdir}
 	${MAKE} -f ${PWD}/module.mk module=$@ ${MAKEFLAGS} ${TARGET}
+
+run: all ${chroot_mkdir}
+	${MAKE} -f ${PWD}/module.mk module=nd ${MAKEFLAGS} osdbg
 
 FORCE:
 

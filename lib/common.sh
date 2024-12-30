@@ -70,19 +70,23 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
+public() {
+	chmod g+w $1
+	chgrp www $1
+}
 
 counter_inc() {
 	current="`zcat $1 || echo 0`"
 	local existed="`test -f "$1" && echo true || echo false`"
 	math $current + 1 | tee $1
-	$existed || chmod g+w $1
+	$existed || public $1
 }
 
 counter_dec() {
 	current="`zcat $1 || echo 0`"
 	local existed="`test -f "$1" && echo true || echo false`"
 	math $current - $2 | tee $1
-	$existed || chmod g+w $1
+	$existed || public $1
 }
 
 sum_lines_exp() {

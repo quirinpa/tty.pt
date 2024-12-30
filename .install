@@ -95,3 +95,8 @@ groupdel
 readlink
 expr
 paste
+chgrp
+pwd
+realpath
+/usr/bin/install
+/usr/lib/x86_64-linux-gnu/libdb-5.3.so

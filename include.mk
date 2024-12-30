@@ -11,6 +11,7 @@ CFLAGS += ${npm-lib:%=-I%/include}
 bin := $(exe:%=$(DESTDIR)$(PREFIX)/bin/%)
 
 $(bin): ${exe:%=%.c}
+	echo ROOT ${npm-root}
 	@install -d ${DESTDIR}${PREFIX}/bin
 	${CC} ${CFLAGS} -o $@ ${@:${DESTDIR}${PREFIX}/bin/%=%.c} ${LDFLAGS}
 

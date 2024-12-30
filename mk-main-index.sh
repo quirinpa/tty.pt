@@ -1,4 +1,5 @@
 #!/bin/sh
+alias qhash=../node_modules/@tty-pt/qhash/qhash
 qhash -p "chords 1 🎸 Chords" index.db
 qhash -p "choir 1 ⛪ Choirs" index.db
 qhash -p "sb 1 🎼 Songbooks" index.db
