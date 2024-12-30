@@ -52,7 +52,7 @@ case "$REQUEST_METHOD" in
 	POST)
 		case "$CONTENT_TYPE" in
 			multipart/form-data*)
-				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
+				# grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
 				rm $DOCUMENT_ROOT/tmp/mpfd/* 2>/dev/null || true
 				mpfd "$boundary"
@@ -73,24 +73,16 @@ esac
 
 counter_inc() {
 	current="`zcat $1 || echo 0`"
-	if test ! -z "$current"; then
-		next="`math $current + 1`"
-		echo $next | tee $1
-	else
-		touch $1
-		echo 1 | tee $1
-	fi
+	local existed="`test -f "$1" && echo true || echo false`"
+	math $current + 1 | tee $1
+	$existed || chmod g+w $1
 }
 
 counter_dec() {
-	if test -f $1; then
-		current="`cat $1`"
-		next="`math $current - $2`"
-		echo $next | tee $1
-	else
-		touch $1
-		echo -1 | tee $1
-	fi
+	current="`zcat $1 || echo 0`"
+	local existed="`test -f "$1" && echo true || echo false`"
+	math $current - $2 | tee $1
+	$existed || chmod g+w $1
 }
 
 sum_lines_exp() {

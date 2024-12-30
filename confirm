@@ -8,4 +8,7 @@ if test "$HTTP_PARAM_rcode" != "$USER_RCODE"; then
 fi
 
 rm $USER_PATH/rcode
-SeeOther /login
+TOKEN="`rand_str_1`"
+echo $HTTP_PARAM_username > $DOCUMENT_ROOT/sessions/$TOKEN
+header "Set-Cookie: QSESSION=$TOKEN; SameSite=Lax"
+SeeOther /

@@ -62,9 +62,11 @@ echo $email > $USER_DIR/email
 mkdir -p $DOCUMENT_ROOT/home/$username
 enc="`htpasswd $username $password | sed 's/.*://'`"
 useradd -Gwww -p"$enc" $username
+which femail || SeeOther welcome
+
 rand_str="`rand_str_1`"
 echo "$rand_str" > $USER_DIR/rcode
-which femail && femail -f noreply@tty.pt $email || true <<!
+femail -f noreply@tty.pt $email <<!
 Subject: `_ "Registration on tty.pt"`
 
 `_ "Welcome to tty.pt!"`
