@@ -1,0 +1,17 @@
+{
+  "name": "tty.pt",
+  "version": "1.0.0",
+  "description": "# Install dependencies ```sh sudo apt install libxxhash-dev libdb-dev ```",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "@tty-pt/qhash": "^0.5.1"
+  }
+}

@@ -36,3 +36,5 @@
 /.links
 /certs.txt
 /counter.txt
+/node_modules
+/lib/x86_64-linux-gnu/

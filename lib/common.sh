@@ -72,7 +72,7 @@ esac
 
 
 counter_inc() {
-	current="`zcat $1`"
+	current="`zcat $1 || echo 0`"
 	if test ! -z "$current"; then
 		next="`math $current + 1`"
 		echo $next | tee $1

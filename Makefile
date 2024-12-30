@@ -11,7 +11,9 @@ chown-user := www
 chown-group := www
 chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
-chroot_mkdir := empty sessions
+wheel != cat /etc/group | grep -q "^wheel" && echo wheel || echo root
+chroot_mkdir-Linux := dev sys proc
+chroot_mkdir := empty sessions etc ${chroot_mkdir-${uname}} tmp
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -28,6 +30,13 @@ shell-OpenBSD := /bin/ksh
 shell-Linux := /bin/bash
 shell := ${shell-${uname}}
 no-shell := /sbin/nologin
+npm-root != npm root
+npm-lib := @tty-pt/qhash
+npm-lib := ${npm-lib:%=${npm-root}/%}
+npm-lib != echo ${npm-lib} | tr ' ' '\n' | while read lib; do realpath $$lib; done | tr '\n' ' '
+CFLAGS += ${npm-lib:%=-I%/include}
+LDFLAGS	+= ${npm-lib:%=-L%} ${npm-lib:%=-Wl,-rpath,%}
+LINK.bin := ${LINK.c} ${CFLAGS} ${LDFLAGS}
 
 all:
 
@@ -38,15 +47,15 @@ htdocs/vim.css: FORCE
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.c} -o $@ src/htpasswd/htpasswd.c -lqhash -ldb ${lcrypt}
+	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqhash -ldb ${lcrypt}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.c} -o $@ src/htmlsh/htmlsh.c
+	${LINK.bin} -o $@ src/htmlsh/htmlsh.c
 
 bin/mpfd: src/mpfd/mpfd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.c} -o $@ src/mpfd/mpfd.c
+	${LINK.bin} -o $@ src/mpfd/mpfd.c
 
 src-bin := htpasswd htmlsh mpfd
 src-bin := ${src-bin:%=bin/%}
@@ -56,50 +65,49 @@ mod-bin := ${mod-bin:%=bin/%}
 
 mod-bin:
 	@echo ${mod-y} | tr ' ' '\n' | while read mod; do \
-		${MAKE} module=$$mod DESTDIR=${PWD}/ \
-		-f ${PWD}/module.mk; done
+		${MAKE} -f ${PWD}/module.mk module=$$mod DESTDIR=${PWD}/ ; done
 		
 mod-dirs:
-	@mkdir items 2>/dev/null || true
 	@cat .modules | while read line; do \
 		dir=`basename $$line | sed 's/\..*//'` ; \
-		test -d items/$$dir || git -C items clone --recursive $$dir ; \
+		test -d items/$$dir || git -C items clone --recursive $$line $$dir ; \
 		done
 
-.all-install: .links install
+items/index.db:
+	cd items && ./../mk-main-index.sh && ./../mk-main-index-pt.sh
+
+.all-install: items .links install
 	@cp install .all-install
 	@ls items | while read module; do \
 		test ! -f items/$$module/install || cat items/$$module/install; \
 		done >> .all-install
-	@cat .all-install | while read dep ign; do \
+	cp .all-install /tmp/.all-install
+	@cat /tmp/.all-install | while read dep ign; do \
 		test -f $$dep && echo $$dep || which $$dep 2>/dev/null; \
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
-items: FORCE
-	mkdir $@ || true
-
-all: .all-install mod-dirs chroot htdocs/vim.css ${all-${uname}} etc/group etc/passwd \
+all: .all-install mod-dirs items/index.db chroot htdocs/vim.css ${all-${uname}} etc/group etc/passwd \
 	etc/resolv.conf mod-bin ${src-bin}
 
 etc/group:
-	echo "wheel:*:0:root" > $@
+	echo "${wheel}:*:0:root" > $@
 	echo "_shadow:*:65:" >> $@
 	chmod 644 $@
-	${sudo} chown root:wheel $@
+	${sudo} chown root:${wheel} $@
 
 etc/passwd:
 	echo "root:X:0:0:root:/root:${shell}" > $@
 	echo "daemon:*:1:1:root:/root:${no-shell}" >> $@
 	chmod 644 $@
-	${sudo} chown root:wheel $@
+	${sudo} chown root:${wheel} $@
 
 etc/shadow etc/master.passwd:
 	test "${root-password}" != "unsafe" \
 		|| echo Warning: default password is unsafe >&2
-	echo "`./bin/htpasswd root ${root-password}`:0:0:daemon:0:0:Charlie &:/root:${shell}" > $@
+	echo "`${sudo} ./bin/htpasswd root ${root-password}`:0:0:daemon:0:0:Charlie &:/root:${shell}" > $@
 	echo "daemon:*:1:1::0:0:The devil will die:/root:/sbin/nologin" >> $@
 	chmod 600 $@
-	${sudo} chown root:wheel $@
+	${sudo} chown root:${wheel} $@
 
 etc/pwd.db: etc/group etc/master.passwd
 	${sudo} chroot . pwd_mkdb /etc/master.passwd
@@ -112,7 +120,7 @@ ${chroot-ln}:
 	@mkdir -p `dirname $@` || true
 	@./sln $@
 
-items/ users/ home/ .links:
+items/ users/ home/ .links $(chroot_mkdir):
 	mkdir -p $@
 
 ${chown-dirs}:
@@ -129,12 +137,11 @@ $(mount): dev/ sys/ proc/
 		fi
 
 clean: modules-clean mounts-clean
-	rm -rf ${chroot_mkdir} .all-install .links
+	${sudo} rm -rf ${chroot_mkdir} .all-install .links
 
 mounts-clean:
-	test -z "${sorted-mounts}" || \
-		${sudo} umount ${sorted-mounts}
-	rm -rf ${mounts}
+	test -z "${sorted-mounts}" || ${sudo} umount ${sorted-mounts}
+	test -z "${sorted-mounts}" || ${sudo} rm -rf ${mounts}
 
 modules-clean:
 	-ls items | while read line; do \
@@ -144,9 +151,9 @@ modules-clean:
 etc/resolv.conf: /etc/resolv.conf
 	cp /etc/resolv.conf $@
 
-$(mod-y):
+$(mod-y): ${chroot_mkdir-${uname}}
 	@echo ${MAKEFLAGS}
-	${MAKE} module=$@ ${MAKEFLAGS} -f ${PWD}/module.mk ${TARGET}
+	${MAKE} -f ${PWD}/module.mk module=$@ ${MAKEFLAGS} ${TARGET}
 
 FORCE:
 
