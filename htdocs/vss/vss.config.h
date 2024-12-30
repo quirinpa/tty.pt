@@ -16,6 +16,7 @@ CALL(MARGIN, 0, BASE_SIZES)
 CALL(PADDING, 0, BASE_SIZES)
 CALL(AXIS_horizontal, 0, BASE_SIZES)
 CALL(AXIS_vertical, 0, BASE_SIZES)
+ABS_DIST_ALL(0)
 CALL(TEXT_ALIGN, left, center, right)
 OVERFLOW(hidden)
 CALL(ABS_DIST, 0, BASE_SIZES)
@@ -156,3 +157,5 @@ input[type="number"] {
 
 .btn.abs { box-sizing: content-box; }
 .shad { text-shadow: 1px 1px 2px black, 2px -1px 3px black; }
+
+.bb { box-sizing: border-box; }
