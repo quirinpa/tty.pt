@@ -13,7 +13,7 @@ chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
 wheel != cat /etc/group | grep -q "^wheel" && echo wheel || echo root
 chroot_mkdir-Linux := dev sys proc
-chroot_mkdir := empty sessions etc ${chroot_mkdir-${uname}} tmp
+chroot_mkdir := empty sessions etc ${chroot_mkdir-${uname}} tmp tmp/mpfd
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -36,9 +36,9 @@ npm-lib := @tty-pt/qhash
 npm-bin := ${${npm-lib:%=%-bin}}
 npm-rlib := ${${npm-lib:%=%-lib}}
 npm-ilib := ${npm-rlib:%=usr/local/lib/%}
-abs-npm-lib := ${npm-lib:%=${npm-root}/%}
-CFLAGS += ${abs-npm-lib:%=-I%/include}
-LDFLAGS	+= ${abs-npm-lib:%=-L%} ${abs-npm-lib:%=-Wl,-rpath,%}
+libdir := /usr/local/lib ${npm-lib:%=${npm-root}/%}
+CFLAGS += ${libdir:%=-I%/include}
+LDFLAGS	+= ${libdir:%=-L%} ${libdir:%=-Wl,-rpath,%}
 LINK.bin := ${LINK.c} ${CFLAGS}
 
 all:
@@ -69,13 +69,17 @@ mod-bin := ${mod-bin:%=bin/%}
 mod-bin:
 	@echo ${mod-y} | tr ' ' '\n' | while read mod; do \
 		${MAKE} -f ${PWD}/module.mk module=$$mod DESTDIR=${PWD}/ ; done
+
+$(npm-lib:%=node_modules/%/include.mk): mod-dirs
+	@test -d node_modules || pnpm i
 		
 mod-dirs:
 	@cat .modules | while read line; do \
 		dir=`basename $$line | sed 's/\..*//'` ; \
-		test -d items/$$dir || git -C items clone --recursive $$line $$dir ; \
+		test ! -d items/$$dir || continue ; \
+		git -C items clone --recursive $$line $$dir ; \
+		mkdir items/$$dir/items ; \
 		done
-	@test -d node_modules || pnpm i
 
 $(npm-bin:%=usr/local/bin/%): ${npm-ilib}
 	${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}} bin
@@ -104,7 +108,7 @@ items/index.db:
 		test -f $$dep && echo $$dep || which $$dep 2>/dev/null; \
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
-all: .all-install mod-dirs chroot ${npm-lib:%=node_modules/%/include.mk} npm-lib-bin \
+all: .all-install chroot ${npm-lib:%=node_modules/%/include.mk} npm-lib-bin \
 	items/index.db htdocs/vim.css ${all-${uname}} etc/group etc/passwd etc/resolv.conf mod-bin ${src-bin}
 
 etc/group:
@@ -120,13 +124,13 @@ etc/passwd:
 	chmod 644 $@
 	${sudo} chown root:${wheel} $@
 
-etc/shadow etc/master.passwd:
-	test "${root-password}" != "unsafe" \
-		|| echo Warning: default password is unsafe >&2
+etc/shadow etc/master.passwd: bin/htpasswd
 	echo "`${sudo} ./bin/htpasswd root ${root-password}`:0:0:daemon:0:0:Charlie &:/root:${shell}" > $@
 	echo "daemon:*:1:1::0:0:The devil will die:/root:/sbin/nologin" >> $@
 	chmod 600 $@
 	${sudo} chown root:${wheel} $@
+	@echo Please change the root password >&2
+	${sudo} chroot . passwd root
 
 etc/pwd.db: etc/group etc/master.passwd
 	${sudo} chroot . sh -c "pwd_mkdb /etc/master.passwd && passwd root"

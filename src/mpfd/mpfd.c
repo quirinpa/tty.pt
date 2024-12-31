@@ -34,9 +34,6 @@ int main(int argc, char * argv[]) {
 		root = getenv("DOCUMENT_ROOT");
 
 	snprintf(mpfd_path, sizeof(mpfd_path), "%s/tmp/mpfd", root);
-	//printf("MPFD_PATH: %s\n", mpfd_path);
-	if (stat(mpfd_path, &sb))
-		mkdir(mpfd_path, 0770);
 
 	while ((linelen = getline(&line, &linesize, stdin)) >= 0) {
 		/* continue; */
