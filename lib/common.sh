@@ -70,11 +70,6 @@ case "$REQUEST_METHOD" in
 		;;
 esac
 
-public() {
-	chmod g+w $1
-	chgrp www $1
-}
-
 counter_inc() {
 	current="`zcat $1 || echo 0`"
 	local existed="`test -f "$1" && echo true || echo false`"
@@ -215,6 +210,7 @@ contents=$DOCUMENT_ROOT/tmp/contents
 cond() {
 	# tee $contents$1
 	cat - > $contents$1
+	public $contents$1
 	test -z "`cat $contents$1`"
 }
 

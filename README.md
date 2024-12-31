@@ -9,11 +9,10 @@ Also - you will need pnpm.
 
 # Running
 ```sh
-make
 make run
 ```
 
-Register, Login, and enjoy the now very boring game (as much as you can).
+Register, Login, and enjoy the now very boring game (as much as you can) and the other modules.
 
 # Some modules come pre-installed
 - [nd](https://github.com/tty-pt/nd): The CORE module, with a game / http batteries included

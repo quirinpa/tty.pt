@@ -13,8 +13,14 @@ export LD_LIBRARY_PATH=/usr/local/lib
 test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
 	STATUS_STR="Status: "
 
+public() {
+	chmod g+w $1
+	chgrp www $1
+}
+
 header() {
 	echo "$@" >> $DOCUMENT_ROOT/tmp/headers
+	public $DOCUMENT_ROOT/tmp/headers
 }
 
 debug() {
@@ -26,6 +32,7 @@ debug() {
 
 dcmd() {
 	sh -c "$@" 2>/tmp/debug
+	public $DOCUMENT_ROOT/tmp/debug
 }
 
 zcat() {
@@ -254,6 +261,7 @@ _Normal() {
 
 Normal() {
 	_Normal $@ > $DOCUMENT_ROOT/tmp/normal
+	public $DOCUMENT_ROOT/tmp/normal
 }
 
 uname=`uname`

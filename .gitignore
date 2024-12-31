@@ -9,6 +9,7 @@
 /dev
 /tmp
 /var
+/run
 /root
 /home
 /cache

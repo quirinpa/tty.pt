@@ -100,3 +100,9 @@ pwd
 realpath
 /usr/bin/install
 /usr/lib/x86_64-linux-gnu/libdb-5.3.so
+/etc/pam.d
+/etc/pam.conf
+/lib/x86_64-linux-gnu/security
+/etc/default/useradd
+/etc/login.defs
+/etc/shells

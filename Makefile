@@ -4,16 +4,17 @@ DESTDIR := ${PWD}/
 PREFIX := usr
 INSTALL_DEP := ${PWD}/make_dep.sh
 MAKEFLAGS += INSTALL_DEP=${INSTALL_DEP} DESTDIR=${PWD}/
-MFLAGS := ${MAKEFLAGS}
+MFLAGS := ${MAKE}
 mod-y != cat .modules | while read line; do basename $$line | sed s/\\..*//; done
 mod-dirs := ${mod-y:%=items/%}
 chown-user := www
 chown-group := www
+mounts-Linux := sys proc run/
+mounts := ${mounts-${uname}}
 chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
 wheel != cat /etc/group | grep -q "^wheel" && echo wheel || echo root
-chroot_mkdir-Linux := dev sys proc
-chroot_mkdir := empty sessions etc ${chroot_mkdir-${uname}} tmp tmp/mpfd
+chroot_mkdir := empty sessions etc ${chroot_mkdir-${uname}} tmp tmp/mpfd dev
 sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
@@ -25,14 +26,14 @@ lcrypt := ${lcrypt-${uname}}
 all-Linux := etc/shadow
 all-OpenBSD := etc/pwd.db
 # please change the default if online
-root-password := unsafe
 shell-OpenBSD := /bin/ksh
 shell-Linux := /bin/bash
 shell := ${shell-${uname}}
 no-shell := /sbin/nologin
 npm-root != npm root
 npm-lib := @tty-pt/qhash
--include $(npm-lib:%=node_modules/%/include.mk)
+npm-lib-inc := ${npm-lib:%=node_modules/%/include.mk}
+-include $(npm-lib-inc)
 npm-bin := ${${npm-lib:%=%-bin}}
 npm-rlib := ${${npm-lib:%=%-lib}}
 npm-ilib := ${npm-rlib:%=usr/local/lib/%}
@@ -109,7 +110,8 @@ items/index.db:
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
 all: .all-install chroot ${npm-lib:%=node_modules/%/include.mk} npm-lib-bin \
-	items/index.db htdocs/vim.css ${all-${uname}} etc/group etc/passwd etc/resolv.conf mod-bin ${src-bin}
+	items/index.db htdocs/vim.css  bin/htpasswd etc/passwd etc/group dev/urandom \
+	${all-${uname}} ${mounts} etc/group etc/passwd etc/resolv.conf mod-bin ${src-bin}
 
 etc/group:
 	echo "${wheel}:*:0:root" > $@
@@ -124,16 +126,20 @@ etc/passwd:
 	chmod 644 $@
 	${sudo} chown root:${wheel} $@
 
+dev/urandom: ${mounts} items/nd
+	${MAKE} -f ${PWD}/module.mk module=nd ${MAKEFLAGS} nods
+
 etc/shadow etc/master.passwd: bin/htpasswd
-	echo "`${sudo} ./bin/htpasswd root ${root-password}`:0:0:daemon:0:0:Charlie &:/root:${shell}" > $@
-	echo "daemon:*:1:1::0:0:The devil will die:/root:/sbin/nologin" >> $@
-	chmod 600 $@
+	@stty -echo
+	@echo -n "Please input desired root password: "
+	@read PASS && echo "`./bin/htpasswd root $$PASS`:0:0:daemon:0:0:Charlie &:/root:${shell}" > $@
+	@stty echo
+	@echo "daemon:*:1:1::0:0:The devil will die:/root:/sbin/nologin" >> $@
+	@chmod 600 $@
 	${sudo} chown root:${wheel} $@
-	@echo Please change the root password >&2
-	${sudo} chroot . passwd root
 
 etc/pwd.db: etc/group etc/master.passwd
-	${sudo} chroot . sh -c "pwd_mkdb /etc/master.passwd && passwd root"
+	${sudo} chroot . pwd_mkdb /etc/master.passwd
 
 ${chroot-cp}:
 	@mkdir -p `dirname $@` || true
@@ -152,7 +158,7 @@ ${chown-dirs}:
 
 chroot: ${chroot-cp} ${chroot-ln}
 
-$(mount): dev/ sys/ proc/
+$(mounts): ${chroot_mkdir}
 	@if ! mount | grep -q "on ${PWD}/$@ type"; then \
 		mkdir -p $@ 2>/dev/null || true ; \
 		echo ${sudo} mount --bind /$@ $@ ; \
