@@ -10,8 +10,7 @@ CALL(TEXT_SIZE, ALL_TEXT_SIZES)
 CALL(BACKGROUND_COLOR, ALL_COLORS)
 CALL(COLOR, ALL_COLORS)
 CALL(BORDER, ALL_COLORS)
-CALL(SIZE, ALL_SIZES)
-CALL(SIZE, ALL_SIZES)
+CALL(SIZE, f, ALL_SIZES)
 CALL(MARGIN, 0, BASE_SIZES)
 CALL(PADDING, 0, BASE_SIZES)
 CALL(AXIS_horizontal, 0, BASE_SIZES)
@@ -159,3 +158,4 @@ input[type="number"] {
 .shad { text-shadow: 1px 1px 2px black, 2px -1px 3px black; }
 
 .bb { box-sizing: border-box; }
+.shf { width: 100% }
