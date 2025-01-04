@@ -152,7 +152,7 @@ input.c0:focus {
 input[type="number"] {
 	width: 60px;
 }
-.chords b { margin-top: 4px !important; display: inline-block; }
+.chords b { margin-top: 4px !important; }
 
 .btn.abs { box-sizing: content-box; }
 .shad { text-shadow: 1px 1px 2px black, 2px -1px 3px black; }

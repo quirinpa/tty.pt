@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdio.h>
 
+DB_TXN *txnid = NULL;
+
 char *crypt_it(const char *password) {
 	static char *result;
 	char *salt = "$2b$12$abcdefghijklmnopqrstuv";
