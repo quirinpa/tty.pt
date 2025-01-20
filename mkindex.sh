@@ -4,10 +4,9 @@ translate() {
 
 rm index.db
 ls | sort -V | while read line; do
-	id="`basename $line`"
-	if test -h $id; then
-		continue
-	fi
+	test ! -h "$line" || continue
+	line="`pwd`/$line"
+	id="`basename "$line"`"
 	test -f $id/title || continue
 	title="`cat $id/title`"
 	link="`echo "$title" | translate`"

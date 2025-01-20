@@ -159,3 +159,4 @@ input[type="number"] {
 
 .bb { box-sizing: border-box; }
 .shf { width: 100% }
+.comment { color: VAL(COLOR, 4); }
