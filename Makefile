@@ -97,7 +97,10 @@ $(npm-ilib):
 	${sudo} chroot . ${MAKE} -C node_modules/${npm-${@:usr/local/lib/%=%}} install
 
 items/index.db:
-	cd items && ./../mk-main-index.sh && ./../mk-main-index-pt.sh
+	paste -d ' ' common-index en-index | \
+		./index_put.sh items/index.db
+	paste -d ' ' common-index pt-index | \
+		./index_put.sh items/index-pt_PT.db
 
 .all-install: items .links .install
 	@cp .install .all-install
