@@ -15,11 +15,803 @@ rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
 	$DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun \
 	$DOCUMENT_ROOT/tmp/bottom $DOCUMENT_ROOT/tmp/ncat || true
 
-. $DOCUMENT_ROOT/lib/optional-auth.sh
-. $DOCUMENT_ROOT/lib/very-common.sh
-. $DOCUMENT_ROOT/lib/common.sh
+umask 002
+set -e
 
-counter_inc $DOCUMENT_ROOT/counter.txt >/dev/null
+test -z "$VERY_COMMON" || return 0
+VERY_COMMON=y
+RES_CONTENT_TYPE="text/html; charset=UTF-8"
+HEADERS=""
+STATUS_STR=""
+STATUS_CODE=200
+
+export LD_LIBRARY_PATH=/usr/local/lib
+test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
+	STATUS_STR="Status: "
+
+public() {
+	chmod g+w $1
+	chgrp www $1
+}
+
+header() {
+	echo "$@" >> $DOCUMENT_ROOT/tmp/headers
+	public $DOCUMENT_ROOT/tmp/headers
+}
+
+debug() {
+	echo "$STATUS_STR"500 Internal Error
+	echo "Content-Type: text/plain; charset=UTF-8"
+	echo
+	echo Sorry, I\'m currently debugging. Please wait.
+}
+
+zcat() {
+	if test -f "$@"; then
+		cat "$@"
+		true
+	else
+		false
+	fi
+}
+
+NormalHead() {
+	case "$1" in
+		200) STATUS_TEXT="OK";;
+		400) STATUS_TEXT="Bad Request";;
+		401) STATUS_TEXT="Unauthorized";;
+		404) STATUS_TEXT="Not Found";;
+		409) STATUS_TEXT="Conflict";;
+	esac
+	export STATUS_TEXT
+	local status_code=$1
+	echo "$STATUS_STR$1 $STATUS_TEXT"
+	echo "Content-Type: $RES_CONTENT_TYPE"
+	test ! -f $DOCUMENT_ROOT/tmp/headers || \
+		cat $DOCUMENT_ROOT/tmp/headers
+}
+
+Head() {
+	cat<<!
+<!DOCTYPE html>
+<html lang="$htmllang">
+	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+		<link rel="stylesheet" href="/vim.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&display=swap" rel="stylesheet">
+		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
+		<title>$PINDEX_ICON $_TITLE</title>
+	</head>
+!
+}
+
+_Cat() {
+	cat $DOCUMENT_ROOT/tmp/normal
+	if test $# -lt 1; then
+		htmlsh | envsubst
+	elif test -f $1.html; then
+		cat $1.html | htmlsh '. /lib/very-common.sh; ' | envsubst
+	fi
+	echo "</html>"
+}
+
+Cat() {
+	_Cat template/$1
+}
+
+CCat() {
+	_Cat $DOCUMENT_ROOT/components/$1
+}
+
+SeeOther() {
+	header "Location: $1"
+	Fatal 303 "See Other"
+}
+
+RB() {
+	echo "<a class='$RBS' href='$2'>$1</a>"
+}
+
+Immediate() {
+	content="$1"
+	shift
+
+	SUBINDEX_ICON=""
+	test ! -z "$_TITLE" || _TITLE="$content"
+	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
+	if test -f $content; then
+		CONTENT="`INCEPTION=true . ./$content $@`"
+	else
+		CONTENT="`cat -`"
+	fi
+	test -f $DOCUMENT_ROOT/tmp/post \
+		&& cat $DOCUMENT_ROOT/tmp/post \
+		&& return 0 || true
+	test ! -z "$PRECLASS" || PRECLASS="v f fic"
+	FUNCTIONS="`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
+	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
+
+	test -z "$INDEX_ICON" \
+		|| INDEX_ICON="`RB $INDEX_ICON ./..`"
+
+	export MENU="`Menu`"
+	export INDEX_ICON
+	export SUBINDEX_ICON
+	export FUNCTIONS
+	export CONTENT
+	export MENU_LEFT
+	export BOTTOM_CONTENT
+	export _TITLE
+	export PRECLASS
+
+	test -f "$DOCUMENT_ROOT/tmp/normal" || \
+		Normal $STATUS_CODE "./$content"
+	CCat common
+	exit 0
+}
+
+INCEPTION=false
+_Fatal() {
+	local status_code=$1
+	shift 1
+	export _TITLE="$status_code: `_ "$@"`"
+	if test "$HTTP_ACCEPT" = "text/plain"; then
+		NormalHead $status_code
+		echo
+		echo $_TITLE
+		return 1
+	fi
+	export _TITLE
+	STATUS_CODE=$status_code
+	Normal "$STATUS_CODE" $DOCUMENT_URI
+	$INCEPTION && echo $_TITLE || Immediate - $@
+}
+
+Fin() {
+	cat - > $DOCUMENT_ROOT/tmp/post
+	exit 0
+}
+
+Fatal() {
+	_Fatal $@
+	exit 0
+}
+
+get_lang() {
+	echo $HTTP_ACCEPT_LANGUAGE | tr ',' '\n' | tr '-' '_' | tr ';' ' ' | \
+		while read alang qlang; do \
+			if grep "$alang" $DOCUMENT_ROOT/locale/langs; then
+				break
+			fi
+		done | head -n 1
+}
+
+lang="`get_lang`"
+htmllang="`echo $lang | tr '_' ' ' | awk '{print $1}'`"
+export lang
+export LANG=$lang
+if test -z "$LANG"; then
+	LANG=pt_PT
+fi
+ILANG=$LANG
+
+_() {
+	arg="$@"
+	IFS='$'
+	TEXTDOMAIN=site
+	value="`cat $DOCUMENT_ROOT/locale/$TEXTDOMAIN-$lang.txt | sed -n "s|^$arg\|||p"`"
+	test -z "$value" && echo $arg || echo $value
+}
+
+export RB="btn round p16 ts20"
+export RBS="btn round p8 ts17"
+export RBXS="btn round p4 tss"
+export SRB="btn round ps tsl"
+
+Menu() {
+	local user_name
+	local user_icon
+	if test ! -z "$REMOTE_USER"; then
+		user_icon="`RB 👤 /user`"
+	else
+		user_icon="`RB 🔑 /login?ret=$DOCUMENT_URI`"
+	fi
+	echo $user_icon
+}
+
+Unauthorized() {
+	header "Date: `TZ=GMT date '+%a, %d %b %Y %T %Z'`"
+	header "WWW-Authenticate: Basic realm='tty-pt'"
+	Fatal 401 Unauthorized
+}
+
+cookie=$HTTP_COOKIE
+cookie="`echo $cookie | tr ' ' '\n' | head -n 1`"
+cookie="`echo $cookie | awk 'BEGIN { FS = "=" } { print $2 }'`"
+
+rand_str_1() {
+	# TODO maybe remove lowercase conversion
+	xxd -l32 -ps $DOCUMENT_ROOT/dev/urandom | xxd -r -ps | openssl base64 \
+		    | tr -d = | tr + - | tr / _ | tr '[A-Z]' '[a-z]'
+}
+
+no_html() {
+	sed -e 's/</\&lt\;/g' -e 's/>/\&gt\;/g' 
+}
+
+Whisper() {
+	WHISPER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER/.whisper
+	WHISPER="`zcat $WHISPER_PATH | no_html`"
+	if test -z "$WHISPER"; then
+		return
+	fi
+
+	echo "<pre>$WHISPER</pre>"
+	rm $WHISPER_PATH
+}
+
+UserNormal() {
+	NormalHead "$1"
+	echo "Link: <http://$HTTP_HOST/e/$2$3>; rel=\"alternate\"; hreflang=\"x-default\""
+	echo
+	export HEAD="`Head`"
+	export WHISPER="`Whisper`"
+	export MENU="`Menu`"
+}
+
+_Normal() {
+	UserNormal $@
+	echo "$HEAD"
+	echo "$WHISPER"
+}
+
+Normal() {
+	_Normal $@ > $DOCUMENT_ROOT/tmp/normal
+	public $DOCUMENT_ROOT/tmp/normal
+}
+
+uname=`uname`
+shadow=shadow
+test "$uname" != "OpenBSD" || shadow=master.passwd
+
+auth() {
+	username=$1
+	password=$2
+	REMOTE_USER=""
+	hash="`grep "^$username:" $DOCUMENT_ROOT/etc/$shadow | awk 'BEGIN{FS=":"} {print $2}'`"
+	test ! -z "$hash" || return 0
+	htpasswd -v $DOCUMENT_ROOT/etc/$shadow "$username" "$password" || return 0
+	test ! -f $DOCUMENT_ROOT/users/$username/rcode || return 0
+
+	REMOTE_USER="$username"
+}
+
+if test ! -z "$cookie" && test -f "$DOCUMENT_ROOT/sessions/$cookie"; then
+	user="`cat $DOCUMENT_ROOT/sessions/$cookie`"
+	REMOTE_USER=$user
+elif ! test -z "$HTTP_AUTHORIZATION"; then
+	AUTH="`echo $HTTP_AUTHORIZATION | awk '{print $2}' | openssl base64 -d | tr ':' ' '`"
+	username="`echo $AUTH | awk '{print $1}'`"
+	password="`echo $AUTH | awk '{print $2}'`"
+	auth $username $password || true
+fi
+
+Forbidden() {
+	Fatal 403 Forbidden
+}
+
+NotAllowed() {
+	Fatal 405 "Method Not Allowed"
+}
+
+MustPost() {
+	test "$REQUEST_METHOD" = "POST" || NotAllowed
+}
+
+NotFound() {
+	Fatal 404 "Not Found"
+}
+
+_bc() {
+	read exp
+	echo "$exp" | bc -l
+}
+
+math() {
+	echo "$@" | _bc
+}
+
+_urldecode() {
+	sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
+}
+
+urldecode() {
+	echo $@ | _urldecode
+}
+
+san_param() {
+	echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1' | while IFS='=' read name value; do
+		echo HTTP_PARAM_$name=$value
+	done
+}
+
+fd() {
+	test ! -f $DOCUMENT_ROOT/tmp/mpfd/$1 || \
+		cat $DOCUMENT_ROOT/tmp/mpfd/$1
+}
+
+case "$REQUEST_METHOD" in
+	POST)
+		case "$CONTENT_TYPE" in
+			multipart/form-data*)
+				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
+				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
+				rm $DOCUMENT_ROOT/tmp/mpfd/* 2>/dev/null || true
+				mpfd "$boundary"
+				;;
+			application/x-www-form-urlencoded*)
+				read line1 || true
+				eval "`san_param $line1`"
+				;;
+		esac
+		;;
+	GET)
+		eval "`san_param $QUERY_STRING`"
+		;;
+	*)
+		;;
+esac
+
+counter_inc() {
+	current="`zcat $1 || echo 0`"
+	local existed="`test -f "$1" && echo true || echo false`"
+	math $current + 1 | tee $1
+	$existed || public $1
+}
+
+counter_dec() {
+	current="`zcat $1 || echo 0`"
+	local existed="`test -f "$1" && echo true || echo false`"
+	math $current - $2 | tee $1
+	$existed || public $1
+}
+
+sum_lines_exp() {
+	echo -n '(0'
+	sed 's/$/ +/' | tr '\n' ' ' | sed 's/ + $//'
+	echo -n ')'
+}
+
+# poem only
+revlines() {
+	rev | tr '\n' '~' | rev | tr '~' '\n'
+}
+
+_see_other() {
+	Fin <<!
+${STATUS_STR}303 See Other
+Location: $1
+
+!
+}
+
+see_other() {
+	Fin <<!
+${STATUS_STR}303 See Other
+Location: /e/$1$2
+
+!
+}
+
+if test "$uname" = "Linux"; then
+	fsize() {
+		stat --format %s $1
+	}
+
+else
+	fsize() {
+		stat -f%z $1
+	}
+fi
+
+id_query() {
+	awk '{print $1}' | while read line; do
+		echo "-$1$line$2"
+	done
+}
+
+## COMPONENTS
+
+NormalCat() {
+	Normal 200 $SCRIPT $1
+	Cat $SCRIPT
+}
+
+SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $2}'`"
+ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
+set -- `echo $DOCUMENT_URI | tr '/' ' '`
+if test "$SCRIPT" = "e"; then
+	SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $3}'`"
+	ARG="`echo $DOCUMENT_URI | awk -F '/' '{print $4}'`"
+	e_mode=1
+fi
+
+fw() {
+	csurround div "class=\"h$1 v$1 f fw fcc fic\""
+}
+
+invalid_id() {
+	valid="`echo $@ | tr -cd '[a-zA-Z0-9]_'`"
+	count="`echo $@ | wc -c`"
+	test "$valid" != "$@" || test "$count" -le 0
+}
+
+invalid_password() {
+	count="`echo $@ | wc -c`"
+	test "$count" -le 8
+}
+
+invalid_lang() {
+	lang="$@"
+	! grep -q "$lang" $DOCUMENT_ROOT/locale/langs
+}
+
+urlencode() {
+	echo -n "$1" | od -t d1 | awk '{
+	for (i = 2; i <= NF; i++) {
+		printf(($i>=48 && $i<=57) || ($i>=65 && $i<=90) || ($i>=97 && $i<=122) || $i==45 || $i==46 || $i==95 || $i==126 ?  "%c" : "%%%02x", $i)
+	}
+}'
+}
+
+Buttons3() {
+	local db="`test -f items/index-$LANG.db && echo -$LANG`"
+	local cla="$1"
+	local path="$2"
+	local where="$3"
+	local extra="$4"
+	local aflags="$5"
+	test ! -z "$aflags" || aflags="1"
+	local sub
+	local title
+	qhash -l items/index$db.db | sort -Vk1 | while read sub link flags title; do
+	test $sub != "-1" && test "$(($flags & ~$aflags))" = "0" || continue;
+		cat <<!
+<div><a class="btn wsnw h $cla" href="$where$link/$extra">
+	$title
+</a></div>
+!
+	done
+}
+
+im() {
+	ret=""
+	while test $# -ge 1; do
+		if test "$REMOTE_USER" = "$1"; then
+			ret="1"
+			break;
+		fi
+		shift
+	done
+
+	test "$ret" = "1"
+}
+
+contents=$DOCUMENT_ROOT/tmp/contents
+
+cond() {
+	# tee $contents$1
+	cat - > $contents$1
+	public $contents$1
+	test -z "`cat $contents$1`"
+}
+
+# shop only
+surround() {
+	echo "<$@>"
+	cat -
+	echo "</$1>"
+}
+
+csurround() {
+	local contents="`cat -`"
+
+	test -z "$contents" || {
+		echo $contents | surround $@
+	}
+
+}
+
+Field() {
+	cat <<!
+<div class="_">
+	<span class="tsxs">$1</span>
+	<span>$2</span>
+</div>
+!
+}
+
+EditBtn() {
+	im $OWNER || return 0
+	RB 📝 ./edit/
+}
+
+_Functions() {
+	read icon params
+	RB $icon $DOCUMENT_URI?$params
+}
+
+Functions() {
+	while test $# -ge 1; do
+		echo $1 | _Functions
+		shift
+	done >> $DOCUMENT_ROOT/tmp/fun
+}
+
+IsAllowedItemFound() {
+	set -- `echo $REQUEST_URI | tr '/' ' '`
+	local item_path="`pwd`/items/$iid"
+	test ! -z "$ITEM_PATH" \
+		|| ITEM_PATH="$item_path"
+
+	if test ! -f "$ITEM_PATH" && test ! -d "$ITEM_PATH"; then
+		Fatal 404 Item not found
+	fi
+}
+
+AddBtn() {
+	RB + ./add/
+}
+
+Index() {
+	typ=$1
+	test $# -lt 1 || shift
+
+	INDEX_PATH="`pwd`"
+	if test -z "$SUBINDEX_ICON"; then
+		SUBINDEX_ICON="`zcat icon || echo "🗂"`"
+	fi
+	test ! -z "$PINDEX_ICON" || PINDEX_ICON="`zcat icon`"
+
+	test ! -f .lib/index.sh || . .lib/index.sh
+
+	if test -f "$PWD/over-index"; then
+		if test -z "$_TITLE"; then
+			TITLE="`zcat title || echo $typ`"
+			_TITLE="`_ "$TITLE"`"
+		fi
+		Immediate over-index $@
+		exit 0
+	fi
+
+	case "$1" in
+		"") ;;
+		add) shift; Add add $@ ; exit 0;;
+		*)
+			ITEM_PATH="`pwd`/items/$1"
+			INDEX_ICON="$SUBINDEX_ICON"
+			SUBINDEX_ICON=" "
+			_TITLE=
+			SubIndex $@
+			exit 0
+			;;
+	esac
+
+	test "$REQUEST_METHOD" = "GET" || return 0
+
+	if test -z "$_TITLE"; then
+		TITLE="`zcat title || echo $typ`"
+		_TITLE="`_ "$TITLE"`"
+	fi
+
+	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
+	INDEX_ICON="`RB $INDEX_ICON ./..`"
+
+	test ! -z "$FUNCTIONS" || \
+		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
+	test ! -z "$CONTENT" || \
+		CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items $DOCUMENT_URI`"
+
+	export _TITLE
+	export INDEX_ICON
+	export SUBINDEX_ICON
+	export BOTTOM_CONTENT
+	export CONTENT
+	export FUNCTIONS
+	Normal 200 $typ
+	CCat common
+	exit 0
+}
+
+owner_get() {
+	local path=items/$iid
+	if test -f $path/.owner; then
+		cat $path/.owner
+	else
+		ls -al $path | awk '{print $3}'
+	fi
+}
+
+SubIndex() {
+	iid="$1"
+	IsAllowedItemFound $@
+	OWNER=`owner_get`
+
+	content="index"
+	shift
+
+	case "$1" in
+		"") ;;
+		add) shift; _TITLE= Add sub-add $@ ; exit 0;;
+		delete) shift; _TITLE= Delete delete $@ ; exit 0;;
+		*)
+			if test -f ./$1; then
+				content=$1
+				_TITLE="`_ $1`"
+				Immediate $content $@
+				exit 0
+			else
+				SUB_ITEM_PATH="$ITEM_PATH/items/$1"
+				content=sub-index
+			fi
+			;;
+	esac
+
+	if test -z "$_TITLE"; then
+		_TITLE="`cat items/$iid/title`"
+	fi
+
+	if im $OWNER; then
+	cat > $DOCUMENT_ROOT/tmp/fun <<!
+`RB 📝 ./edit/`
+`RB "🗑" ./delete/`
+!
+	fi
+
+	Immediate $content $@
+}
+
+InvalidItem() {
+	rm -rf "$ITEM_PATH"
+	Fatal 400 Invalid item
+}
+
+translate() {
+	iconv -f utf-8 -t ascii//TRANSLIT | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 ]//g' | sed 's/ /_/g'
+}
+
+Add() {
+	local template=$1
+	shift
+	test ! -z "$REMOTE_USER" || Forbidden
+
+	if test "$REQUEST_METHOD" = "GET"; then
+		test ! -z "$_TITLE" || _TITLE="`_ "Add item"`"
+		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
+
+		export FILES="<label>`_ Files`<input required type='file' name='file[]' multiple></input></label>"
+		export FILE="<label>`_ File`<input required type='file' name='file'></input></label>"
+
+		Immediate - <<!
+<form action="." method="POST" class="v f fic" enctype="multipart/form-data">
+	<label>
+		`_ Title`
+		<input required name="title"></input>
+	</label>
+	`. ./$template`
+	<div>$_DESCRIPTION</div>
+	<button>`_ Submit`</button>
+</form>
+!
+		exit 0
+	fi
+
+	test "$REQUEST_METHOD" = "POST" || NotAllowed
+
+	title="`fd title`"
+	link="`echo "$title" | translate`"
+	item_id="`qhash -p "$link 0 $title" items/index.db`"
+
+	ITEM_PATH="`test -z "$ITEM_PATH" && pwd || echo "$ITEM_PATH"`/items/$item_id"
+
+	mkdir -p items/$item_id
+	ln -sf $item_id items/$link
+	echo $REMOTE_USER > $ITEM_PATH/.owner
+	echo "$title" > $ITEM_PATH/title
+
+	. ./$template
+	SeeOther ../$link/edit/ | Immediate - $@
+}
+
+Delete() {
+	shift
+	test ! -z "$REMOTE_USER" || Forbidden
+
+	if test "$REQUEST_METHOD" = "GET"; then
+		test ! -z "$_TITLE" || _TITLE="`_ "Delete item"`"
+		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
+
+		Immediate - <<!
+<form action="." method="POST" class="v f fic">
+	<div class="f v fic">
+		<div>Are you sure you wish to delete this item?</div>
+		<div class="h tac">
+			<button class='cf15 c9'>`_ Yes`</button>
+			<a href="./.."><button type='button'>`_ No`</button></a>
+		</div>
+	</div>
+</form>
+!
+		exit 0
+	fi
+
+	test "$REQUEST_METHOD" = "POST" || NotAllowed
+
+	test ! -f delete || . ./delete
+
+	nid="`readlink items/$iid`"
+	if test "$nid" = "-1"; then
+		nid="$iid"
+		iid="`qhash -rg "$nid" items/index.db | cut -d' ' -f2-`"
+	fi
+	qhash -rd "$nid" items/index.db >/dev/null || true
+	rm -rf items/$iid items/$nid
+
+	SeeOther ../../
+}
+
+nfiles() {
+	urldecode "$@" | sed '/^$/d' | tr -d '\r'
+}
+
+a2l() {
+	while test $# -ge 1; do
+		echo $1
+		shift;
+	done
+}
+
+noslash() {
+	sed -e 's:/:\\/:g' $1
+}
+
+cslash() {
+	if grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.slash; then
+		cat -
+	else
+		noslash -
+	fi
+}
+
+mpfd_ls() {
+	local file_count="`cat $DOCUMENT_ROOT/tmp/mpfd/file-count`"
+	for i in `seq 0 $file_count`; do
+		local FILE_PATH=$DOCUMENT_ROOT/tmp/mpfd/file$i
+		filename="`cat $FILE_PATH-name`"
+		echo $FILE_PATH $filename
+	done
+}
+
+literal() {
+	sed 's/</\&lt\;/g'
+}
+
+export GIT_HTTP_EXPORT_ALL=1
+export REQUEST_METHOD
+
+git_backend() {
+	export GIT_PROJECT_ROOT="/"
+	export PATH_INFO="`echo $DOCUMENT_URI | sed 's|^/~|/home/|'`"
+	$DOCUMENT_ROOT/usr/local/libexec/git/git-http-backend 2>&1
+	exit
+}
+
+# counter_inc $DOCUMENT_ROOT/counter.txt >/dev/null
 
 if test ! -z "$1"; then
 	INDEX_ICON="🏠"
