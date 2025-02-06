@@ -38,14 +38,14 @@ body {
 	background-color: #3c403c;
 	caret-color: #9589c5;
 	padding: VAL(SIZE, 8);
-	font-family: "Noto Sans", "Noto Color Emoji", sans-serif;
+	font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Color Emoji", sans-serif;
 	font-optical-sizing: auto;
 	font-size: 13px;
 	box-sizing: border-box;
 	max-width: 100%;
 }
 pre {
-	font-family: "Noto Sans Mono", "Noto Color Emoji", monospace !important;
+	font-family: "Consolas", "Roboto Mono", "Courier New", "DejaVu Sans Mono", "Noto Color Emoji", monospace;
 }
 label > input {
 	display: block;
