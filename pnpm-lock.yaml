@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tty-pt/qhash':
-        specifier: ^0.5.35
-        version: 0.5.35
+        specifier: ^0.6.0
+        version: 0.6.0
       '@tty-pt/vim.css':
         specifier: ^0.0.2
         version: 0.0.2
@@ -21,11 +21,11 @@ importers:
         specifier: ^2.11.8
         version: 2.11.8
       '@tty-pt/ndc':
-        specifier: ^0.7.17
-        version: 0.7.17(@tty-pt/qhash@0.5.33)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)
+        specifier: ^0.7.20
+        version: 0.7.20(@tty-pt/qhash@0.6.0)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)
       '@tty-pt/qhash':
-        specifier: ^0.5.33
-        version: 0.5.33
+        specifier: ^0.6.0
+        version: 0.6.0
       '@tty-pt/sub':
         specifier: ^2.3.2
         version: 2.3.2(lodash@4.17.21)
@@ -52,11 +52,11 @@ importers:
   items/sem:
     dependencies:
       '@tty-pt/libit':
-        specifier: ^0.0.11
-        version: 0.0.11(@tty-pt/qhash@0.5.33)
+        specifier: ^0.0.13
+        version: 0.0.13(@tty-pt/qhash@0.6.0)
       '@tty-pt/qhash':
-        specifier: ^0.5.31
-        version: 0.5.33
+        specifier: ^0.6.0
+        version: 0.6.0
 
 packages:
 
@@ -1565,25 +1565,22 @@ packages:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
 
-  '@tty-pt/libit@0.0.11':
-    resolution: {integrity: sha512-IfFOtP+v264nE4/awen8O6FFlcXOHC4v7ixcWtaeTtcxEiQNvevG9sIDhgHR2aEUQVMcN0MIq9jUurZDiAa5aQ==}
+  '@tty-pt/libit@0.0.13':
+    resolution: {integrity: sha512-XQPKt2etGsm/tI5c5P0G1F2FAWF6x2U8kgEq8nR7v1VwWdaifU7H9601UknVXzGv47LqC+AUb2MIO2W8sodqpA==}
     peerDependencies:
-      '@tty-pt/qhash': ^0.5.29
+      '@tty-pt/qhash': ^0.6.0
 
-  '@tty-pt/ndc@0.7.17':
-    resolution: {integrity: sha512-aiq53Z3mV/95DqOGJcKQdHAJw8uechFJViHYRg7Pdmr4F1rCcicZUFYAb3NHlLOix6VhvPGySaomz3QFqKC51A==}
+  '@tty-pt/ndc@0.7.20':
+    resolution: {integrity: sha512-+zdedYW2cKzR48egQgnL5TGKJX+11wnpMfQ7uEb8CAtAFKLF+bBUR03X8XAJBcFdLkjvwMI31MdcMr2qy2DmZw==}
     hasBin: true
     peerDependencies:
-      '@tty-pt/qhash': ^0.5.29
+      '@tty-pt/qhash': ^0.6.0
       '@xterm/addon-fit': ^0.10.0
       '@xterm/addon-web-links': ^0.11.0
       '@xterm/xterm': ^5.5.0
 
-  '@tty-pt/qhash@0.5.33':
-    resolution: {integrity: sha512-LF0X63TShjWoemfLIN668EAOhHuWVoLKGjv2iCadY0uirIy7cYAk3bb0ujZRAL6CTHolUkZ+qaO2L6TppE6cVg==}
-
-  '@tty-pt/qhash@0.5.35':
-    resolution: {integrity: sha512-Y/74yuaHzYbhEjpShNc9agUfT5ZdTLl0LZEuOgBYdo0S3ESHwx19pPThU+OEEPraq5s82jabdnO/hklxU9xEdQ==}
+  '@tty-pt/qhash@0.6.0':
+    resolution: {integrity: sha512-WTIY+1Nrv8tmFAV6yTktOTZlI+O178PqE8uCyMQCJJbo8kkEhh45EV4/eHyPJjGyJxNRxyh50hjW1iSITxrHNw==}
 
   '@tty-pt/scripts@0.6.9':
     resolution: {integrity: sha512-uuYO8AkxZ6RukxJ7+GP/qWxhBUwJArdgE3xatA31Vz61cMoMD8ySsKYzs+FJq5WZVRijB1G8bHrQgmTZiB9B5g==}
@@ -6928,20 +6925,18 @@ snapshots:
 
   '@trysound/sax@0.2.0': {}
 
-  '@tty-pt/libit@0.0.11(@tty-pt/qhash@0.5.33)':
+  '@tty-pt/libit@0.0.13(@tty-pt/qhash@0.6.0)':
     dependencies:
-      '@tty-pt/qhash': 0.5.33
+      '@tty-pt/qhash': 0.6.0
 
-  '@tty-pt/ndc@0.7.17(@tty-pt/qhash@0.5.33)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)':
+  '@tty-pt/ndc@0.7.20(@tty-pt/qhash@0.6.0)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)':
     dependencies:
-      '@tty-pt/qhash': 0.5.33
+      '@tty-pt/qhash': 0.6.0
       '@xterm/addon-fit': 0.10.0(@xterm/xterm@5.5.0)
       '@xterm/addon-web-links': 0.11.0(@xterm/xterm@5.5.0)
       '@xterm/xterm': 5.5.0
 
-  '@tty-pt/qhash@0.5.33': {}
-
-  '@tty-pt/qhash@0.5.35': {}
+  '@tty-pt/qhash@0.6.0': {}
 
   '@tty-pt/scripts@0.6.9(@testing-library/dom@10.4.0)(@types/babel__core@7.20.5)(@types/node@22.10.2)(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(@types/testing-library__jest-dom@5.14.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(type-fest@2.19.0)':
     dependencies:
