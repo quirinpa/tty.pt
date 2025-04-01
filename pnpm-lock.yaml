@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tty-pt/qhash':
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.6.11
+        version: 0.6.11
       '@tty-pt/vim.css':
         specifier: ^0.0.2
         version: 0.0.2
@@ -21,11 +21,11 @@ importers:
         specifier: ^2.11.8
         version: 2.11.8
       '@tty-pt/ndc':
-        specifier: ^0.7.20
-        version: 0.7.20(@tty-pt/qhash@0.6.0)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)
+        specifier: ^0.7.22
+        version: 0.7.22(@tty-pt/qhash@0.6.10)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)
       '@tty-pt/qhash':
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.6.10
+        version: 0.6.10
       '@tty-pt/sub':
         specifier: ^2.3.2
         version: 2.3.2(lodash@4.17.21)
@@ -53,10 +53,10 @@ importers:
     dependencies:
       '@tty-pt/libit':
         specifier: ^0.0.13
-        version: 0.0.13(@tty-pt/qhash@0.6.0)
+        version: 0.0.13(@tty-pt/qhash@0.6.10)
       '@tty-pt/qhash':
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.6.10
+        version: 0.6.10
 
 packages:
 
@@ -1570,17 +1570,20 @@ packages:
     peerDependencies:
       '@tty-pt/qhash': ^0.6.0
 
-  '@tty-pt/ndc@0.7.20':
-    resolution: {integrity: sha512-+zdedYW2cKzR48egQgnL5TGKJX+11wnpMfQ7uEb8CAtAFKLF+bBUR03X8XAJBcFdLkjvwMI31MdcMr2qy2DmZw==}
+  '@tty-pt/ndc@0.7.22':
+    resolution: {integrity: sha512-Sorh4ctCmGn+yfIdP3Spz+BNKAS67aKX0XcMZjlPTpsWg/4y4pyw5RgfBXkqyA6dN9TPH02FF4JFdT/Hqlr3Og==}
     hasBin: true
     peerDependencies:
-      '@tty-pt/qhash': ^0.6.0
+      '@tty-pt/qhash': ^0.6.10
       '@xterm/addon-fit': ^0.10.0
       '@xterm/addon-web-links': ^0.11.0
       '@xterm/xterm': ^5.5.0
 
-  '@tty-pt/qhash@0.6.0':
-    resolution: {integrity: sha512-WTIY+1Nrv8tmFAV6yTktOTZlI+O178PqE8uCyMQCJJbo8kkEhh45EV4/eHyPJjGyJxNRxyh50hjW1iSITxrHNw==}
+  '@tty-pt/qhash@0.6.10':
+    resolution: {integrity: sha512-NrLBdwNIkcxltcCautixGeax38NL6bF7Zft7SJF8vheV68Fr/uY4VfNmDuDoHKRWWa2l50XPGiKncB4a7YSPow==}
+
+  '@tty-pt/qhash@0.6.11':
+    resolution: {integrity: sha512-9fHgUe4/7bQoJujTZiGNNnHHxxae383QkH3JOwAo0lRRJigBBJuw/7tPss3Gf016NEAkzVdNlTOCqvX00qvH2A==}
 
   '@tty-pt/scripts@0.6.9':
     resolution: {integrity: sha512-uuYO8AkxZ6RukxJ7+GP/qWxhBUwJArdgE3xatA31Vz61cMoMD8ySsKYzs+FJq5WZVRijB1G8bHrQgmTZiB9B5g==}
@@ -6925,18 +6928,20 @@ snapshots:
 
   '@trysound/sax@0.2.0': {}
 
-  '@tty-pt/libit@0.0.13(@tty-pt/qhash@0.6.0)':
+  '@tty-pt/libit@0.0.13(@tty-pt/qhash@0.6.10)':
     dependencies:
-      '@tty-pt/qhash': 0.6.0
+      '@tty-pt/qhash': 0.6.10
 
-  '@tty-pt/ndc@0.7.20(@tty-pt/qhash@0.6.0)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)':
+  '@tty-pt/ndc@0.7.22(@tty-pt/qhash@0.6.10)(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)':
     dependencies:
-      '@tty-pt/qhash': 0.6.0
+      '@tty-pt/qhash': 0.6.10
       '@xterm/addon-fit': 0.10.0(@xterm/xterm@5.5.0)
       '@xterm/addon-web-links': 0.11.0(@xterm/xterm@5.5.0)
       '@xterm/xterm': 5.5.0
 
-  '@tty-pt/qhash@0.6.0': {}
+  '@tty-pt/qhash@0.6.10': {}
+
+  '@tty-pt/qhash@0.6.11': {}
 
   '@tty-pt/scripts@0.6.9(@testing-library/dom@10.4.0)(@types/babel__core@7.20.5)(@types/node@22.10.2)(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(@types/testing-library__jest-dom@5.14.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(type-fest@2.19.0)':
     dependencies:

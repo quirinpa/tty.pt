@@ -50,7 +50,7 @@ pre {
 label > input {
 	display: block;
 }
-h1,h2,h3,h4,h5,h6 { color: #f5f5f5; margin: 0; }
+h1,h2,h3,h4,h5,h6 { color: #f5f5f5; }
 img { color: #c1c3da; };
 .modal a { color: #9589c5; }
 input,textarea {
@@ -67,7 +67,7 @@ input:focus {
 a { color: #c1c3da; }
 style { display: none !important; }
 .oav { overflow: auto; }
-form,pre,p,h2,h1 { margin: 0; }
+form,pre,p { margin: 0; }
 pre { font-family: monospace; }
 .dib { display: inline-block; }
 .ofc { object-fit: cover; }
@@ -160,3 +160,4 @@ input[type="number"] {
 .bb { box-sizing: border-box; }
 .shf { width: 100% }
 .comment { color: VAL(COLOR, 4); }
+.strike { text-decoration: line-through; }

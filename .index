@@ -13,7 +13,8 @@ fi
 
 rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
 	$DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun \
-	$DOCUMENT_ROOT/tmp/bottom $DOCUMENT_ROOT/tmp/ncat || true
+	$DOCUMENT_ROOT/tmp/bottom $DOCUMENT_ROOT/tmp/ncat \
+	$DOCUMENT_ROOT/tmp/notitle || true
 
 umask 002
 set -e
@@ -102,6 +103,9 @@ Cat() {
 }
 
 CCat() {
+	test -f $DOCUMENT_ROOT/tmp/notitle && \
+		export _TITLE="" || \
+		export _TITLE="<h2 class='cap tac'>$_TITLE $SUBINDEX_ICON</h2>"
 	_Cat $DOCUMENT_ROOT/components/$1
 }
 
@@ -831,7 +835,7 @@ if test ! -z "$1"; then
 					test -f "$path" || NotFound
 				fi
 				echo "$STATUS_STR"200 Ok
-				echo "Cache-Control: max-age=5184000"
+				echo "Cache-Control: max-age=864000"
 				echo
 				cat "$path"
 			fi
