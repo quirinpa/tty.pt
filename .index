@@ -483,7 +483,7 @@ Buttons3() {
 	qhash -l items/index$db.db | sort -Vk1 | while read sub link flags title; do
 	test $sub != "-1" && test "$(($flags & ~$aflags))" = "0" || continue;
 		cat <<!
-<div><a class="btn wsnw h $cla" href="$where$link/$extra">
+<div><a class="btn wsnw h $cla" href="/$where/$link/$extra">
 	$title
 </a></div>
 !
@@ -570,6 +570,7 @@ AddBtn() {
 }
 
 Index() {
+	echo INDEX $@ >&2
 	typ=$1
 	test $# -lt 1 || shift
 
@@ -616,7 +617,7 @@ Index() {
 	test ! -z "$FUNCTIONS" || \
 		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
 	test ! -z "$CONTENT" || \
-		CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items $DOCUMENT_URI`"
+		CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items $typ`"
 
 	export _TITLE
 	export INDEX_ICON
@@ -817,6 +818,11 @@ git_backend() {
 if test ! -z "$1"; then
 	INDEX_ICON="🏠"
 	case "$1" in
+		1.txt)
+			cd ./items/poem/
+			export DOCUMENT_URI="/poem/1/"
+			Index poem 1
+			;;
 		~*) . ./.tilde $@;;
 		*)
 			if test -d ./items/$1; then
