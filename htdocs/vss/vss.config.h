@@ -1,14 +1,22 @@
+:root {
+  color-scheme: light dark;
+}
+
 /*#define CONFIG_IPH 12px*/
 #define CONFIG_ROUND
 #include "vss/vss.h"
 #define CF #c1c3da
 #define CM VAL(COLOR, 13)
 
+#define LIGHT_COLORS 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+#define DARK_COLORS d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15
+
 ROUND
 ALL_FLEX
 CALL(TEXT_SIZE, ALL_TEXT_SIZES)
-CALL(BACKGROUND_COLOR, ALL_COLORS)
-CALL(COLOR, ALL_COLORS)
+CALL(BACKGROUND_COLOR, LIGHT_COLORS)
+CALL(COLOR, LIGHT_COLORS)
+CALL(BORDER, ALL_COLORS)
 CALL(BORDER, ALL_COLORS)
 CALL(SIZE, f, ALL_SIZES)
 CALL(MARGIN, 0, BASE_SIZES)
@@ -31,11 +39,30 @@ ROUND_PADDING( 8, 20)
 ROUND_PADDING( 8, 26)
 
 .dn { display: none !important; }
+.cf { background: #cdcfe7; }
+.cb { color: #3c403c; }
+
+@media (prefers-color-scheme: dark) {
 .cf { background: #3c403c; }
 .cb { color: #c1c3da; }
 body {
 	color: #c1c3da;
 	background-color: #3c403c;
+}
+button:not(.transparent), .btn:not(.transparent) {
+	background-color: VAL(COLOR, d0);
+	color: VAL(COLOR, d15);
+}
+CALL(COLOR, DARK_COLORS)
+CALL(BACKGROUND_COLOR, DARK_COLORS)
+h1,h2,h3,h4,h5,h6 { color: VAL(COLOR, d15); }
+.modal a { color: VAL(COLOR, d13); }
+a { color: VAL(COLOR, d13); }
+}
+
+body {
+	color: #3c403c;
+	background-color: #cdcfe7;
 	caret-color: #9589c5;
 	padding: VAL(SIZE, 8);
 	font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Color Emoji", sans-serif;
@@ -50,9 +77,10 @@ pre {
 label > input {
 	display: block;
 }
-h1,h2,h3,h4,h5,h6 { color: #f5f5f5; }
+h1,h2,h3,h4,h5,h6 { color: VAL(COLOR, 0); }
 img { color: #c1c3da; };
-.modal a { color: #9589c5; }
+.modal a { color: VAL(COLOR, 5); }
+a { color: VAL(COLOR, 5); }
 input,textarea {
 	border: solid thin #2c2c2c;
 	font-size: inherit;
@@ -64,7 +92,6 @@ input:focus {
 }
 .abs { position: absolute; }
 .rel { position: relative; }
-a { color: #c1c3da; }
 style { display: none !important; }
 .oav { overflow: auto; }
 form,pre,p { margin: 0; }
@@ -85,7 +112,7 @@ button, .btn {
 }
 
 button:not(.transparent), .btn:not(.transparent) {
-	background-color: VAL(COLOR, 0);
+	background-color: VAL(COLOR, 13);
 	color: VAL(COLOR, 15);
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 	//border: solid thin black;

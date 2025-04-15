@@ -483,7 +483,7 @@ Buttons3() {
 	qhash -l items/index$db.db | sort -Vk1 | while read sub link flags title; do
 	test $sub != "-1" && test "$(($flags & ~$aflags))" = "0" || continue;
 		cat <<!
-<div><a class="btn wsnw h $cla" href="/$where/$link/$extra">
+<div><a class="btn wsnw h $cla" href="$where$link/$extra">
 	$title
 </a></div>
 !
@@ -617,7 +617,7 @@ Index() {
 	test ! -z "$FUNCTIONS" || \
 		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f add || AddBtn`"
 	test ! -z "$CONTENT" || \
-		CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items $typ`"
+		CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
 
 	export _TITLE
 	export INDEX_ICON
@@ -854,4 +854,4 @@ test "$REQUEST_METHOD" = "GET" || NotAllowed
 
 _TITLE=$HTTP_HOST
 ttyf="`test $HTTP_HOST = tty.pt && echo 1 || echo 2`"
-Buttons3 'f jcsb cap tsxl' items "" "" "$ttyf" | Immediate -
+Buttons3 'f jcsb cap tsxl' items "/" "" "$ttyf" | Immediate -
