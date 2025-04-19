@@ -5,8 +5,6 @@
 /*#define CONFIG_IPH 12px*/
 #define CONFIG_ROUND
 #include "vss/vss.h"
-#define CF #c1c3da
-#define CM VAL(COLOR, 13)
 
 #define LIGHT_COLORS 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 #define DARK_COLORS d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15
@@ -39,31 +37,49 @@ ROUND_PADDING( 8, 20)
 ROUND_PADDING( 8, 26)
 
 .dn { display: none !important; }
-.cf { background: #cdcfe7; }
-.cb { color: #3c403c; }
+.cf { background: VAL(COLOR, b); }
+.cb { color: VAL(COLOR, f); }
+
+@media (prefers-color-scheme: light) {
+	.abs.c0 { background: color-mix(in oklab, VAL(COLOR, 15) 80%, VAL(COLOR, b) 10%) !important; }
+}
 
 @media (prefers-color-scheme: dark) {
-.cf { background: #3c403c; }
-.cb { color: #c1c3da; }
+.cf { background: VAL(COLOR, db); }
+.cb { color: VAL(COLOR, df); }
 body {
-	color: #c1c3da;
-	background-color: #3c403c;
+	color: VAL(COLOR, df);
+	background-color: VAL(COLOR, db);
 }
 button:not(.transparent), .btn:not(.transparent) {
 	background-color: VAL(COLOR, d0);
 	color: VAL(COLOR, d15);
 }
+button:not(.transparent):hover, .btn:not(.transparent):hover {
+	background-color: color-mix(in oklab, VAL(COLOR, d0) 90%, VAL(COLOR, d7) 10%);
+}
 CALL(COLOR, DARK_COLORS)
 CALL(BACKGROUND_COLOR, DARK_COLORS)
 h1,h2,h3,h4,h5,h6 { color: VAL(COLOR, d15); }
+img { color: VAL(COLOR, df); };
 .modal a { color: VAL(COLOR, d13); }
 a { color: VAL(COLOR, d13); }
+input,textarea { border: solid thin VAL(COLOR, d0); }
+input:focus {
+        border: solid thin VAL(COLOR, dc);
+        outline: VAL(COLOR, dc);
+}
+input.c0 { border: solid thin VAL(COLOR, d0); color: VAL(COLOR, df); }
+input.c0:focus {
+        border: solid thin VAL(COLOR, d13)
+        outline: VAL(COLOR, d13);
+}
 }
 
 body {
-	color: #3c403c;
-	background-color: #cdcfe7;
-	caret-color: #9589c5;
+	color: VAL(COLOR, f);
+	background-color: VAL(COLOR, b);
+	caret-color: VAL(COLOR, c);
 	padding: VAL(SIZE, 8);
 	font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Color Emoji", sans-serif;
 	font-optical-sizing: auto;
@@ -78,17 +94,17 @@ label > input {
 	display: block;
 }
 h1,h2,h3,h4,h5,h6 { color: VAL(COLOR, 0); }
-img { color: #c1c3da; };
-.modal a { color: VAL(COLOR, 5); }
+img { color: VAL(COLOR, f); };
+.modal a { color: VAL(COLOR, c); }
 a { color: VAL(COLOR, 5); }
 input,textarea {
-	border: solid thin #2c2c2c;
+	border: solid thin VAL(COLOR, 0);
 	font-size: inherit;
 	padding: VAL(SIZE, 8);
 }
 input:focus {
-        border: solid thin #9589c5;
-        outline: #9589c5;
+        border: solid thin VAL(COLOR, c);
+        outline: VAL(COLOR, c);
 }
 .abs { position: absolute; }
 .rel { position: relative; }
@@ -111,11 +127,15 @@ button, .btn {
 	text-decoration: none;
 }
 
+button:not(:disabled), .btn:not(:disabled) { cursor: pointer; }
 button:not(.transparent), .btn:not(.transparent) {
-	background-color: VAL(COLOR, 13);
-	color: VAL(COLOR, 15);
+	background-color: color-mix(in oklab, VAL(COLOR, 13) 30%, #ffffff 70%);
+	color: VAL(COLOR, f);
 	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 	//border: solid thin black;
+}
+button:not(.transparent):hover, .btn:not(.transparent):hover {
+	background-color: color-mix(in oklab, VAL(COLOR, 13) 20%, #ffffff 80%);
 }
 
 .c01 {
@@ -155,15 +175,15 @@ pre {
 }
 
 .al.menu.btn.round > * { right: -16px; }
-.menu.btn.round > .center { transform: translateX(-25%); margin-left: -32px; }
-.menu.btn.round > .center > form { margin-top: -16px; }
+.menu.btn.round > .center { transform: translateX(-50%); margin-left: -48px; }
+// .menu.btn.round > .center > form { margin-top: -16px; }
 .menu.btn.round > * { margin-top: 8px; }
 .menu.extended > * { right: 16px; min-width: 300px; }
 .menu:not(.js) > div { display: none; }
 .menu input[type="checkbox"] { display: none; }
 .menu :checked + div { display: block }
+a:hover { color: VAL(COLOR, 13); }
 .menu a { text-decoration: none; }
-.menu a:hover { color: white; }
 
 .pn { padding: 0; }
 .fix { position: fixed; }
@@ -171,10 +191,10 @@ pre {
 .cp { cursor: pointer; }
 .ttc { text-transform: capitalize; }
 
-input.c0 { border: solid thin VAL(COLOR, 0); color: CF; }
+input.c0 { border: solid thin VAL(COLOR, 0); color: VAL(COLOR, f); }
 input.c0:focus {
-        border: solid thin CM;
-        outline: CM;
+        border: solid thin VAL(COLOR, 13);
+        outline: VAL(COLOR, 13);
 }
 input[type="number"] {
 	width: 60px;

@@ -63,6 +63,8 @@ mkdir -p $DOCUMENT_ROOT/home/$username
 enc="`htpasswd $username $password | sed 's/.*://'`"
 # groupadd $username
 useradd -gwww -Gwww -p"$enc" $username
+git config --global user.email $REMOTE_USER@tty.pt
+git config --global user.name $REMOTE_USER
 which femail || SeeOther welcome
 
 rand_str="`rand_str_1`"

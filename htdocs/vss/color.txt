@@ -1,3 +1,6 @@
+b #f9f9f9
+f #3c403c
+c #c2B3FF
 0 #2c2c2c
 1 #7b3045
 2 #304d39
@@ -13,7 +16,10 @@
 12 #6a90af
 13 #877cb3
 14 #11a291
-15 #ffffff
+15 #d1d1d1
+db #3c403c
+df #c1c3da
+dc #9589c5
 d0 #2c2c2c
 d1 #bd4a6a
 d2 #3a5e46

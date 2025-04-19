@@ -1,0 +1,39 @@
+#!/bin/sh
+PUSER=$1
+HOME=$DOCUMENT_ROOT/home/$PUSER
+shift
+
+case "$1" in
+	"") ;;
+	*)
+		typ=$1
+		shift
+		cd $HOME/.items/$typ
+		Normal 200 $typ
+		SubIndex $typ $@
+		exit 0
+		;;
+esac
+
+_TITLE="`_ User` - $PUSER"
+
+cat > /tmp/contents <<!
+<h3>`_ Forks`</h3>
+`ls $DOCUMENT_ROOT/home/$PUSER/.items | \
+while read type; do ls $DOCUMENT_ROOT/home/$PUSER/.items/$type | while read item; do
+	echo "<a href='/$PUSER/$type/$item'>$type/$item</a>"
+done; done`
+
+<div class="tac tsxl f">
+	<a class="btn" href="~$PUSER">`_ Page`</a>
+</div>
+
+<div class="tac tsxl f">
+	<a class="btn" href="logout">`_ Logout`</a>
+</div>
+!
+
+export INDEX_ICON="`RB 🏠 ./..`"
+export CONTENT="`cat /tmp/contents`"
+Normal 200 me
+CCat /common
