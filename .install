@@ -79,14 +79,13 @@ femail
 /bin/bash
 pwd_mkdb
 stty
-qhash
 whoami
 iconv
-qhash
 id
 userdel
 groupdel
 readlink
+getent
 expr
 chgrp
 pwd

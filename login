@@ -23,12 +23,14 @@ fi
 
 _TITLE="`_ Login`"
 
-username="`urldecode $HTTP_PARAM_username`"
-password="`urldecode $HTTP_PARAM_password`"
+username="$HTTP_PARAM_username"
+password="$HTTP_PARAM_password"
 
 hash="`grep "^$username:" $DOCUMENT_ROOT/etc/$shadow | awk 'BEGIN{FS=":"} {print $2}'`"
-test -z "$REMOTE_USER" || \
-	rm $DOCUMENT_ROOT/sessions/$cookie
+if test ! -z "$REMOTE_USER"; then
+	test -z "$cookie" || \
+		rm $DOCUMENT_ROOT/sessions/$cookie
+fi
 test ! -z "$hash" \
 	|| Fatal 400 No such user
 htpasswd -v $DOCUMENT_ROOT/etc/$shadow "$username" "$password" \

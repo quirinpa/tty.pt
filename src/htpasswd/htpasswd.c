@@ -50,13 +50,15 @@ int main(int argc, char *argv[]) {
 	char *password = argv[4];
 	int fd = open(filename, O_RDONLY);
 
+	qdb_init();
+
 	if (fstat(fd, &sb) == -1 || sb.st_size == 0)
 		return EXIT_FAILURE;
 
 	char *mapped = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	char copy[sb.st_size];
 	memcpy(copy, mapped, sb.st_size);
-	int pwd_hd = hash_init();
+	int pwd_hd = qdb_open(NULL, "s", "s", 0);
 
 	for (int i = 0; i < sb.st_size; i++) {
 		char *s = &copy[i];
@@ -77,12 +79,13 @@ int main(int argc, char *argv[]) {
 			eoc = eol;
 
 		*eoc = '\0';
-		hash_put(pwd_hd, s, colon - s, colon + 1, 62);
+		qdb_putc(pwd_hd, s, colon - s, colon + 1, 62);
 		i += eol - s;
 	}
 
-	char hash[62];
-	if (hash_get(pwd_hd, &hash, login, strlen(login)))
+	size_t len;
+	char *hash;
+	if (!(hash = qdb_getc(pwd_hd, &len, login, strlen(login))))
 		return EXIT_FAILURE;
 
 	return crypt_checkpass(password, hash)

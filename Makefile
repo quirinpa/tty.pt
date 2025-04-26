@@ -57,11 +57,15 @@ bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
 	${LINK.bin} -o $@ src/htmlsh/htmlsh.c ${LDFLAGS}
 
+bin/urldecode: src/urldecode/urldecode.c
+	@mkdir bin 2>/dev/null || true
+	${LINK.bin} -o $@ src/urldecode/urldecode.c ${LDFLAGS}
+
 bin/mpfd: src/mpfd/mpfd.c
 	@mkdir bin 2>/dev/null || true
 	${LINK.bin} -o $@ src/mpfd/mpfd.c ${LDFLAGS}
 
-src-bin := htpasswd htmlsh mpfd
+src-bin := htpasswd htmlsh mpfd urldecode
 src-bin := ${src-bin:%=bin/%}
 
 -include .all-install
@@ -129,10 +133,10 @@ etc/passwd:
 	chmod 644 $@
 	${sudo} chown root:${wheel} $@
 
-dev/urandom: ${mounts} items/nd
+dev/urandom: ${mounts}
 	${MAKE} -f ${PWD}/module.mk module=nd ${MAKEFLAGS} nods
 
-etc/shadow etc/master.passwd: bin/htpasswd
+etc/shadow etc/master.passwd:
 	@stty -echo
 	@echo -n "Please input desired root password: "
 	@read PASS && echo "`./bin/htpasswd root $$PASS`:0:0:daemon:0:0:Charlie &:/root:${shell}" > $@

@@ -79,6 +79,7 @@ Head() {
 	<head>
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+		<meta name="description" content="tty.pt $_TITLE">
 		<link rel="stylesheet" href="/vim.css" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -364,17 +365,9 @@ math() {
 	echo "$@" | _bc
 }
 
-_urldecode() {
-	sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
-}
-
-urldecode() {
-	echo $@ | _urldecode
-}
-
 san_param() {
-	echo $1 | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1' | while IFS='=' read name value; do
-		echo HTTP_PARAM_$name=$value
+	echo "$@" | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1' | while IFS='=' read name value; do
+		echo HTTP_PARAM_$name=\"`urldecode "$value"`\"
 	done
 }
 
@@ -387,19 +380,19 @@ case "$REQUEST_METHOD" in
 	POST)
 		case "$CONTENT_TYPE" in
 			multipart/form-data*)
-				grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
+				# grep -q "^$REMOTE_USER$" $DOCUMENT_ROOT/.uploaders || Forbidden "`_ "You don't have upload permissions"`"
 				boundary="`echo $CONTENT_TYPE | sed 's/.*=//'`"
 				rm $DOCUMENT_ROOT/tmp/mpfd/* 2>/dev/null || true
 				mpfd "$boundary"
 				;;
 			application/x-www-form-urlencoded*)
 				read line1 || true
-				eval "`san_param $line1`"
+				eval "`san_param "$line1"`"
 				;;
 		esac
 		;;
 	GET)
-		eval "`san_param $QUERY_STRING`"
+		eval "`san_param "$QUERY_STRING"`"
 		;;
 	*)
 		;;
@@ -512,6 +505,35 @@ urlencode() {
 }'
 }
 
+ilang() {
+	test -f ./index-$LANG.db && echo -$LANG
+}
+
+filter_one() {
+	while read id0 rest; do
+		echo $rest
+	done
+}
+
+Buttons() {
+	local cla="$1"
+	local where="$3"
+	local extra="$4"
+	local aflags="$5"
+	test ! -z "$aflags" || aflags="1"
+	local sub
+	local link
+	local flags
+	local title
+	while read sub link flags title; do
+		cat <<!
+<div><a class="btn wsnw h $cla" href="$where$link/$extra">
+	$title
+</a></div>
+!
+	done
+}
+
 Buttons3() {
 	local db="`test -f ./index-$LANG.db && echo -$LANG`"
 	local cla="$1"
@@ -522,7 +544,7 @@ Buttons3() {
 	test ! -z "$aflags" || aflags="1"
 	local sub
 	local title
-	qhash -l ./index$db.db | sort -Vk1 | while read sub link flags title; do
+	qhash -l ./index`ilang`.db | sort -Vk3 | while read sub link flags title; do
 	test $sub != "-1" && test "$(($flags & $aflags))" = "$aflags" || continue;
 		cat <<!
 <div><a class="btn wsnw h $cla" href="$where$link/$extra">
@@ -532,17 +554,19 @@ Buttons3() {
 	done
 }
 
-im() {
-	ret=""
-	while test $# -ge 1; do
-		if test "$REMOTE_USER" = "$1"; then
-			ret="1"
-			break;
-		fi
-		shift
-	done
+imin() {
+	test ! -z "$2" || return 1
+	groups | tr ' ' '\n' | grep -q "$2"
+}
 
-	test "$ret" = "1"
+im() {
+	if test "$REMOTE_USER" = "$1"; then
+		return 0
+	elif test ! -z "$2" && imin "$2"; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 contents=$DOCUMENT_ROOT/tmp/contents
@@ -612,15 +636,6 @@ Index() {
 
 	test ! -f $MOD_PATH/.lib/index.sh || . $MOD_PATH/.lib/index.sh
 
-	if test -f "$MOD_PATH/over-index"; then
-		if test -z "$_TITLE"; then
-			TITLE="`zcat $MOD_PATH/title || echo $typ`"
-			_TITLE="`_ "$TITLE"`"
-		fi
-		Immediate $MOD_PATH/over-index $@
-		exit 0
-	fi
-
 	case "$1" in
 		"") ;;
 		add) shift; Add $MOD_PATH/add $@ ; exit 0;;
@@ -646,7 +661,7 @@ Index() {
 	test ! -z "$FUNCTIONS" || \
 		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f $MOD_PATH/add || AddBtn`"
 	test ! -z "$CONTENT" || \
-		CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
+		CONTENT="`test -f "$MOD_PATH/over-index" && . "$MOD_PATH/over-index" || zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
 
 	export _TITLE
 	export INDEX_ICON
@@ -700,7 +715,7 @@ SubIndex() {
 		_TITLE="`cat title`"
 	fi
 
-	if im $OWNER; then
+	if im $OWNER $typ; then
 	cat > $DOCUMENT_ROOT/tmp/fun <<!
 `RB 📝 $dot/edit/`
 `RB "🗑" $dot/delete/`
@@ -712,8 +727,8 @@ SubIndex() {
 
 is_main() {
 	set -- `echo $DOCUMENT_URI | tr '/' ' '`
-	test $# -ge 3 && return 1
-	true
+	test $# -ge 4 && return 1
+	return 0
 }
 
 reindex() {
@@ -762,7 +777,7 @@ Add() {
 
 	title="`fd title`"
 	link="`echo "$title" | translate`"
-	item_id="`qhash -p "$link 0 $title" index.db`"
+	item_id="`qhash -p "$link 1 $title" index.db`"
 
 	mkdir -p $item_id
 	ln -sf $item_id $link
@@ -804,15 +819,17 @@ Delete() {
 		exit 0
 	fi
 
+	im $OWNER || Forbidden
+
 	test ! -f delete || . ./delete
 
-	nid="`readlink ../../$iid`"
+	nid="`readlink ./../$iid`"
 	if test "$nid" = "-1"; then
 		nid="$iid"
-		iid="`qhash -rg "$nid" ../../index.db | cut -d' ' -f2-`"
+		iid="`qhash -rg "$nid" ./../index.db | cut -d' ' -f2-`"
 	fi
-	qhash -rd "$nid" ../../index.db >/dev/null || true
-	rm -rf ../../$iid ../../$nid
+	qhash -rd "$nid" ./../index.db >/dev/null || true
+	rm -rf ./../$iid ./../$nid
 	SeeOther ../../
 }
 
