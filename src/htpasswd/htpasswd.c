@@ -1,7 +1,7 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <qhash.h>
+#include <qdb.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <stdlib.h>

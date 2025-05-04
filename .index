@@ -542,7 +542,7 @@ Buttons3() {
 	local aflags="$5"
 	test ! -z "$aflags" || aflags="1"
 	local title
-	qhash -l ./index`ilang`.db | while read link flags title; do
+	qdb -l ./index`ilang`.db | while read link flags title; do
 	test $link != "-1" && test "$(($flags & $aflags))" = "$aflags" || continue;
 		cat <<!
 <div><a class="btn wsnw h $cla" href="$where$link/$extra">
@@ -775,7 +775,7 @@ Add() {
 
 	title="`fd title`"
 	link="`echo "$title" | translate`"
-	item_id="`qhash -p "$link:1 $title" index.db:s`"
+	item_id="`qdb -p "$link:1 $title" index.db:s`"
 
 	mkdir -p $item_id
 	ln -sf $item_id $link
@@ -821,7 +821,7 @@ Delete() {
 
 	test ! -f delete || . ./delete
 
-	qhash -rd "$iid" ./../index.db >/dev/null || true
+	qdb -rd "$iid" ./../index.db >/dev/null || true
 	rm -rf ./../$iid
 	SeeOther ../../
 }

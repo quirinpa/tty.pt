@@ -16,5 +16,5 @@ ls | sort -V | while read line; do
 	echo "-p'$link:1 $title'" >> $tmpfile
 done
 
-cat $tmpfile | xargs -I {} qhash {} index.db:s
+cat $tmpfile | xargs -I {} qdb {} index.db:s
 rm -f "$tmpfile"

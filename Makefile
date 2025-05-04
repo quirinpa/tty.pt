@@ -31,7 +31,7 @@ shell-Linux := /bin/bash
 shell := ${shell-${uname}}
 no-shell := /sbin/nologin
 npm-root != npm root
-npm-lib := @tty-pt/qhash
+npm-lib := @tty-pt/qdb
 npm-lib-inc := ${npm-lib:%=node_modules/%/include.mk}
 -include $(npm-lib-inc)
 npm-bin := ${${npm-lib:%=%-bin}}
@@ -51,7 +51,7 @@ htdocs/vim.css: FORCE
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqhash -ldb ${lcrypt} ${LDFLAGS}
+	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqdb -ldb ${lcrypt} ${LDFLAGS}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
@@ -87,9 +87,8 @@ mod-dirs:
 		done
 
 $(npm-bin:%=usr/local/bin/%): ${npm-ilib}
-	${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}} bin
-	${sudo} chroot . ${MAKE} -C \
-		node_modules/${npm-${@:usr/local/bin/%=%}} install-bin
+	${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}}
+	${sudo} chroot . ${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}} install
 
 $(npm-lib:%=%-bin): ${npm-ilib}
 	${MAKE} -C node_modules/${@:%-bin=%}
