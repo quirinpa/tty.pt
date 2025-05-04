@@ -7,6 +7,8 @@
 /sessions
 /usr
 /dev
+/lib
+/include
 /tmp
 /var
 /run

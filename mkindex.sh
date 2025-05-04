@@ -13,8 +13,8 @@ ls | sort -V | while read line; do
 	title="`cat $id/title`"
 	link="`echo "$title" | translate`"
 	ln -sf $id $link >/dev/null
-	echo "-p'$id:$link 1 $title'" >> $tmpfile
+	echo "-p'$link:1 $title'" >> $tmpfile
 done
 
-cat $tmpfile | xargs -I {} qhash {} index.db
+cat $tmpfile | xargs -I {} qhash {} index.db:s
 rm -f "$tmpfile"

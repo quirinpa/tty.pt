@@ -37,9 +37,9 @@ npm-lib-inc := ${npm-lib:%=node_modules/%/include.mk}
 npm-bin := ${${npm-lib:%=%-bin}}
 npm-rlib := ${${npm-lib:%=%-lib}}
 npm-ilib := ${npm-rlib:%=usr/local/lib/%}
-libdir := /usr/local/lib ${npm-lib:%=${npm-root}/%}
-CFLAGS += ${libdir:%=-I%/include}
-LDFLAGS	+= ${libdir:%=-L%} ${libdir:%=-Wl,-rpath,%}
+prefix := ${npm-lib:%=${npm-root}/%} /usr/local
+CFLAGS += ${prefix:%=-I%/include}
+LDFLAGS += ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
 LINK.bin := ${LINK.c} ${CFLAGS}
 
 all:
@@ -92,7 +92,7 @@ $(npm-bin:%=usr/local/bin/%): ${npm-ilib}
 		node_modules/${npm-${@:usr/local/bin/%=%}} install-bin
 
 $(npm-lib:%=%-bin): ${npm-ilib}
-	${MAKE} -C node_modules/${@:%-bin=%} bin
+	${MAKE} -C node_modules/${@:%-bin=%}
 
 npm-lib-bin: ${npm-bin:%=usr/local/bin/%}
 

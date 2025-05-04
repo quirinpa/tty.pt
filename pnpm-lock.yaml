@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tty-pt/qhash':
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.8.5
+        version: 0.8.5
       '@tty-pt/vim.css':
         specifier: ^0.0.2
         version: 0.0.2
@@ -1579,11 +1579,11 @@ packages:
       '@xterm/addon-web-links': ^0.11.0
       '@xterm/xterm': ^5.5.0
 
-  '@tty-pt/qhash@0.7.0':
-    resolution: {integrity: sha512-Eo265rzWJ9Dz1yYQjvy3Tivv9ikMb3Y+YL0Gwe31EoDs7C/KKDBzT1vO4fs+eIVyKds8YNGsgXfGDBPL/iD6bg==}
-
   '@tty-pt/qhash@0.8.4':
     resolution: {integrity: sha512-rauKQWYjuOpl2Wa+ufTmU/ovP3mk7l+bxd0lil8miwSJ78uYhzofeeGhfm6OnBO0J+1wRnQg6JLIgMB5J4KXkQ==}
+
+  '@tty-pt/qhash@0.8.5':
+    resolution: {integrity: sha512-GrZ/OoMvR3LIyc1fD4yHdu82fKuEoYklicmy7yWMsGtSjzQeM1MO1iWv270fBxG3lWLd5eGtzFj1B+QtEXDN7A==}
 
   '@tty-pt/scripts@0.6.9':
     resolution: {integrity: sha512-uuYO8AkxZ6RukxJ7+GP/qWxhBUwJArdgE3xatA31Vz61cMoMD8ySsKYzs+FJq5WZVRijB1G8bHrQgmTZiB9B5g==}
@@ -6939,9 +6939,9 @@ snapshots:
       '@xterm/addon-web-links': 0.11.0(@xterm/xterm@5.5.0)
       '@xterm/xterm': 5.5.0
 
-  '@tty-pt/qhash@0.7.0': {}
-
   '@tty-pt/qhash@0.8.4': {}
+
+  '@tty-pt/qhash@0.8.5': {}
 
   '@tty-pt/scripts@0.6.9(@testing-library/dom@10.4.0)(@types/babel__core@7.20.5)(@types/node@22.10.2)(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(@types/testing-library__jest-dom@5.14.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(type-fest@2.19.0)':
     dependencies:
