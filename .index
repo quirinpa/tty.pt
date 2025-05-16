@@ -638,11 +638,13 @@ Index() {
 		"") ;;
 		add) shift; Add $MOD_PATH/add $@ ; exit 0;;
 		*)
-			INDEX_ICON="$SUBINDEX_ICON"
-			SUBINDEX_ICON=" "
-			_TITLE=
-			SubIndex $typ $@
-			exit 0
+			if test ! -f "$MOD_PATH/over-index" || test -f "$MOD_PATH/index"; then
+				INDEX_ICON="$SUBINDEX_ICON"
+				SUBINDEX_ICON=" "
+				_TITLE=
+				SubIndex $typ $@
+				exit 0
+			fi
 			;;
 	esac
 
@@ -870,6 +872,15 @@ git_backend() {
 	export PATH_INFO="`echo $DOCUMENT_URI | sed 's|^/~|/home/|'`"
 	$DOCUMENT_ROOT/usr/local/libexec/git/git-http-backend 2>&1
 	exit
+}
+
+Static() {
+	path="$1"
+	test -f "$path" || NotFound
+	echo "$STATUS_STR"200 Ok
+	echo "Cache-Control: max-age=864000"
+	echo
+	cat "$path"
 }
 
 # counter_inc $DOCUMENT_ROOT/counter.txt >/dev/null

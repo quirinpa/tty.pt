@@ -1,8 +1,0 @@
-#!/bin/sh
-
-. $DOCUMENT_ROOT/lib/auth.sh
-. $DOCUMENT_ROOT/lib/common.sh
-
-NormalHead 200
-echo
-cat $DOCUMENT_ROOT/htdocs/neverdark/index.html

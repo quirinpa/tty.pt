@@ -12,7 +12,7 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@tty-pt/qdb": "^0.0.2",
+    "@tty-pt/qdb": "^0.0.13",
     "@tty-pt/vim.css": "^0.0.2"
   }
 }
