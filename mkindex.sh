@@ -6,11 +6,11 @@ tmpfile="`mktemp`"
 
 rm index.db || true
 ls | sort -V | while read line; do
-	test ! -h "$line" || continue
+	id="$line"
 	line="`pwd`/$line"
-	id="`basename "$line"`"
-	test -f $id/title || continue
-	title="`cat $id/title`"
+	test -f $id/title && \
+		title="`cat $id/title`" || \
+		title="$id"
 	link="`echo "$title" | translate`"
 	ln -sf $id $link >/dev/null
 	echo "-p'$link:1 $title'" >> $tmpfile

@@ -98,3 +98,6 @@ realpath
 /etc/default/useradd
 /etc/login.defs
 /etc/shells
+mktemp
+iconv
+gdb

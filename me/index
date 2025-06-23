@@ -33,7 +33,7 @@ done; done`
 </div>
 !
 
-export INDEX_ICON="`RB 🏠 ./..`"
+export INDEX_ICON="`RB 🏠 "Home" ./..`"
 export CONTENT="`cat /tmp/contents`"
 Normal 200 me
 CCat /common

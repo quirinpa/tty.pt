@@ -104,9 +104,10 @@ Cat() {
 }
 
 CCat() {
-	test -f $DOCUMENT_ROOT/tmp/notitle && \
-		export _TITLE="" || \
-		export _TITLE="<h2 class='cap tac'>$_TITLE $SUBINDEX_ICON</h2>"
+	test ! -f $DOCUMENT_ROOT/tmp/notitle || _TITLE=
+	test -z "$_TITLE" || \
+		_TITLE="<h2 class='cap tac'>$_TITLE $SUBINDEX_ICON</h2>"
+	export _TITLE
 	_Cat $DOCUMENT_ROOT/components/$1
 }
 
@@ -118,7 +119,13 @@ SeeOther() {
 env > $DOCUMENT_ROOT/tmp/env
 
 RB() {
-	echo "<a class='$RBS' href='$2'>$1</a>"
+	test -z "$2" || label="<label>$2</label>"
+	echo "<a class='$SRBS h8 f fic' href='$3'><span>$1</span>$label</a>"
+}
+
+JSB() {
+	test -z "$2" || label="<label>$2</label>"
+	echo "<div class='$SRBS h8' onclick=\"$3\"><span>$1</span>$label</div>"
 }
 
 hidparams() {
@@ -130,30 +137,54 @@ hidparams() {
 }
 
 IFB() {
+	test -z "$2" || label="<label>$2</label>"
 	cat <<!
-<form action='$2' method='POST'>
-<button class="$RBS">$1</button>
+<form action='$3' method='POST'>
+<button class="h8"><span>$1</span>$label</button>
 </form>
 !
 }
 
 FB() {
+	test -z "$2" || label="<label>$2</label>"
 	cat <<!
-<label class="$RBS menu">$1
-<input type="checkbox" /><div class="abs v p ts ttc c01 r center">
-<form action='$2' method='$3' class='h f fic'>
-`hidparams $4`
-`cat`
-<button class="$RBS">✔</button>
-</form></div></label>
+<form action='$3' method='$4' class='h8 f p8 fic'>
+<span>$1</span>
+<label class='v0 ts9'><span>tune</span>`cat`</label>
+`hidparams $5`
+<noscript><button class="$RBS">✔</button></noscript>
+</form>
 !
 }
 
 QB() {
-	local param="$2"
-	local value="$3"
+	local icon="$1"
+	local label="$2"
+	local param="$3"
+	local value="$4"
 	local qs="`echo $QUERY_STRING | sed "s/$param=[^&]*&*//"`"
-	RB "$1" "?$param=$value&$qs"
+	RB "$icon" "$label" "?$param=$value&$qs"
+}
+
+TB() {
+	local val="`eval 'echo $HTTP_PARAM_'$1`"
+	if test -z "$6"; then
+		if test -z "$val"; then
+			buttons="$buttons`QB "$2" "$3" $1 1`"
+			true
+		else
+			buttons="$buttons`QB "$4" "$5" $1`"
+			false
+		fi
+	else
+		if test -z "$val"; then
+			buttons="$buttons`QB "$4" "$5" $1 1`"
+			false
+		else
+			buttons="$buttons`QB "$2" "$3" $1`"
+			true
+		fi
+	fi
 }
 
 Immediate() {
@@ -161,8 +192,6 @@ Immediate() {
 	shift
 
 	SUBINDEX_ICON=""
-	test ! -z "$_TITLE" || _TITLE="$content"
-	# rm $DOCUMENT_ROOT/tmp/fun $DOCUMENT_ROOT/tmp/bottom || true
 	if test -f $content; then
 		CONTENT="`INCEPTION=true . $content $@`"
 	else
@@ -176,7 +205,7 @@ Immediate() {
 	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
 
 	test -z "$INDEX_ICON" \
-		|| INDEX_ICON="`RB $INDEX_ICON ./..`"
+		|| INDEX_ICON="`RB $INDEX_ICON "Go Up"  ./..`"
 
 	export MENU="`Menu`"
 	export INDEX_ICON
@@ -249,6 +278,7 @@ _() {
 
 export RB="btn round p16 ts20"
 export RBS="btn round p8 ts17"
+export SRBS="p8"
 export RBXS="btn round p4 tss"
 export SRB="btn round ps tsl"
 
@@ -256,9 +286,9 @@ Menu() {
 	local user_name
 	local user_icon
 	if test ! -z "$REMOTE_USER"; then
-		user_icon="`RB 😊 /$REMOTE_USER`"
+		user_icon="`RB 😊 "Me" /$REMOTE_USER`"
 	else
-		user_icon="`RB 🔑 /login?ret=$DOCUMENT_URI`"
+		user_icon="`RB 🔑 "Login" /login?ret=$DOCUMENT_URI`"
 	fi
 	echo $user_icon
 }
@@ -524,13 +554,15 @@ Buttons() {
 	local link
 	local flags
 	local title
+	echo "<div class='f fic v8'>"
 	while read link flags title; do
 		cat <<!
-<div><a class="btn wsnw h $cla" href="$where$link/$extra">
+<a class="btn wsnw h $cla" href="$where$link/$extra">
 	$title
-</a></div>
+</a>
 !
 	done
+	echo "</div>"
 }
 
 Buttons3() {
@@ -602,8 +634,8 @@ Field() {
 }
 
 _Functions() {
-	read icon params
-	RB $icon $DOCUMENT_URI?$params
+	read icon label params
+	RB $icon label $DOCUMENT_URI?$params
 }
 
 Functions() {
@@ -619,7 +651,7 @@ IsAllowedItemFound() {
 }
 
 AddBtn() {
-	RB + ./add/
+	RB + "add" ./add/
 }
 
 Index() {
@@ -656,12 +688,16 @@ Index() {
 	fi
 
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
-	INDEX_ICON="`RB $INDEX_ICON ./..`"
+	INDEX_ICON="`RB $INDEX_ICON "home" ./..`"
 
-	test ! -z "$FUNCTIONS" || \
+	if test -z "$FUNCTIONS"; then
 		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f $MOD_PATH/add || AddBtn`"
+	fi
+
 	test ! -z "$CONTENT" || \
 		CONTENT="`test -f "$MOD_PATH/over-index" && . "$MOD_PATH/over-index" || zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
+
+	FUNCTIONS="$FUNCTIONS`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
 
 	export _TITLE
 	export INDEX_ICON
@@ -705,20 +741,19 @@ SubIndex() {
 				Immediate $DOCUMENT_ROOT/items/$typ/$1 $@
 				exit 0
 			else
-				SUB_ITEM_PATH="$1"
-				content=$DOCUMENT_ROOT/items/$typ/sub-index $@
+				NotFound
 			fi
 			;;
 	esac
 
 	if test -z "$_TITLE"; then
-		_TITLE="`cat title`"
+		_TITLE="`zcat title || true`"
 	fi
 
 	if im $OWNER $typ; then
 	cat > $DOCUMENT_ROOT/tmp/fun <<!
-`RB 📝 $dot/edit/`
-`RB "🗑" $dot/delete/`
+`RB 📝 edit $dot/edit/`
+`RB "🗑" delete $dot/delete/`
 !
 	fi
 
@@ -763,7 +798,7 @@ Add() {
 <form action="." method="POST" class="v f fic" enctype="multipart/form-data">
 	<label>
 		`_ Title`
-		<input required name="title"></input>
+		<input required name="title" value="$HTTP_PARAM_title"></input>
 	</label>
 	`. $template`
 	<div>$_DESCRIPTION</div>
@@ -920,7 +955,7 @@ if test ! -z "$1"; then
 					test -f "$path" || NotFound
 				fi
 				echo "$STATUS_STR"200 Ok
-				echo "Cache-Control: max-age=864000"
+				echo "Cache-Control: max-age=7200"
 				echo
 				cat "$path"
 			fi

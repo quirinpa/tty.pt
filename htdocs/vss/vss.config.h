@@ -53,7 +53,7 @@ body {
 }
 button:not(.transparent), .btn:not(.transparent) {
 	background-color: VAL(COLOR, d0);
-	color: VAL(COLOR, d15);
+	color: VAL(COLOR, d15) !important;
 }
 button:not(.transparent):hover, .btn:not(.transparent):hover {
 	background-color: color-mix(in oklab, VAL(COLOR, d0) 90%, VAL(COLOR, d7) 10%);
@@ -97,6 +97,11 @@ h1,h2,h3,h4,h5,h6 { color: VAL(COLOR, 0); }
 img { color: VAL(COLOR, f); };
 .modal a { color: VAL(COLOR, c); }
 a { color: VAL(COLOR, 5); }
+.nd {
+	color: VAL(COLOR, df);
+}
+.nd a { color: #fafafa; text-shadow: 2px 2px 4px rgba(1, 1, 1, 0.6), -1px -1px 2px rgba(1, 1, 1, 0.4); }
+.nd a:hover { color: white; }
 input,textarea {
 	border: solid thin VAL(COLOR, 0);
 	font-size: inherit;
@@ -122,20 +127,25 @@ pre { font-family: monospace; }
 .wn { white-space: nowrap; }
 button, .btn {
 	font-size: inherit;
-	padding: VAL(SIZE, );
+	padding: VAL(SIZE, 8);
 	border: none;
 	text-decoration: none;
+	min-width: max-content;
+	min-height: max-content;
 }
 
 button:not(:disabled), .btn:not(:disabled) { cursor: pointer; }
 button:not(.transparent), .btn:not(.transparent) {
-	background-color: color-mix(in oklab, VAL(COLOR, 13) 30%, #ffffff 70%);
-	color: VAL(COLOR, f);
-	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
+	background: whitesmoke;
+	border: solid thin gainsboro;
+	transition: filter .2s;
+	color: VAL(COLOR, f) !important;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 	//border: solid thin black;
 }
+
 button:not(.transparent):hover, .btn:not(.transparent):hover {
-	background-color: color-mix(in oklab, VAL(COLOR, 13) 20%, #ffffff 80%);
+  filter: brightness(1.03);
 }
 
 .c01 {
@@ -152,7 +162,7 @@ button > a, .btn > a, a.btn {
 }
 
 button:hover, .btn:hover, .card:hover {
-	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
 }
 pre {
 	overflow: auto;
@@ -174,16 +184,74 @@ pre {
 	//color: VAL(COLOR, 0);
 }
 
+h3, h4, h5, h6 { margin: 0; }
+a > h3 { text-align: center;
+}
+
 .al.menu.btn.round > * { right: -16px; }
 .menu.btn.round > .center { transform: translateX(-50%); margin-left: -48px; }
 // .menu.btn.round > .center > form { margin-top: -16px; }
 .menu.btn.round > * { margin-top: 8px; }
 .menu.extended > * { right: 16px; min-width: 300px; }
-.menu:not(.js) > div { display: none; }
+.menu:not(.js) > div {
+	overflow: hidden;
+	width: 0;
+}
 .menu input[type="checkbox"] { display: none; }
-.menu :checked + div { display: block }
+.menu :checked + div {
+	width: auto;
+}
 a:hover { color: VAL(COLOR, 13); }
 .menu a { text-decoration: none; }
+
+.main.menu {
+	border-left: solid thin gainsboro;
+	background: whitesmoke;
+	height: 100%;
+}
+
+.main.menu > span {
+	text-align: right;
+}
+
+.functions form > button {
+	padding: 8px;
+	background-color: transparent !important;
+        box-shadow: none !important;
+	align-items: center;
+	display: flex;
+}
+
+.functions > * {
+	background: whitesmoke;
+	transition: filter .2s;
+	display: flex !important;
+	cursor: pointer;
+	color: VAL(COLOR, 0);
+}
+
+.functions > *:hover {
+  filter: brightness(1.03);
+  color: black;
+}
+
+.functions > * label {
+	font-size: 0.8rem !important;
+	cursor: pointer;
+	text-wrap: nowrap;
+}
+
+.functions > * label span {
+	font-size: 8px;
+}
+
+script {
+	display: none !important;
+}
+
+.menu :checked + div label {
+	display: inline-block !important;
+}
 
 .pn { padding: 0; }
 .fix { position: fixed; }
@@ -208,3 +276,8 @@ input[type="number"] {
 .shf { width: 100% }
 .comment { color: VAL(COLOR, 4); }
 .strike { text-decoration: line-through; }
+.nd_copy { padding: 0; }
+button.nd_copy { display: flex; gap: VAL(SIZE, 4); padding: VAL(SIZE, 4); }
+.terminal { text-shadow: 2px 2px 4px rgba(1, 1, 1, 0.6), -1px -1px 2px rgba(1, 1, 1, 0.4); }
+.xterm-viewport { background-color: rbga(0, 0, 0, 0.7) !important; }
+.ctb { background-color: rgba(0, 0, 0, 0.5);

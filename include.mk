@@ -1,12 +1,12 @@
 include env.mk
 
 npm-root != npm root
-npm-lib := ${npm-lib:%=${npm-root}/%}
-npm-lib != echo ${npm-lib} | tr ' ' '\n' | while read lib; do realpath $$lib; done | tr '\n' ' '
-LDFLAGS += -L/usr/local/lib
-LDFLAGS += ${npm-lib:%=-L%} ${npm-lib:%=-Wl,-rpath,%}
-CFLAGS += -I/usr/local/include
-CFLAGS += ${npm-lib:%=-I%/include}
+prefix := ${pwd} \
+	  ${npm-lib:%=${npm-root}/%} \
+	  ${npm-lib:%=${npm-root-dir}/../../%} \
+	  /usr/local
+CFLAGS += -g ${prefix:%=-I%/include}
+LDFLAGS	+= ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
 
 bin := $(exe:%=$(DESTDIR)$(PREFIX)/bin/%)
 
