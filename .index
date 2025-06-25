@@ -30,6 +30,17 @@ export LD_LIBRARY_PATH=/usr/local/lib
 test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
 	STATUS_STR="Status: "
 
+___() {
+	local res
+	local query
+	read res query
+	test "$res" = "-1" && echo "$@" || echo "$res"
+}
+
+__() {
+	qdb -g"$@" $DOCUMENT_ROOT/items/i18n-$lang.db | ___ "$@"
+}
+
 public() {
 	chmod g+w $1
 	chgrp www $1
@@ -80,9 +91,10 @@ Head() {
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 		<meta name="description" content="tty.pt $_TITLE">
-		<link rel="stylesheet" href="/vim.css" />
+		<style>`cat $DOCUMENT_ROOT/htdocs/basics.css $DOCUMENT_ROOT/htdocs/vim.css`</style>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+Mono:wght@100..900&display=swap" rel="stylesheet">
 		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
 		<title>$PINDEX_ICON $_TITLE</title>
 	</head>
@@ -106,7 +118,7 @@ Cat() {
 CCat() {
 	test ! -f $DOCUMENT_ROOT/tmp/notitle || _TITLE=
 	test -z "$_TITLE" || \
-		_TITLE="<h2 id='title' class='cap tac'>$_TITLE $SUBINDEX_ICON</h2>"
+		_TITLE="<h2 id='title' class='ttc tac'>$_TITLE $SUBINDEX_ICON</h2>"
 	export _TITLE
 	_Cat $DOCUMENT_ROOT/components/$1
 }
@@ -119,13 +131,13 @@ SeeOther() {
 env > $DOCUMENT_ROOT/tmp/env
 
 RB() {
-	test -z "$2" || label="<label>$2</label>"
-	echo "<a class='$SRBS h8 f fic' href='$3'><span>$1</span>$label</a>"
+	test -z "$2" || label="<label>`__ "$2"`</label>"
+	echo "<a href='$3'><span>$1</span>$label</a>"
 }
 
 JSB() {
-	test -z "$2" || label="<label>$2</label>"
-	echo "<div class='$SRBS h8' onclick=\"$3\"><span>$1</span>$label</div>"
+	test -z "$2" || label="<label>`__ "$2"`</label>"
+	echo "<div onclick=\"$3\"><span>$1</span>$label</div>"
 }
 
 hidparams() {
@@ -137,7 +149,7 @@ hidparams() {
 }
 
 IFB() {
-	test -z "$2" || label="<label>$2</label>"
+	test -z "$2" || label="<label>`__ "$2"`</label>"
 	cat <<!
 <form action='$3' method='POST'>
 <button class="h8"><span>$1</span>$label</button>
@@ -146,42 +158,65 @@ IFB() {
 }
 
 FB() {
-	test -z "$2" || label="<label>$2</label>"
+	test -z "$2" || label="`__ "$2"`"
 	cat <<!
 <form action='$3' method='$4' class='h8 f p8 fic'>
 <span>$1</span>
-<label class='v0 ts9'><span>tune</span>`cat`</label>
+<label><div>$label</div>`cat`</label>
 `hidparams $5`
 <noscript><button class="$RBS">✔</button></noscript>
 </form>
 !
 }
 
-QB() {
+IQB() {
 	local icon="$1"
 	local label="$2"
 	local param="$3"
 	local value="$4"
+	local iq="$5"
+	RB "$icon" "$label" "?$param=$value&$iq"
+}
+
+QB() {
+	local param="$3"
 	local qs="`echo $QUERY_STRING | sed "s/$param=[^&]*&*//"`"
-	RB "$icon" "$label" "?$param=$value&$qs"
+	IQB "$1" "$2" "$param" "$4" "$qs"
 }
 
 TB() {
 	local val="`eval 'echo $HTTP_PARAM_'$1`"
+	local invert
+	local tty="$DOCUMENT_ROOT/home/$REMOTE_USER/.tty"
+
+	if test -f $tty/$MOD-$1; then
+		invert=true
+		test -z "$val" || rm $tty/$MOD-$1
+	else
+		invert=false
+		test -z "$val" || touch $tty/$MOD-$1
+	fi
+
 	if test -z "$6"; then
+		$invert && invert=false || invert=true
+	else
+		$invert && invert=true || invert=false
+	fi
+
+	if $invert; then
 		if test -z "$val"; then
-			buttons="$buttons`QB "$2" "$3" $1 1`"
+			buttons="$buttons`IQB "$2" "$3" $1 1`"
 			true
 		else
-			buttons="$buttons`QB "$4" "$5" $1`"
+			buttons="$buttons`IQB "$4" "$5" $1`"
 			false
 		fi
 	else
 		if test -z "$val"; then
-			buttons="$buttons`QB "$4" "$5" $1 1`"
+			buttons="$buttons`IQB "$4" "$5" $1 1`"
 			false
 		else
-			buttons="$buttons`QB "$2" "$3" $1`"
+			buttons="$buttons`IQB "$2" "$3" $1`"
 			true
 		fi
 	fi
@@ -205,7 +240,7 @@ Immediate() {
 	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
 
 	test -z "$INDEX_ICON" \
-		|| INDEX_ICON="`RB $INDEX_ICON "Go Up"  ./..`"
+		|| INDEX_ICON="`RB $INDEX_ICON "go up"  ./..`"
 
 	export MENU="`Menu`"
 	export INDEX_ICON
@@ -277,8 +312,7 @@ _() {
 }
 
 export RB="btn round p16 ts20"
-export RBS="btn round p8 ts17"
-export SRBS="p8"
+export RBS="btn round p8"
 export RBXS="btn round p4 tss"
 export SRB="btn round ps tsl"
 
@@ -286,9 +320,9 @@ Menu() {
 	local user_name
 	local user_icon
 	if test ! -z "$REMOTE_USER"; then
-		user_icon="`RB 😊 "Me" /$REMOTE_USER`"
+		user_icon="`RB 😊 "me" /$REMOTE_USER`"
 	else
-		user_icon="`RB 🔑 "Login" /login?ret=$DOCUMENT_URI`"
+		user_icon="`RB 🔑 "login" /login?ret=$DOCUMENT_URI`"
 	fi
 	echo $user_icon
 }
@@ -340,6 +374,12 @@ _Normal() {
 }
 
 Normal() {
+	# test using non logged in nd
+	if test -f $DOCUMENT_ROOT/tmp/post; then
+		cat $DOCUMENT_ROOT/tmp/post
+		exit 0
+	fi
+
 	_Normal $@ > $DOCUMENT_ROOT/tmp/normal
 	public $DOCUMENT_ROOT/tmp/normal
 }
@@ -657,6 +697,7 @@ AddBtn() {
 Index() {
 	typ=$1
 	test $# -lt 1 || shift
+	MOD="$typ"
 	MOD_PATH="$DOCUMENT_ROOT/items/$typ"
 
 	if test -z "$SUBINDEX_ICON"; then
@@ -670,7 +711,10 @@ Index() {
 		"") ;;
 		add) shift; Add $MOD_PATH/add $@ ; exit 0;;
 		*)
-			if test ! -f "$MOD_PATH/over-index" || test -f "$MOD_PATH/index"; then
+			if test -f $MOD_PATH/$1; then
+				Immediate $MOD_PATH/$1 $@
+				exit 0
+			elif test ! -f "$MOD_PATH/over-index" || test -f "$MOD_PATH/index"; then
 				INDEX_ICON="$SUBINDEX_ICON"
 				SUBINDEX_ICON=" "
 				_TITLE=
@@ -683,8 +727,8 @@ Index() {
 	test "$REQUEST_METHOD" = "GET" || return 0
 
 	if test -z "$_TITLE"; then
-		TITLE="`zcat title || echo $typ`"
-		_TITLE="`_ "$TITLE"`"
+		TITLE="`zcat $MOD_PATH/title || echo $typ`"
+		_TITLE="`__ "$TITLE"`"
 	fi
 
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
@@ -802,7 +846,7 @@ Add() {
 		export FILE="<label>`_ File`<input required type='file' name='file'></input></label>"
 
 		Immediate - <<!
-<form action="." method="POST" class="v f fic" enctype="multipart/form-data">
+<form action="$MOD_PATH/add" method="POST" class="v f fic" enctype="multipart/form-data">
 	<label>
 		`_ Title`
 		<input required name="title" value="$HTTP_PARAM_title"></input>

@@ -23,7 +23,7 @@ cat > /tmp/contents <<!
 while read type; do ls $DOCUMENT_ROOT/home/$PUSER/.items/$type | while read item; do
 	echo "<a href='/$PUSER/$type/$item'>$type/$item</a>"
 done; done`
-
+<hr />
 <div class="tac tsxl f">
 	<a class="btn" href="~$PUSER">`_ Page`</a>
 </div>

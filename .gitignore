@@ -42,3 +42,4 @@
 /node_modules
 /lib/x86_64-linux-gnu/
 /htdocs/vss/color.h
+!/htdocs/basics.css
