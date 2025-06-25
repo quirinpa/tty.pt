@@ -18,7 +18,7 @@ CALL(BORDER, ALL_COLORS)
 CALL(BORDER, ALL_COLORS)
 CALL(SIZE, f, ALL_SIZES)
 CALL(MARGIN, 0, BASE_SIZES)
-CALL(PADDING, 0, BASE_SIZES)
+CALL(PADDING, 0, 2, BASE_SIZES)
 CALL(AXIS_horizontal, 0, BASE_SIZES)
 CALL(AXIS_vertical, 0, BASE_SIZES)
 ABS_DIST_ALL(0)
@@ -30,6 +30,8 @@ FULL_SIZE
 /* CALL(FLEX_VERTICAL, SS) */
 CALL(ROUND_T, ALL_TEXT_SIZES)
 CALL(ROUND_EDGE, ALL_SIZES)
+ROUND_PADDING( 2, 17)
+ROUND_PADDING( 4, 17)
 ROUND_PADDING( 4, 14)
 ROUND_PADDING( 8, 8)
 ROUND_PADDING( 8, 17)
@@ -37,15 +39,15 @@ ROUND_PADDING( 8, 20)
 ROUND_PADDING( 8, 26)
 
 .dn { display: none !important; }
-.cf { background: VAL(COLOR, b); }
+.cf { background-color: VAL(COLOR, b); }
 .cb { color: VAL(COLOR, f); }
 
 @media (prefers-color-scheme: light) {
-	.abs.c0 { background: color-mix(in oklab, VAL(COLOR, 15) 80%, VAL(COLOR, b) 10%) !important; }
+	.abs.c0 { background-color: color-mix(in oklab, VAL(COLOR, 15) 80%, VAL(COLOR, b) 10%) !important; }
 }
 
 @media (prefers-color-scheme: dark) {
-.cf { background: VAL(COLOR, db); }
+.cf { background-color: VAL(COLOR, db); }
 .cb { color: VAL(COLOR, df); }
 body {
 	color: VAL(COLOR, df);
@@ -120,7 +122,7 @@ pre { font-family: monospace; }
 .dib { display: inline-block; }
 .ofc { object-fit: cover; }
 .tdn { text-decoration: none; }
-.ch00:hover { background: black; }
+.ch00:hover { background-color: black; }
 // .s_k9 { max-width: 256px; }
 .s_5 { width: 64px; }
 .s_4_5 { width: 48px; }
@@ -129,14 +131,13 @@ button, .btn {
 	font-size: inherit;
 	padding: VAL(SIZE, 8);
 	border: none;
+	box-sizing: content-box;
 	text-decoration: none;
-	min-width: max-content;
-	min-height: max-content;
 }
 
 button:not(:disabled), .btn:not(:disabled) { cursor: pointer; }
 button:not(.transparent), .btn:not(.transparent) {
-	background: whitesmoke;
+	background-color: whitesmoke;
 	border: solid thin gainsboro;
 	transition: filter .2s;
 	color: VAL(COLOR, f) !important;
@@ -184,7 +185,9 @@ pre {
 	//color: VAL(COLOR, 0);
 }
 
-h3, h4, h5, h6 { margin: 0; }
+h1, h2, h3, h4, h5, h6 { margin: 0; }
+
+h2 { margin-bottom: 8px !important; }
 a > h3 { text-align: center;
 }
 
@@ -206,7 +209,7 @@ a:hover { color: VAL(COLOR, 13); }
 
 .main.menu {
 	border-left: solid thin gainsboro;
-	background: whitesmoke;
+	background-color: whitesmoke;
 	height: 100%;
 }
 
@@ -223,7 +226,7 @@ a:hover { color: VAL(COLOR, 13); }
 }
 
 .functions > * {
-	background: whitesmoke;
+	background-color: whitesmoke;
 	transition: filter .2s;
 	display: flex !important;
 	cursor: pointer;

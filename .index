@@ -14,7 +14,7 @@ fi
 rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
 	$DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun \
 	$DOCUMENT_ROOT/tmp/bottom $DOCUMENT_ROOT/tmp/ncat \
-	$DOCUMENT_ROOT/tmp/notitle || true
+	$OOCUMENT_ROOT/tmp/full-size $DOCUMENT_ROOT/tmp/notitle || true
 
 umask 002
 set -e
@@ -106,7 +106,7 @@ Cat() {
 CCat() {
 	test ! -f $DOCUMENT_ROOT/tmp/notitle || _TITLE=
 	test -z "$_TITLE" || \
-		_TITLE="<h2 class='cap tac'>$_TITLE $SUBINDEX_ICON</h2>"
+		_TITLE="<h2 id='title' class='cap tac'>$_TITLE $SUBINDEX_ICON</h2>"
 	export _TITLE
 	_Cat $DOCUMENT_ROOT/components/$1
 }
@@ -694,8 +694,15 @@ Index() {
 		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f $MOD_PATH/add || AddBtn`"
 	fi
 
-	test ! -z "$CONTENT" || \
-		CONTENT="`test -f "$MOD_PATH/over-index" && . "$MOD_PATH/over-index" || zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
+	if test -z "$CONTENT"; then
+		if test -f "$MOD_PATH/over-index"; then
+			CONTENT="`. "$MOD_PATH/over-index"`"
+			test ! -f $DOCUMENT_ROOT/tmp/full-size || \
+				export FULL_SIZE="svfv"
+		else
+			CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
+		fi
+	fi
 
 	FUNCTIONS="$FUNCTIONS`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
 
