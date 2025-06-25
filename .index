@@ -30,6 +30,17 @@ export LD_LIBRARY_PATH=/usr/local/lib
 test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
 	STATUS_STR="Status: "
 
+___() {
+	local res
+	local query
+	read res query
+	test "$res" = "-1" && echo "$@" || echo "$res"
+}
+
+__() {
+	qdb -g"$@" $DOCUMENT_ROOT/items/i18n-$lang.db | ___ "$@"
+}
+
 public() {
 	chmod g+w $1
 	chgrp www $1
@@ -80,7 +91,7 @@ Head() {
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 		<meta name="description" content="tty.pt $_TITLE">
-		<link rel="stylesheet" href="/vim.css" />
+		<style>`cat $DOCUMENT_ROOT/htdocs/basics.css $DOCUMENT_ROOT/htdocs/vim.css`</style>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
@@ -106,7 +117,7 @@ Cat() {
 CCat() {
 	test ! -f $DOCUMENT_ROOT/tmp/notitle || _TITLE=
 	test -z "$_TITLE" || \
-		_TITLE="<h2 id='title' class='cap tac'>$_TITLE $SUBINDEX_ICON</h2>"
+		_TITLE="<h2 id='title' class='ttc tac'>$_TITLE $SUBINDEX_ICON</h2>"
 	export _TITLE
 	_Cat $DOCUMENT_ROOT/components/$1
 }
@@ -119,13 +130,13 @@ SeeOther() {
 env > $DOCUMENT_ROOT/tmp/env
 
 RB() {
-	test -z "$2" || label="<label>$2</label>"
-	echo "<a class='$SRBS h8 f fic' href='$3'><span>$1</span>$label</a>"
+	test -z "$2" || label="<label>`__ "$2"`</label>"
+	echo "<a href='$3'><span>$1</span>$label</a>"
 }
 
 JSB() {
-	test -z "$2" || label="<label>$2</label>"
-	echo "<div class='$SRBS h8' onclick=\"$3\"><span>$1</span>$label</div>"
+	test -z "$2" || label="<label>`__ "$2"`</label>"
+	echo "<div onclick=\"$3\"><span>$1</span>$label</div>"
 }
 
 hidparams() {
@@ -137,7 +148,7 @@ hidparams() {
 }
 
 IFB() {
-	test -z "$2" || label="<label>$2</label>"
+	test -z "$2" || label="<label>`__ "$2"`</label>"
 	cat <<!
 <form action='$3' method='POST'>
 <button class="h8"><span>$1</span>$label</button>
@@ -146,11 +157,11 @@ IFB() {
 }
 
 FB() {
-	test -z "$2" || label="<label>$2</label>"
+	test -z "$2" || label="`__ "$2"`"
 	cat <<!
 <form action='$3' method='$4' class='h8 f p8 fic'>
 <span>$1</span>
-<label class='v0 ts9'><span>tune</span>`cat`</label>
+<label><div>$label</div>`cat`</label>
 `hidparams $5`
 <noscript><button class="$RBS">✔</button></noscript>
 </form>
@@ -205,7 +216,7 @@ Immediate() {
 	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
 
 	test -z "$INDEX_ICON" \
-		|| INDEX_ICON="`RB $INDEX_ICON "Go Up"  ./..`"
+		|| INDEX_ICON="`RB $INDEX_ICON "go up"  ./..`"
 
 	export MENU="`Menu`"
 	export INDEX_ICON
@@ -277,8 +288,7 @@ _() {
 }
 
 export RB="btn round p16 ts20"
-export RBS="btn round p8 ts17"
-export SRBS="p8"
+export RBS="btn round p8"
 export RBXS="btn round p4 tss"
 export SRB="btn round ps tsl"
 
@@ -286,9 +296,9 @@ Menu() {
 	local user_name
 	local user_icon
 	if test ! -z "$REMOTE_USER"; then
-		user_icon="`RB 😊 "Me" /$REMOTE_USER`"
+		user_icon="`RB 😊 "me" /$REMOTE_USER`"
 	else
-		user_icon="`RB 🔑 "Login" /login?ret=$DOCUMENT_URI`"
+		user_icon="`RB 🔑 "login" /login?ret=$DOCUMENT_URI`"
 	fi
 	echo $user_icon
 }
@@ -340,6 +350,12 @@ _Normal() {
 }
 
 Normal() {
+	# test using non logged in nd
+	if test -f $DOCUMENT_ROOT/tmp/post; then
+		cat $DOCUMENT_ROOT/tmp/post
+		exit 0
+	fi
+
 	_Normal $@ > $DOCUMENT_ROOT/tmp/normal
 	public $DOCUMENT_ROOT/tmp/normal
 }
@@ -683,8 +699,8 @@ Index() {
 	test "$REQUEST_METHOD" = "GET" || return 0
 
 	if test -z "$_TITLE"; then
-		TITLE="`zcat title || echo $typ`"
-		_TITLE="`_ "$TITLE"`"
+		TITLE="`zcat $MOD_PATH/title || echo $typ`"
+		_TITLE="`__ "$TITLE"`"
 	fi
 
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"

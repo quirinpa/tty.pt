@@ -13,6 +13,6 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "@tty-pt/qdb": "^0.0.14",
-    "@tty-pt/vim.css": "^0.0.2"
+    "@tty-pt/vim.css": "^0.0.3"
   }
 }

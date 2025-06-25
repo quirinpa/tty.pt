@@ -12,17 +12,8 @@ importers:
         specifier: ^0.0.14
         version: 0.0.14
       '@tty-pt/vim.css':
-        specifier: ^0.0.2
-        version: 0.0.2
-
-  items/chords/src/transp:
-    devDependencies:
-      '@tty-pt/mk':
-        specifier: ^0.0.13
-        version: 0.0.13
-      '@tty-pt/qdb':
-        specifier: ^0.0.14
-        version: 0.0.14
+        specifier: ^0.0.3
+        version: 0.0.3
 
   items/nd:
     dependencies:
@@ -1626,8 +1617,8 @@ packages:
     peerDependencies:
       lodash: ^4.17.21
 
-  '@tty-pt/vim.css@0.0.2':
-    resolution: {integrity: sha512-A02OYE7pZ/LJu9NeRl2nUKvTm0vAUYakxli5oowWaNNQ2jgn6zl0B8ErZXf4fYOrowyZpjnic6njUbn5lb0tyA==}
+  '@tty-pt/vim.css@0.0.3':
+    resolution: {integrity: sha512-SqNns8Ti4jMcHvnLYESTqMj5ERLxuEYwA+dY3C/PuxnvT4AjmXB0h3Crl70s34bijsN3IzAXiZiN4fX8366lPw==}
 
   '@types/aria-query@5.0.4':
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
@@ -7115,7 +7106,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  '@tty-pt/vim.css@0.0.2': {}
+  '@tty-pt/vim.css@0.0.3': {}
 
   '@types/aria-query@5.0.4': {}
 
