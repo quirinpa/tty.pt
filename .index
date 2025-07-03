@@ -169,19 +169,13 @@ FB() {
 !
 }
 
-IQB() {
+QB() {
 	local icon="$1"
 	local label="$2"
 	local param="$3"
 	local value="$4"
-	local iq="$5"
-	RB "$icon" "$label" "?$param=$value&$iq"
-}
-
-QB() {
-	local param="$3"
 	local qs="`echo $QUERY_STRING | sed "s/$param=[^&]*&*//"`"
-	IQB "$1" "$2" "$param" "$4" "$qs"
+	RB "$icon" "$label" "?$param=$value&$qs"
 }
 
 TB() {
@@ -191,10 +185,10 @@ TB() {
 
 	if test -f $tty/$MOD-$1; then
 		invert=true
-		test -z "$val" || rm $tty/$MOD-$1
+		test -z "$val" || test -z "$REMOTE_USER" || rm $tty/$MOD-$1
 	else
 		invert=false
-		test -z "$val" || touch $tty/$MOD-$1
+		test -z "$val" || test -z "$REMOTE_USER" || touch $tty/$MOD-$1
 	fi
 
 	if test -z "$6"; then
@@ -205,18 +199,18 @@ TB() {
 
 	if $invert; then
 		if test -z "$val"; then
-			buttons="$buttons`IQB "$2" "$3" $1 1`"
+			buttons="$buttons`QB "$2" "$3" $1 1`"
 			true
 		else
-			buttons="$buttons`IQB "$4" "$5" $1`"
+			buttons="$buttons`QB "$4" "$5" $1`"
 			false
 		fi
 	else
 		if test -z "$val"; then
-			buttons="$buttons`IQB "$4" "$5" $1 1`"
+			buttons="$buttons`QB "$4" "$5" $1 1`"
 			false
 		else
-			buttons="$buttons`IQB "$2" "$3" $1`"
+			buttons="$buttons`QB "$2" "$3" $1`"
 			true
 		fi
 	fi
@@ -694,6 +688,12 @@ AddBtn() {
 	RB + "add" ./add/
 }
 
+valid_cgi() {
+	test -f "$1" || return 1
+	echo "$1" | grep -q '\.' || return 0
+	return 1
+}
+
 Index() {
 	typ=$1
 	test $# -lt 1 || shift
@@ -711,7 +711,7 @@ Index() {
 		"") ;;
 		add) shift; Add $MOD_PATH/add $@ ; exit 0;;
 		*)
-			if test -f $MOD_PATH/$1; then
+			if valid_cgi $MOD_PATH/$1; then
 				Immediate $MOD_PATH/$1 $@
 				exit 0
 			elif test ! -f "$MOD_PATH/over-index" || test -f "$MOD_PATH/index"; then
@@ -746,6 +746,11 @@ Index() {
 		else
 			CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
 		fi
+	fi
+
+	if test -f $DOCUMENT_ROOT/tmp/normal; then
+		cat $DOCUMENT_ROOT/tmp/normal
+		exit 0
 	fi
 
 	FUNCTIONS="$FUNCTIONS`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"

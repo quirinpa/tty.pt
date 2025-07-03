@@ -168,12 +168,21 @@ button.round {
 	text-align: right;
 }
 
+.functions {
+	overflow: auto !important;
+}
+
+.functions > form {
+	padding: 0px;
+}
+
 .functions form > button {
 	padding: 8px;
 	background-color: transparent !important;
 	box-shadow: none !important;
 	align-items: center;
 	display: flex;
+	flex-grow: 1;
 }
 
 .functions input[type=range] {
@@ -197,13 +206,13 @@ button.round {
   color: black;
 }
 
-.functions > * label {
+.functions label {
 	font-size: 0.8rem !important;
 	cursor: pointer;
 	text-wrap: nowrap;
 }
 
-.functions > * label > div:first-child {
+.functions label > div:first-child {
 	font-size: 8px;
 }
 

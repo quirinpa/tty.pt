@@ -41,6 +41,7 @@ prefix := ${npm-lib:%=${npm-root}/%} /usr/local
 CFLAGS += ${prefix:%=-I%/include}
 LDFLAGS += ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
 LINK.bin := ${LINK.c} ${CFLAGS}
+qdb := node_modules/@tty-pt/qdb/bin/qdb
 
 all:
 
@@ -86,7 +87,7 @@ mod-dirs:
 		mkdir items/$$dir/items ; \
 		done
 
-$(npm-bin:%=usr/local/bin/%): ${npm-ilib}
+$(npm-bin:%=usr/local/bin/%): usr/bin/make ${npm-ilib}
 	${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}}
 	${sudo} chroot . ${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}} install
 
@@ -95,7 +96,7 @@ $(npm-lib:%=%-bin): ${npm-ilib}
 
 npm-lib-bin: ${npm-bin:%=usr/local/bin/%}
 
-$(npm-ilib):
+$(npm-ilib): usr/bin/make
 	${MAKE} -C node_modules/${npm-${@:usr/local/lib/%=%}}
 	${sudo} chroot . ${MAKE} -C node_modules/${npm-${@:usr/local/lib/%=%}} install
 
@@ -104,6 +105,8 @@ items/index.db:
 		./index_put.sh items/index.db
 	paste -d ' ' common-index pt-index | \
 		./index_put.sh items/index-pt_PT.db
+
+usr/bin/make: .all-install
 
 .all-install: items .links .install
 	@cp .install .all-install
@@ -191,6 +194,9 @@ $(mod-y): all ${chroot_mkdir}
 
 run: all ${chroot_mkdir}
 	${MAKE} -f ${PWD}/module.mk module=nd ${MAKEFLAGS} osdbg
+
+module:
+	${MAKE} -f ${PWD}/module.mk module=${MODULE} ${MAKEFLAGS} ${TARGET}
 
 FORCE:
 

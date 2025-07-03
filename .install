@@ -101,3 +101,4 @@ realpath
 mktemp
 iconv
 gdb
+/usr/share/mk
