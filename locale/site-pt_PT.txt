@@ -3,66 +3,33 @@ Books|Livros
 Questions|Questões
 Please wait|Por favor espere
 Page under construction|Página em construção
-Chords|Acordes
-choirs|coros
-chords|acordes
-Songbooks|Cancioneiros
-songbooks|cancioneiros
-Commands|Comandos
-commands|comandos
 Never Dark|Nunca Sombrio
 never dark|nunca sombrio
-Shops|Lojas
-shops|lojas
-Shared Expenses Manager|Gestor de Despesas Partilhadas
-shared expenses manager|gestor de despesas partilhadas
-
-
-
 Username|Nome de utilizador
 Password|Palavra-passe
 Submit|Submeter
 Register|Registo
 Anonymous|Anónimo
 Repeat password|Repetir palavra-passe
-
 Passwords don't match|As palavras-passes não combinam.
 User already exists|O utilizador já existe
 loja_dos_sonhos|Loja Dos Sonhos
 misc|Mistos
-Cart|Carrinho
-Order|Encomenda
-Orders|Encomedas
-Pending_payment|Pagamento pendente
-Pending_shipment|Envio pendente
-Shipped|Enviado
-Delivered|Entregue
 Empty|Vazio
 User|Utilizador
 Welcome|Bem-vindo
-Shop not found|Loja não encontrada
-Order not found|Encomenda não encontrada
 You can not do that|Não pode fazer isso
-Add product|Adicionar produto
 Title|Título
 Description|Descrição
 Images|Imagens
-Price|Preço
 Upload image|Fazer upload de uma imagem
 Files|Ficheiros
-Product|Produto
-change_personal_data|Mudar dados pessoais
-Address line 1|Primeira linha da morada
-Address line 2|Segunda linha da morada
 Zip code|Código postal
 Phone number|Número de telefone
-change_vendor_data|Mudar dados de vendedor
 Account IBAN|IBAN da conta
 Account BICSWIFT|BICSWIFT da conta
 Checking bytes of unknown user|A verificar bytes de um utilizador desconhecido
-Please refer to the order number in the credit description.|Por favor faça referência ao número da encomenda no descritivo do crédito.
 You can send an e-mail to|Pode enviar um email a
-to speed up shipment.|para acelerar o envio.
 Welcome to tty.pt!|Bem vindo ao tty.pt!
 To confirm that this e-mail address belongs to you, go to the page at:|Para confirmar que este endereço de e-mail lhe pertence, vá á pagina:
 You will then be able to use your account.|Poderá usar a sua conta depois disso.
@@ -71,10 +38,7 @@ Registration complete|Registo completo
 Please click the link sent to your e-mail to activate your account.|Por favor clique no link enviado para o seu e-mail para activar a sua conta.
 The account was not activated|A conta não foi activada
 No such user|Esse utilizador não existe
-Poems|Poemas
-poems|poemas
 programmers_poem|O poema do programador
 Cookie policy|Política de cookies
-Add poem|Adicionar poema
 Poem ID|ID do poema
 add_poem_note|Os nomes dos ficheiros devem corresponder aos locales suportados. Exemplo:

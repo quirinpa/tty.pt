@@ -178,17 +178,30 @@ QB() {
 	RB "$icon" "$label" "?$param=$value&$qs"
 }
 
+qs_get() {
+	local qs="`env | grep 'HTTP_PARAM_' | sed 's/HTTP_PARAM_//' | tr '\n' '&'`"
+	test -z "$qs" || echo "?$qs"
+}
+
 TB() {
 	local val="`eval 'echo $HTTP_PARAM_'$1`"
 	local invert
 	local tty="$DOCUMENT_ROOT/home/$REMOTE_USER/.tty"
+	unset HTTP_PARAM_
+	eval 'unset HTTP_PARAM_'$1
 
 	if test -f $tty/$MOD-$1; then
 		invert=true
-		test -z "$val" || test -z "$REMOTE_USER" || rm $tty/$MOD-$1
+		if test ! -z "$val" && test ! -z "$REMOTE_USER"; then
+			rm $tty/$MOD-$1
+			SeeOther "$DOCUMENT_URI`qs_get`"
+		fi
 	else
 		invert=false
-		test -z "$val" || test -z "$REMOTE_USER" || touch $tty/$MOD-$1
+		if test ! -z "$val" && test ! -z "$REMOTE_USER"; then
+			touch $tty/$MOD-$1
+			SeeOther "$DOCUMENT_URI`qs_get`"
+		fi
 	fi
 
 	if test -z "$6"; then
@@ -289,12 +302,14 @@ get_lang() {
 }
 
 lang="`get_lang`"
+if test "$lang" = "pt_BR" || test "$lang" = "pt" || test "$lang" = "pt_PT"; then
+	lang=pt_PT
+else
+	lang=en
+fi
 htmllang="`echo $lang | tr '_' ' ' | awk '{print $1}'`"
 export lang
 export LANG=$lang
-if test -z "$LANG"; then
-	LANG=pt_PT
-fi
 ILANG=$LANG
 
 _() {
@@ -431,7 +446,7 @@ math() {
 
 san_param() {
 	echo "$@" | tr '&' '\n' | awk 'BEGIN{FS="="; OFS="="} NF>1 {$1=tolower($1)}1' | while IFS='=' read name value; do
-		echo HTTP_PARAM_$name=\"`urldecode "$value"`\"
+		echo export HTTP_PARAM_$name=\"`urldecode "$value"`\"
 	done
 }
 
@@ -847,18 +862,18 @@ Add() {
 		test ! -z "$_TITLE" || _TITLE="`_ "Add item"`"
 		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
 
-		export FILES="<label>`_ Files`<input required type='file' name='file[]' multiple></input></label>"
-		export FILE="<label>`_ File`<input required type='file' name='file'></input></label>"
+		export FILES="<label>`__ files`<input required type='file' name='file[]' multiple></input></label>"
+		export FILE="<label>`__ file`<input required type='file' name='file'></input></label>"
 
 		Immediate - <<!
-<form action="$MOD_PATH/add" method="POST" class="v f fic" enctype="multipart/form-data">
+<form action="/$MOD/add" method="POST" class="v f fic" enctype="multipart/form-data">
 	<label>
-		`_ Title`
+		`__ title`
 		<input required name="title" value="$HTTP_PARAM_title"></input>
 	</label>
 	`. $template`
 	<div>$_DESCRIPTION</div>
-	<button>`_ Submit`</button>
+	<button>`__ submit`</button>
 </form>
 !
 		exit 0
@@ -876,7 +891,7 @@ Add() {
 	echo "$title" > title
 
 	. $template
-	SeeOther ../$link/edit/ | Immediate - $@
+	SeeOther /$MOD/$link/edit/ | Immediate - $@
 }
 
 Delete() {
@@ -884,7 +899,7 @@ Delete() {
 	test ! -z "$REMOTE_USER" || Forbidden
 
 	if test "$REQUEST_METHOD" = "GET"; then
-		test ! -z "$_TITLE" || _TITLE="`_ "Delete item"`"
+		test ! -z "$_TITLE" || _TITLE="`__ delete`"
 		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
 
 		Immediate - <<!
@@ -892,8 +907,8 @@ Delete() {
 	<div class="f v fic">
 		<div>Are you sure you wish to delete this item?</div>
 		<div class="h tac">
-			<button class='cf15 c9'>`_ Yes`</button>
-			<a href="./.."><button type='button'>`_ No`</button></a>
+			<button class='cf15 c9'>`__ yes`</button>
+			<a href="./.."><button type='button'>`__ no`</button></a>
 		</div>
 	</div>
 </form>
