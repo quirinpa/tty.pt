@@ -6,7 +6,7 @@ translate() {
 target=index.db:s
 test $# -lt 1 || target=$1:s
 #qhash="`pnpm root -w`/@tty-pt/qdb/qdb"
-qdb=qdb
+qdb=$DOCUMENT_ROOT/usr/local/bin/qdb
 cmd="$qdb `while read link line; do echo -n " -p '$link:$line'"; done` $target"
 echo "$cmd"
 sh -c "$cmd"

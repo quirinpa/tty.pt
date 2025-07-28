@@ -37,8 +37,11 @@ ___() {
 	test "$res" = "-1" && echo "$@" || echo "$res"
 }
 
+export qdb=qdb
+# export qdb=$DOCUMENT_ROOT/usr/local/bin/qdb
+
 __() {
-	qdb -g"$@" $DOCUMENT_ROOT/items/i18n-$lang.db | ___ "$@"
+	$qdb -g"$@" $DOCUMENT_ROOT/items/i18n-$lang.db:s | ___ "$@" || echo "$@"
 }
 
 public() {
@@ -623,7 +626,7 @@ Buttons3() {
 	local aflags="$5"
 	test ! -z "$aflags" || aflags="1"
 	local title
-	qdb -l ./index`ilang`.db | while read link flags title; do
+	$qdb -l ./index`ilang`.db:s | while read link flags title; do
 	test $link != "-1" && test "$(($flags & $aflags))" = "$aflags" || continue;
 		cat <<!
 <div><a class="btn wsnw h $cla" href="$where$link/$extra">
@@ -883,7 +886,7 @@ Add() {
 
 	title="`fd title`"
 	link="`echo "$title" | translate`"
-	item_id="`qdb -p "$link:1 $title" index.db:s`"
+	item_id="`$qdb -p "$link:1 $title" index.db:s`"
 
 	mkdir -p $item_id
 	cd $item_id
@@ -928,7 +931,7 @@ Delete() {
 
 	test ! -f delete || . ./delete
 
-	qdb -rd "$iid" ./../index.db >/dev/null || true
+	$qdb -rd "$iid" ./../index.db:s >/dev/null || true
 	rm -rf ./../$iid
 	SeeOther ../../
 }

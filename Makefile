@@ -32,11 +32,6 @@ shell := ${shell-${uname}}
 no-shell := /sbin/nologin
 npm-root != npm root
 npm-lib := @tty-pt/qdb
-npm-lib-inc := ${npm-lib:%=node_modules/%/include.mk}
--include $(npm-lib-inc)
-npm-bin := ${${npm-lib:%=%-bin}}
-npm-rlib := ${${npm-lib:%=%-lib}}
-npm-ilib := ${npm-rlib:%=usr/local/lib/%}
 prefix := ${npm-lib:%=${npm-root}/%} /usr/local
 CFLAGS += ${prefix:%=-I%/include}
 LDFLAGS += ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
@@ -76,7 +71,7 @@ mod-bin:
 	@echo ${mod-y} | tr ' ' '\n' | while read mod; do \
 		${MAKE} -f ${PWD}/module.mk module=$$mod DESTDIR=${PWD}/ ; done
 
-$(npm-lib:%=node_modules/%/include.mk): mod-dirs
+pnpm-i: mod-dirs
 	@test -d node_modules || pnpm i
 		
 mod-dirs:
@@ -87,18 +82,8 @@ mod-dirs:
 		mkdir items/$$dir/items ; \
 		done
 
-$(npm-bin:%=usr/local/bin/%): usr/bin/make ${npm-ilib}
-	${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}}
-	${sudo} chroot . ${MAKE} -C node_modules/${npm-${@:usr/local/bin/%=%}} install
-
-$(npm-lib:%=%-bin): ${npm-ilib}
-	${MAKE} -C node_modules/${@:%-bin=%}
-
-npm-lib-bin: ${npm-bin:%=usr/local/bin/%}
-
-$(npm-ilib): usr/bin/make
-	${MAKE} -C node_modules/${npm-${@:usr/local/lib/%=%}}
-	${sudo} chroot . ${MAKE} -C node_modules/${npm-${@:usr/local/lib/%=%}} install
+usr/local/bin/qdb:
+	${MAKE} -C node_modules/@tty-pt/qdb DESTDIR=. install
 
 items/index.db:
 	paste -d ' ' common-index en-index | \
@@ -118,7 +103,7 @@ usr/bin/make: .all-install
 		test -f $$dep && echo $$dep || which $$dep 2>/dev/null; \
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
-all: .all-install chroot ${npm-lib:%=node_modules/%/include.mk} npm-lib-bin \
+all: .all-install chroot pnpm-i usr/local/bin/qdb \
 	items/index.db htdocs/vim.css  bin/htpasswd etc/passwd etc/group dev/urandom \
 	${all-${uname}} ${mounts} etc/group etc/passwd etc/resolv.conf mod-bin ${src-bin}
 
@@ -200,5 +185,5 @@ module:
 
 FORCE:
 
-.PHONY: chroot all mounts-clean \
+.PHONY: chroot all mounts-clean pnpm-i \
 	modules-clean run srun FORCE mod-dirs mod-bin
