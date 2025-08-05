@@ -1,2 +1,5 @@
 items/poem/items /poem/*/*
 items/md/items /md/*/*
+items/nd/htdocs /nd/*
+items/nd /nd/*
+htdocs /*

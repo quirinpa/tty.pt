@@ -45,6 +45,13 @@
 
 /* }}} */
 
+@font-face {
+  font-family: 'Noto Sans Mono';
+  src: url('/fonts/NotoSansMono-Regular.ttf') format('ttf');
+  font-weight: 300 700;
+  font-style: normal;
+}
+
 body {
 	color: var(--cf);
 	background-color: var(--cb);

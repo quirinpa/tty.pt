@@ -3,7 +3,14 @@
 export REQ_PID=$$
 export LD_LIBRARY_PATH=/usr/local/lib
 export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/usr/local/bin:$DOCUMENT_ROOT/bin:$PATH:$DOCUMENT_ROOT/usr/sbin:$DOCUMENT_ROOT/usr/local/sbin
-echo $REQUEST_METHOD $DOCUMENT_URI >&2
+
+rmtmp() {
+	rm -rf $headers $normal $post $fun \
+		$bottom $ncat $settings $notitle \
+		$full_size || true
+}
+
+trap 'rmtmp' EXIT
 trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
 
 if ! echo $DOCUMENT_URI | grep -q '/$'; then
@@ -11,10 +18,16 @@ if ! echo $DOCUMENT_URI | grep -q '/$'; then
 		|| DOCUMENT_URI="$DOCUMENT_URI/"
 fi
 
-rm -rf $DOCUMENT_ROOT/tmp/headers $DOCUMENT_ROOT/tmp/normal \
-	$DOCUMENT_ROOT/tmp/post $DOCUMENT_ROOT/tmp/fun \
-	$DOCUMENT_ROOT/tmp/bottom $DOCUMENT_ROOT/tmp/ncat \
-	$OOCUMENT_ROOT/tmp/full-size $DOCUMENT_ROOT/tmp/notitle || true
+headers="`mktemp $DOCUMENT_ROOT/tmp/headersXXXXXXX`"
+normal="`mktemp $DOCUMENT_ROOT/tmp/normalXXXXXXX`"
+post="`mktemp $DOCUMENT_ROOT/tmp/postXXXXXXX`"
+fun="`mktemp $DOCUMENT_ROOT/tmp/funXXXXXXX`"
+bottom="`mktemp $DOCUMENT_ROOT/tmp/bottomXXXXXXX`"
+ncat="`mktemp $DOCUMENT_ROOT/tmp/ncatXXXXXXX`"
+settings="`mktemp $DOCUMENT_ROOT/tmp/settingsXXXXXXX.db`"
+notitle="`mktemp $DOCUMENT_ROOT/tmp/notitleXXXXXXX.db`"
+full_size="`mktemp $DOCUMENT_ROOT/tmp/full_sizeXXXXXXX.db`"
+rmtmp
 
 umask 002
 set -e
@@ -50,8 +63,8 @@ public() {
 }
 
 header() {
-	echo "$@" >> $DOCUMENT_ROOT/tmp/headers
-	public $DOCUMENT_ROOT/tmp/headers
+	echo "$@" >> $headers
+	public $headers
 }
 
 debug() {
@@ -82,8 +95,7 @@ NormalHead() {
 	local status_code=$1
 	echo "$STATUS_STR$1 $STATUS_TEXT"
 	echo "Content-Type: $RES_CONTENT_TYPE"
-	test ! -f $DOCUMENT_ROOT/tmp/headers || \
-		cat $DOCUMENT_ROOT/tmp/headers
+	test ! -f $headers || cat $headers
 }
 
 Head() {
@@ -94,10 +106,8 @@ Head() {
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 		<meta name="description" content="tty.pt $_TITLE">
-		<style>`cat $DOCUMENT_ROOT/htdocs/basics.css $DOCUMENT_ROOT/htdocs/vim.css`</style>
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+Mono:wght@100..900&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="/basics.css">
+		<link rel="stylesheet" href="/vim.css">
 		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
 		<title>$PINDEX_ICON $_TITLE</title>
 	</head>
@@ -105,7 +115,7 @@ Head() {
 }
 
 _Cat() {
-	cat $DOCUMENT_ROOT/tmp/normal
+	cat $normal
 	if test $# -lt 1; then
 		htmlsh | envsubst
 	elif test -f $1.html; then
@@ -119,7 +129,7 @@ Cat() {
 }
 
 CCat() {
-	test ! -f $DOCUMENT_ROOT/tmp/notitle || _TITLE=
+	test ! -f $notitle || _TITLE=
 	test -z "$_TITLE" || \
 		_TITLE="<h2 id='title' class='ttc tac'>$_TITLE $SUBINDEX_ICON</h2>"
 	export _TITLE
@@ -242,12 +252,14 @@ Immediate() {
 	else
 		CONTENT="`cat -`"
 	fi
-	test -f $DOCUMENT_ROOT/tmp/post \
-		&& cat $DOCUMENT_ROOT/tmp/post \
-		&& return 0 || true
+	if test -f $post ; then
+		echo IMM POST "$DOCUMENT_URI" >&2
+		cat $post
+		return 0
+	fi
 	test ! -z "$PRECLASS" || PRECLASS="v f fic"
-	FUNCTIONS="`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
-	BOTTOM_CONTENT="`test ! -f $DOCUMENT_ROOT/tmp/bottom || cat $DOCUMENT_ROOT/tmp/bottom`"
+	FUNCTIONS="`test -f $fun && cat $fun || echo " "`"
+	BOTTOM_CONTENT="`test ! -f $bottom || cat $bottom`"
 
 	test -z "$INDEX_ICON" \
 		|| INDEX_ICON="`RB $INDEX_ICON "go up"  ./..`"
@@ -262,7 +274,7 @@ Immediate() {
 	export _TITLE
 	export PRECLASS
 
-	test -f "$DOCUMENT_ROOT/tmp/normal" || \
+	test -f "$normal" || \
 		Normal $STATUS_CODE "$content"
 	CCat common
 	exit 0
@@ -286,7 +298,7 @@ _Fatal() {
 }
 
 Fin() {
-	cat - > $DOCUMENT_ROOT/tmp/post
+	cat - > $post
 	exit 0
 }
 
@@ -387,13 +399,13 @@ _Normal() {
 
 Normal() {
 	# test using non logged in nd
-	if test -f $DOCUMENT_ROOT/tmp/post; then
-		cat $DOCUMENT_ROOT/tmp/post
+	if test -f $post ; then
+		cat $post
 		exit 0
 	fi
 
-	_Normal $@ > $DOCUMENT_ROOT/tmp/normal
-	public $DOCUMENT_ROOT/tmp/normal
+	_Normal $@ > $normal
+	public $normal
 }
 
 uname=`uname`
@@ -694,7 +706,7 @@ Functions() {
 	while test $# -ge 1; do
 		echo $1 | _Functions
 		shift
-	done >> $DOCUMENT_ROOT/tmp/fun
+	done >> $fun
 }
 
 IsAllowedItemFound() {
@@ -759,19 +771,19 @@ Index() {
 	if test -z "$CONTENT"; then
 		if test -f "$MOD_PATH/over-index"; then
 			CONTENT="`. "$MOD_PATH/over-index"`"
-			test ! -f $DOCUMENT_ROOT/tmp/full-size || \
-				export FULL_SIZE="svfv"
+			test ! -f $full_size || \
+				export FULL_SIXE="svfv"
 		else
 			CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
 		fi
 	fi
 
-	if test -f $DOCUMENT_ROOT/tmp/normal; then
-		cat $DOCUMENT_ROOT/tmp/normal
+	if test -f $normal ; then
+		cat $normal
 		exit 0
 	fi
 
-	FUNCTIONS="$FUNCTIONS`test -f $DOCUMENT_ROOT/tmp/fun && cat $DOCUMENT_ROOT/tmp/fun || echo " "`"
+	FUNCTIONS="$FUNCTIONS`test -f $fun && cat $fun || echo " "`"
 
 	export _TITLE
 	export INDEX_ICON
@@ -825,7 +837,7 @@ SubIndex() {
 	fi
 
 	if im $OWNER $typ; then
-	cat > $DOCUMENT_ROOT/tmp/fun <<!
+	cat > $fun <<!
 `RB 📝 edit $dot/edit/`
 `RB "🗑" delete $dot/delete/`
 !
@@ -982,15 +994,6 @@ git_backend() {
 	exit
 }
 
-Static() {
-	path="$1"
-	test -f "$path" || NotFound
-	echo "$STATUS_STR"200 Ok
-	echo "Cache-Control: max-age=864000"
-	echo
-	cat "$path"
-}
-
 # counter_inc $DOCUMENT_ROOT/counter.txt >/dev/null
 
 if test ! -z "$1"; then
@@ -1001,7 +1004,8 @@ if test ! -z "$1"; then
 			export DOCUMENT_URI="/poem/1/"
 			Index poem 1
 			;;
-		~*) . ./tilde $@;;
+		~*)
+			. ./tilde $@ ;;
 		*)
 			if test -d ./items/$1; then
 				cd ./items/$1
