@@ -46,10 +46,27 @@
 /* }}} */
 
 @font-face {
-  font-family: 'Noto Sans Mono';
-  src: url('/fonts/NotoSansMono-Regular.ttf') format('ttf');
-  font-weight: 300 700;
-  font-style: normal;
+  font-family: "Noto Sans Mono";
+  src: url('/NotoSansMono-Regular.ttf') format('truetype');
+  font-weight: 100 600;
+  font-stretch: 100%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Mono";
+  src: url('/NotoSansMono-Bold.ttf') format('truetype');
+  font-weight: 600 900;
+  font-stretch: 100%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Color Emoji";
+  src: url('/NotoColorEmoji-Regular.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 100%;
+  font-display: swap;
 }
 
 body {
@@ -61,6 +78,11 @@ body {
 	font-size: 13px;
 	box-sizing: border-box;
 	max-width: 100%;
+}
+
+pre, b > {
+	font-family: monospace;
+	font-family: "Noto Sans Mono", "Consolas", "Roboto Mono", "Courier New", "DejaVu Sans Mono", "Noto Color Emoji", monospace !important;
 }
 
 .cf { background-color: var(--cb); }

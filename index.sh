@@ -13,21 +13,24 @@ rmtmp() {
 trap 'rmtmp' EXIT
 trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
 
+# env >&2
+# echo METHOD: $REQUEST_METHOD URI: $DOCUMENT_URI QS: $QUERY_STRING >&2
+
 if ! echo $DOCUMENT_URI | grep -q '/$'; then
 	echo $DOCUMENT_URI | tr ' ' '\n' | tail -n 1 | grep -q '.' \
 		|| DOCUMENT_URI="$DOCUMENT_URI/"
 fi
 
-headers="`mktemp $DOCUMENT_ROOT/tmp/headersXXXXXXX`"
-normal="`mktemp $DOCUMENT_ROOT/tmp/normalXXXXXXX`"
-post="`mktemp $DOCUMENT_ROOT/tmp/postXXXXXXX`"
-fun="`mktemp $DOCUMENT_ROOT/tmp/funXXXXXXX`"
-bottom="`mktemp $DOCUMENT_ROOT/tmp/bottomXXXXXXX`"
-ncat="`mktemp $DOCUMENT_ROOT/tmp/ncatXXXXXXX`"
-settings="`mktemp $DOCUMENT_ROOT/tmp/settingsXXXXXXX.db`"
-notitle="`mktemp $DOCUMENT_ROOT/tmp/notitleXXXXXXX.db`"
-full_size="`mktemp $DOCUMENT_ROOT/tmp/full_sizeXXXXXXX.db`"
-rmtmp
+export rid="`openssl rand -base64 10 | cut -c1-13 | tr -d '/'`"
+export headers="$DOCUMENT_ROOT/tmp/headers$rid"
+export normal="$DOCUMENT_ROOT/tmp/normal$rid"
+export post="$DOCUMENT_ROOT/tmp/post$rid"
+export fun="$DOCUMENT_ROOT/tmp/fun$rid"
+export bottom="$DOCUMENT_ROOT/tmp/bottom$rid"
+export ncat="$DOCUMENT_ROOT/tmp/ncat$rid"
+export settings="$DOCUMENT_ROOT/tmp/settings$rid.db"
+export notitle="$DOCUMENT_ROOT/tmp/notitle$rid.db"
+export full_size="$DOCUMENT_ROOT/tmp/full_size$rid.db"
 
 umask 002
 set -e
@@ -106,10 +109,12 @@ Head() {
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 		<meta name="description" content="tty.pt $_TITLE">
-		<link rel="stylesheet" href="/basics.css">
+		`#<link rel="stylesheet" href="/basics.css">
+		#<link rel="stylesheet" href="/vim.css">`
 		<link rel="stylesheet" href="/vim.css">
 		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
 		<title>$PINDEX_ICON $_TITLE</title>
+		<style>`cat $DOCUMENT_ROOT/htdocs/basics.css`</style>
 	</head>
 !
 }

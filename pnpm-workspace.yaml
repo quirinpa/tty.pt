@@ -1,2 +1,12 @@
 packages:
-  - 'items/*'
+  - items/*
+
+onlyBuiltDependencies:
+  - '@swc/core'
+  - '@tty-pt/ndc'
+  - '@tty-pt/qdb'
+  - '@tty-pt/qmap'
+  - '@tty-pt/qsys'
+  - '@tty-pt/vim.css'
+  - esbuild
+  - unrs-resolver
