@@ -11,22 +11,22 @@ pre {
 }
 </style>
 
-<body class="f h0 p0 svfv" style="margin: 0" path="$DOCUMENT_URI">
-	<div id="main" class="f v fg fic oav bsf"><div class="f v0 p4 sf rel bb">
-		$_TITLE
-		<div class="$FULL_SIZE fg v f fic">
-			$CONTENT
-			$BOTTOM_CONTENT
-		</div>
-	</div></div>
-	<label class="f svf v0 al menu main">
-		<span class="p8">⋮</span>
-		<input checked type="checkbox" />
-		<div class="f fg v0 ts ttc functions" id="menu">
+<body class="p0 svfv" style="margin: 0" path="$DOCUMENT_URI">
+	<label class="f v0 menu main">
+		<input type="checkbox" />
+		<span id="menu-button" class="p8 f fic h shf fix">
+			<div class="round btn p12 m c0">☰</div>
+		</span>
+		<span class="fg ts ttc functions" id="menu">
+			$_TITLE
 			$INDEX_ICON
 			$MENU
 			$MENU_LEFT
 			$FUNCTIONS
-		</div>
+		</span>
 	</label>
+	<div id="main" class="$FULL_SIZE fg p v f fic">
+		$CONTENT
+		$BOTTOM_CONTENT
+	</div>
 </body>

@@ -2,7 +2,7 @@
 
 if test $REQUEST_METHOD = GET; then
 	cat <<!
-<form action="login" method="POST" class="v f fic">
+<form action="login" method="POST" class="f v fic">
 	<input type="hidden" name="ret" value="$HTTP_PARAM_ret"></input>
 	<label>
 		`_ Username`: <input required name="username"></input>

@@ -109,12 +109,9 @@ Head() {
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 		<meta name="description" content="tty.pt $_TITLE">
-		`#<link rel="stylesheet" href="/basics.css">
-		#<link rel="stylesheet" href="/vim.css">`
-		<link rel="stylesheet" href="/vim.css">
+		<style>`cat $DOCUMENT_ROOT/htdocs/basics.css`</style>
 		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
 		<title>$PINDEX_ICON $_TITLE</title>
-		<style>`cat $DOCUMENT_ROOT/htdocs/basics.css`</style>
 	</head>
 !
 }
@@ -178,7 +175,7 @@ IFB() {
 FB() {
 	test -z "$2" || label="`__ "$2"`"
 	cat <<!
-<form action='$3' method='$4' class='h8 f p8 fic'>
+<form action='$3' method='$4' class='h8 f fic'>
 <span>$1</span>
 <label><div>$label</div>`cat`</label>
 `hidparams $5`
@@ -623,7 +620,7 @@ Buttons() {
 	local link
 	local flags
 	local title
-	echo "<div class='f fic v8'>"
+	echo "<div class='f v fic'>"
 	while read link flags title; do
 		cat <<!
 <a class="btn wsnw h $cla" href="$where$link/$extra">
@@ -828,7 +825,7 @@ SubIndex() {
 		delete) shift; _TITLE= Delete delete $@ ; exit 0;;
 		*)
 			if test -f $DOCUMENT_ROOT/items/$typ/$1; then
-				_TITLE="`_ $1`"
+				_TITLE="`_ $1` $INDEX_ICON"
 				Immediate $DOCUMENT_ROOT/items/$typ/$1 $@
 				exit 0
 			else
@@ -838,7 +835,7 @@ SubIndex() {
 	esac
 
 	if test -z "$_TITLE"; then
-		_TITLE="`zcat title || true`"
+		_TITLE="`zcat title || true`$INDEX_ICON"
 	fi
 
 	if im $OWNER $typ; then
@@ -1049,7 +1046,7 @@ fi
 
 test "$REQUEST_METHOD" = "GET" || NotAllowed
 
-_TITLE=$HTTP_HOST
+_TITLE="$HTTP_HOST 🏠"
 ttyf="`test $HTTP_HOST = tty.pt && echo 1 || echo 2`"
 cd items
 Buttons3 'f jcsb cap tsxl' items "/" "" "$ttyf" | Immediate -

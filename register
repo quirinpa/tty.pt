@@ -2,7 +2,7 @@
 
 if test $REQUEST_METHOD = GET; then
 	cat <<!
-<form action="register" method="post" class="v f fic">
+<form action="register" method="post" class="f v fic">
 	<label>
 		`_ Username`: <input required name="username"></input>
 	</label>
