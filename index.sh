@@ -11,7 +11,7 @@ rmtmp() {
 }
 
 trap 'rmtmp' EXIT
-trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
+# trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
 
 # env >&2
 # echo METHOD: $REQUEST_METHOD URI: $DOCUMENT_URI QS: $QUERY_STRING >&2

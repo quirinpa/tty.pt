@@ -355,4 +355,15 @@ body[path='/'] #title {
 	}
 }
 
+pre,form { margin: 0 }
+pre {
+	display: inline-block;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+.s_k9 {
+	max-width: 512px;
+}
+
 /* }}} */

@@ -47,7 +47,7 @@ htdocs/vim.css: FORCE
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqdb -ldb ${lcrypt} ${LDFLAGS}
+	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqmap -ldb ${lcrypt} ${LDFLAGS}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
@@ -83,7 +83,7 @@ mod-dirs:
 		done
 
 usr/local/bin/qdb:
-	${MAKE} -C node_modules/@tty-pt/qdb DESTDIR=. install
+	${MAKE} -C node_modules/@tty-pt/qdb DESTDIR=${PWD} install
 
 items/index.db:
 	paste -d ' ' common-index en-index | \
@@ -103,7 +103,7 @@ usr/bin/make: .all-install
 		test -f $$dep && echo $$dep || which $$dep 2>/dev/null; \
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
-all: .all-install chroot pnpm-i usr/local/bin/qdb \
+all: .all-install chroot pnpm-i usr/local/lib/ usr/local/bin/ usr/local/bin/qdb \
 	items/index.db htdocs/vim.css  bin/htpasswd etc/passwd etc/group dev/urandom \
 	${all-${uname}} ${mounts} etc/group etc/passwd etc/resolv.conf mod-bin ${src-bin}
 
@@ -143,7 +143,7 @@ ${chroot-ln}:
 	@mkdir -p `dirname $@` || true
 	@./sln $@
 
-items users/ home/ .links $(chroot_mkdir):
+items usr/local/bin/ usr/local/lib/ users/ home/ .links $(chroot_mkdir):
 	mkdir -p $@
 
 ${chown-dirs}:

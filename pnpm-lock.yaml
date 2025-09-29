@@ -8,9 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@tty-pt/mk':
+        specifier: ^0.1.15
+        version: 0.1.15
       '@tty-pt/qdb':
-        specifier: ^0.2.6
-        version: 0.2.6
+        specifier: ^0.4.1
+        version: 0.4.1(@tty-pt/mk@0.1.15)(@tty-pt/qmap@0.3.1(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))
+      '@tty-pt/qmap':
+        specifier: ^0.3.1
+        version: 0.3.1(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))
+      '@tty-pt/qsys':
+        specifier: ^0.0.10
+        version: 0.0.10(@tty-pt/mk@0.1.15)
       '@tty-pt/vim.css':
         specifier: ^0.0.3
         version: 0.0.3
@@ -21,20 +30,20 @@ importers:
         specifier: ^2.11.8
         version: 2.11.8
       '@tty-pt/mk':
-        specifier: ^0.1.12
-        version: 0.1.13
+        specifier: ^0.1.15
+        version: 0.1.15
       '@tty-pt/ndc':
-        specifier: ^0.14.0-beta.3
-        version: 0.14.0-beta.3(@tty-pt/mk@0.1.13)(@tty-pt/qmap@0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)(lodash@4.17.21)
+        specifier: ^0.14.0-beta.5
+        version: 0.14.0-beta.5(@tty-pt/mk@0.1.15)(@tty-pt/qmap@0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)(lodash@4.17.21)
       '@tty-pt/qdb':
-        specifier: ^0.3.0-beta.8
-        version: 0.3.0-beta.9(@tty-pt/mk@0.1.13)(@tty-pt/qmap@0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))
+        specifier: ^0.3.0-beta.12
+        version: 0.3.0-beta.12(@tty-pt/mk@0.1.15)(@tty-pt/qmap@0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))
       '@tty-pt/qmap':
-        specifier: ^0.0.15
-        version: 0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))
+        specifier: ^0.0.16
+        version: 0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))
       '@tty-pt/qsys':
         specifier: ^0.0.10
-        version: 0.0.10(@tty-pt/mk@0.1.13)
+        version: 0.0.10(@tty-pt/mk@0.1.15)
       '@tty-pt/sub':
         specifier: ^2.3.8
         version: 2.3.8(lodash@4.17.21)
@@ -782,36 +791,46 @@ packages:
     resolution: {integrity: sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==}
     engines: {node: '>= 6'}
 
-  '@tty-pt/mk@0.1.13':
-    resolution: {integrity: sha512-JBs0+fI7z3G+t66epXBEvFgkjjnN2ag2UW/ODIWxogIk5Om7Y/na6CDxCjUSL2/n3fiVV8jbT3dKGxJrVU37eQ==}
+  '@tty-pt/mk@0.1.15':
+    resolution: {integrity: sha512-YpmYd+niTNDGQpj9giNp2L5ac+wUWMkf4njL1/hApOTCDQF27x4iqp2E4VfvZEX+gv7G7ey2+hnvswtS/c/XCw==}
 
-  '@tty-pt/ndc@0.14.0-beta.3':
-    resolution: {integrity: sha512-JBwZxLVjdfrNZw83NRgZKOF8LvqA06MWxNJ0Y6oSkZ+qFIapLJF3ZzLk51LIxEkG2UskPNa7H9Gx/kbEC7AnGw==}
+  '@tty-pt/ndc@0.14.0-beta.5':
+    resolution: {integrity: sha512-iXtX4mik+0iAQ60yTRMCrQ8WXycrnTqAeBSkE+gv5+Bz1L4cCT7scGoXHCjZxIZI8y0snnf0nVDcipPQfDYcew==}
     hasBin: true
     peerDependencies:
-      '@tty-pt/mk': ^0.1.13
-      '@tty-pt/qmap': ^0.0.14
+      '@tty-pt/mk': ^0.1.15
+      '@tty-pt/qmap': ^0.0.16
       '@tty-pt/qsys': ^0.0.10
       '@xterm/addon-fit': ^0.10.0
       '@xterm/addon-web-links': ^0.11.0
       '@xterm/xterm': ^5.5.0
       lodash: ^4.17.21
 
-  '@tty-pt/qdb@0.2.6':
-    resolution: {integrity: sha512-XMucdEghjNCz8MQTKhO82gyBVsByTTKhhn3uS2vZUxuj+k/kHlcPvKvbP26USfsJysE5j8MWIz+917IeteHQ3g==}
-
-  '@tty-pt/qdb@0.3.0-beta.9':
-    resolution: {integrity: sha512-vUU2T3DQGfvfN6YDRlN30iWTKAoXWQtrgUNJEmvpc6hLizBnMVKNnQK1/9OLKAxrR9FvNeHUMaowjpbnaipWVw==}
+  '@tty-pt/qdb@0.3.0-beta.12':
+    resolution: {integrity: sha512-jIs33Haa7DbcH1FO0rkolITwFEE5n1DGQ/1YKk2scD6dzXqVc8EEyfieR5y1phGcv/Nfkvvf/SAfh6vbGpeQgw==}
     peerDependencies:
-      '@tty-pt/mk': ^0.1.13
-      '@tty-pt/qmap': ^0.0.15
+      '@tty-pt/mk': ^0.1.14
+      '@tty-pt/qmap': ^0.0.16
       '@tty-pt/qsys': ^0.0.10
 
-  '@tty-pt/qmap@0.0.15':
-    resolution: {integrity: sha512-EcB4koDG7VOKqpSFu8xV4F1F1n/KbCHheiwescvpxlgAEykuo8JCKiRpkQgMkw70tXhr/6t/KGHOWQQulbCm/A==}
+  '@tty-pt/qdb@0.4.1':
+    resolution: {integrity: sha512-nFG1XQHFVVknLRHlyCGOpDchJDAVxniN8AB3SZUuzsJwSSL8/m/n/30Qz+jPEXXUPHBAx/5rPhOiCZ/gCDBwiA==}
     peerDependencies:
-      '@tty-pt/mk': ^0.1.12
-      '@tty-pt/qsys': ^0.0.9
+      '@tty-pt/mk': ^0.1.18
+      '@tty-pt/qmap': ^0.3.0
+      '@tty-pt/qsys': ^0.0.11
+
+  '@tty-pt/qmap@0.0.16':
+    resolution: {integrity: sha512-xf8UcAFmB7hKuhQpEMTO33pC2QjV3+c7jOQ4aSI5gngNUv0+tN8CjRL2y59bZLz1dn+qhtHnoUAT4O1hU2M3Pg==}
+    peerDependencies:
+      '@tty-pt/mk': ^0.1.14
+      '@tty-pt/qsys': ^0.0.10
+
+  '@tty-pt/qmap@0.3.1':
+    resolution: {integrity: sha512-NT7+4c9tA/+sohRF1hXVlU1gJbjiRr1jS/DzvTgE4nR5uryAHY8abnSAxQvCtGiEvNe+pa6hmXEZDji7qWy7gg==}
+    peerDependencies:
+      '@tty-pt/mk': ^0.1.18
+      '@tty-pt/qsys': ^0.0.11
 
   '@tty-pt/qsys@0.0.10':
     resolution: {integrity: sha512-2cn//ClnWSlBYB8//7CaSO9RB+n9qK2CGl6YuaFiO+eBK8PwDAD6N6E2tJH6e4Q3jmXQDo2SF+DWY/BnyxT6eA==}
@@ -4636,34 +4655,43 @@ snapshots:
 
   '@tootallnate/once@1.1.2': {}
 
-  '@tty-pt/mk@0.1.13': {}
+  '@tty-pt/mk@0.1.15': {}
 
-  '@tty-pt/ndc@0.14.0-beta.3(@tty-pt/mk@0.1.13)(@tty-pt/qmap@0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)(lodash@4.17.21)':
+  '@tty-pt/ndc@0.14.0-beta.5(@tty-pt/mk@0.1.15)(@tty-pt/qmap@0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))(@xterm/addon-fit@0.10.0(@xterm/xterm@5.5.0))(@xterm/addon-web-links@0.11.0(@xterm/xterm@5.5.0))(@xterm/xterm@5.5.0)(lodash@4.17.21)':
     dependencies:
-      '@tty-pt/mk': 0.1.13
-      '@tty-pt/qmap': 0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))
-      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.13)
+      '@tty-pt/mk': 0.1.15
+      '@tty-pt/qmap': 0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))
+      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.15)
       '@xterm/addon-fit': 0.10.0(@xterm/xterm@5.5.0)
       '@xterm/addon-web-links': 0.11.0(@xterm/xterm@5.5.0)
       '@xterm/xterm': 5.5.0
       lodash: 4.17.21
 
-  '@tty-pt/qdb@0.2.6': {}
-
-  '@tty-pt/qdb@0.3.0-beta.9(@tty-pt/mk@0.1.13)(@tty-pt/qmap@0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))':
+  '@tty-pt/qdb@0.3.0-beta.12(@tty-pt/mk@0.1.15)(@tty-pt/qmap@0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))':
     dependencies:
-      '@tty-pt/mk': 0.1.13
-      '@tty-pt/qmap': 0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))
-      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.13)
+      '@tty-pt/mk': 0.1.15
+      '@tty-pt/qmap': 0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))
+      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.15)
 
-  '@tty-pt/qmap@0.0.15(@tty-pt/mk@0.1.13)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13))':
+  '@tty-pt/qdb@0.4.1(@tty-pt/mk@0.1.15)(@tty-pt/qmap@0.3.1(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15)))(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))':
     dependencies:
-      '@tty-pt/mk': 0.1.13
-      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.13)
+      '@tty-pt/mk': 0.1.15
+      '@tty-pt/qmap': 0.3.1(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))
+      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.15)
 
-  '@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.13)':
+  '@tty-pt/qmap@0.0.16(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))':
     dependencies:
-      '@tty-pt/mk': 0.1.13
+      '@tty-pt/mk': 0.1.15
+      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.15)
+
+  '@tty-pt/qmap@0.3.1(@tty-pt/mk@0.1.15)(@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15))':
+    dependencies:
+      '@tty-pt/mk': 0.1.15
+      '@tty-pt/qsys': 0.0.10(@tty-pt/mk@0.1.15)
+
+  '@tty-pt/qsys@0.0.10(@tty-pt/mk@0.1.15)':
+    dependencies:
+      '@tty-pt/mk': 0.1.15
 
   '@tty-pt/scripts@0.7.2(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
