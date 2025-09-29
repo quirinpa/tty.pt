@@ -10,10 +10,10 @@ LDFLAGS	+= ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
 
 bin := $(exe:%=$(DESTDIR)$(PREFIX)/bin/%)
 
-$(bin): ${exe:%=%.c}
+$(bin): ${exe:%=src/%.c}
 	echo ROOT ${npm-root}
 	@install -d ${DESTDIR}${PREFIX}/bin
-	${CC} ${CFLAGS} -o $@ ${@:${DESTDIR}${PREFIX}/bin/%=%.c} ${LDFLAGS}
+	${CC} ${CFLAGS} -o $@ ${@:${DESTDIR}${PREFIX}/bin/%=src/%.c} ${LDFLAGS}
 
 install: ${exe:%=${DESTDIR}${PREFIX}/bin/%}
 

@@ -111,7 +111,7 @@ Head() {
 		<meta name="description" content="tty.pt $_TITLE">
 		<style>`cat $DOCUMENT_ROOT/htdocs/basics.css`</style>
 		<link rel='canonical' href='https://tty.pt$DOCUMENT_URI' />
-		<title>$PINDEX_ICON $_TITLE</title>
+		<title>$_TITLE</title>
 	</head>
 !
 }
@@ -133,7 +133,7 @@ Cat() {
 CCat() {
 	test ! -f $notitle || _TITLE=
 	test -z "$_TITLE" || \
-		_TITLE="<h2 id='title' class='ttc tac'>$_TITLE $SUBINDEX_ICON</h2>"
+		_TITLE="<h2 id='title' class='ttc tac'>$_TITLE</h2>"
 	export _TITLE
 	_Cat $DOCUMENT_ROOT/components/$1
 }
@@ -760,7 +760,7 @@ Index() {
 
 	if test -z "$_TITLE"; then
 		TITLE="`zcat $MOD_PATH/title || echo $typ`"
-		_TITLE="`__ "$TITLE"`"
+		_TITLE="`__ "$TITLE"` $SUBINDEX_ICON"
 	fi
 
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
@@ -835,7 +835,7 @@ SubIndex() {
 	esac
 
 	if test -z "$_TITLE"; then
-		_TITLE="`zcat title || true`$INDEX_ICON"
+		_TITLE="`zcat title || true` $INDEX_ICON"
 	fi
 
 	if im $OWNER $typ; then
