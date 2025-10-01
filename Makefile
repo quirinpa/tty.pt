@@ -9,7 +9,7 @@ mod-y != cat .modules | while read line; do basename $$line | sed s/\\..*//; don
 mod-dirs := ${mod-y:%=items/%}
 chown-user := www
 chown-group := www
-mounts-Linux := sys proc run/
+mounts-Linux := ${PWD}/sys ${PWD}/proc ${PWD}/run
 mounts := ${mounts-${uname}}
 chown-dirs-OpenBSD := sessions
 chown-dirs := ${chown-dirs-${uname}}
@@ -37,6 +37,10 @@ CFLAGS += ${prefix:%=-I%/include}
 LDFLAGS += ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
 LINK.bin := ${LINK.c} ${CFLAGS}
 qdb := node_modules/@tty-pt/qdb/bin/qdb
+ndc := node_modules/@tty-pt/ndc/bin/ndc
+
+nods-Linux := dev/ptmx dev/pts dev/urandom dev/null dev/zero
+nods := ${nods-${uname}}
 
 all:
 
@@ -47,7 +51,7 @@ htdocs/vim.css: FORCE
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqdb -ldb ${lcrypt} ${LDFLAGS}
+	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqmap -ldb ${lcrypt} ${LDFLAGS}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
@@ -83,13 +87,7 @@ mod-dirs:
 		done
 
 usr/local/bin/qdb:
-	${MAKE} -C node_modules/@tty-pt/qdb DESTDIR=. install
-
-items/index.db:
-	paste -d ' ' common-index en-index | \
-		./index_put.sh items/index.db
-	paste -d ' ' common-index pt-index | \
-		./index_put.sh items/index-pt_PT.db
+	${MAKE} -C node_modules/@tty-pt/qdb DESTDIR=${PWD} install
 
 usr/bin/make: .all-install
 
@@ -103,9 +101,11 @@ usr/bin/make: .all-install
 		test -f $$dep && echo $$dep || which $$dep 2>/dev/null; \
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
-all: .all-install chroot pnpm-i usr/local/bin/qdb \
-	items/index.db htdocs/vim.css  bin/htpasswd etc/passwd etc/group dev/urandom \
-	${all-${uname}} ${mounts} etc/group etc/passwd etc/resolv.conf mod-bin ${src-bin}
+all: .all-install chroot pnpm-i usr/local/lib/ \
+	usr/local/bin/ usr/local/bin/qdb htdocs/vim.css \
+       	bin/htpasswd etc/passwd etc/group dev/urandom \
+	${all-${uname}} etc/group etc/passwd \
+	etc/resolv.conf mod-bin ${src-bin}
 
 etc/group:
 	echo "${wheel}:*:0:root" > $@
@@ -120,8 +120,12 @@ etc/passwd:
 	chmod 644 $@
 	${sudo} chown root:${wheel} $@
 
-dev/urandom: ${mounts}
-	${MAKE} -f ${PWD}/module.mk module=nd ${MAKEFLAGS} nods
+nods: ${nods}
+
+dev/urandom dev/zero dev/null:
+	${sudo} mknod $@ c ${${@:dev/%=%}-major-${uname}} ${${@:dev/%=%}-minor-${uname}}
+	${sudo} chmod 666 $@
+
 
 etc/shadow etc/master.passwd:
 	@stty -echo
@@ -143,7 +147,7 @@ ${chroot-ln}:
 	@mkdir -p `dirname $@` || true
 	@./sln $@
 
-items users/ home/ .links $(chroot_mkdir):
+items usr/local/bin/ usr/local/lib/ users/ home/ .links $(chroot_mkdir):
 	mkdir -p $@
 
 ${chown-dirs}:
@@ -177,11 +181,52 @@ etc/resolv.conf: /etc/resolv.conf
 $(mod-y): all ${chroot_mkdir}
 	${MAKE} -f ${PWD}/module.mk module=$@ ${MAKEFLAGS} ${TARGET}
 
-run: all ${chroot_mkdir}
-	${MAKE} -f ${PWD}/module.mk module=nd ${MAKEFLAGS} osdbg
+langs != cat locale/langs | sed 's/_.*//' | sort -u
+indexes := ${langs:%=items/index-%.db}
+i18ns := ${langs:%=items/i18n-%.db}
+
+run: all ${chroot_mkdir} certs.txt core.so ${indexes}
+	${sudo} ndc -C ${PWD} -K ${PWD}/certs.txt -d
+
+certs.txt: ss_cert.pem
+	echo -n tty.pt:ss_cert.pem:ss_key.pem > certs.txt
+
+ss_key.pem:
+	openssl genrsa -out $@ 2048
+
+ss_cert.pem: ss_key.pem
+	openssl req -new -key ss_key.pem -out ss_csr.pem  -subj "/CN=tty.pt"
+	openssl req -x509 -key ss_key.pem -in ss_csr.pem -out $@ -days 365 -copy_extensions copy
+
+core.so: src/core/main.c
+	${CC} -fPIC -shared -g -o $@ $<
 
 module:
-	${MAKE} -f ${PWD}/module.mk module=${MODULE} ${MAKEFLAGS} ${TARGET}
+	${MAKE} -f ${PWD}/module.mk \
+		module=${MODULE} ${MAKEFLAGS} ${TARGET}
+
+$(indexes): ${i18ns}
+	@echo ${mod-y} | tr ' ' '\n' \
+		| while read mod; do \
+		title=`${qdb} -rg $$mod ${@:items/index-%=items/i18n-%}` ; \
+		test "$$title" != "-1" || title=$$mod; \
+		echo $$mod 2 `cat ${PWD}/items/$$mod/icon` \
+		$$title \
+		| while read mmod flag icon title; do \
+		${qdb} -p "$$mod:$$flag $$icon $$title" \
+		$@; \
+		done; done
+
+$(i18ns): ${i18ns:items/i18n-%.db=locale/site-%.txt}
+	@echo ${mod-y} | tr ' ' '\n' | while read mod; do \
+		cat ${PWD}/items/$$mod/title | \
+		while read lang title; do \
+		echo "$$mod:$$title"; \
+		done; done \
+		| cat - ${@:items/i18n-%.db=locale/site-%.txt} \
+		| while read line; do \
+		${qdb} -p"$$line" $@; \
+		done
 
 FORCE:
 

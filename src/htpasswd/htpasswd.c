@@ -1,14 +1,12 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <qdb.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
-DB_TXN *txnid = NULL;
+#include <qmap.h>
 
 char *crypt_it(const char *password) {
 	static char *result;
@@ -50,15 +48,13 @@ int main(int argc, char *argv[]) {
 	char *password = argv[4];
 	int fd = open(filename, O_RDONLY);
 
-	qdb_init();
-
 	if (fstat(fd, &sb) == -1 || sb.st_size == 0)
 		return EXIT_FAILURE;
 
 	char *mapped = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	char copy[sb.st_size];
 	memcpy(copy, mapped, sb.st_size);
-	int pwd_hd = qdb_open(NULL, "s", "s", 0);
+	int pwd_hd = qmap_open(QM_STR, QM_STR, 0, 0);
 
 	for (int i = 0; i < sb.st_size; i++) {
 		char *s = &copy[i];
@@ -79,13 +75,14 @@ int main(int argc, char *argv[]) {
 			eoc = eol;
 
 		*eoc = '\0';
-		qdb_putc(pwd_hd, s, colon - s, colon + 1, 62);
+		colon[63] = '\0';
+		qmap_put(pwd_hd, s, colon + 1);
 		i += eol - s;
 	}
 
 	size_t len;
-	char *hash;
-	if (!(hash = qdb_getc(pwd_hd, &len, login, strlen(login))))
+	const char *hash = qmap_get(pwd_hd, login);
+	if (!hash)
 		return EXIT_FAILURE;
 
 	return crypt_checkpass(password, hash)

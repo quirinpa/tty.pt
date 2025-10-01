@@ -1,0 +1,27 @@
+Please wait:Por favor espere
+Username:Nome de utilizador
+Password:Palavra-passe
+Submit:Submeter
+Register:Registo
+Repeat password:Repetir palavra-passe
+Passwords don't match:As palavras-passes não combinam.
+User already exists:O utilizador já existe
+User:Utilizador
+Welcome:Bem-vindo
+You can not do that:Não pode fazer isso
+Title:Título
+Description:Descrição
+Checking bytes of unknown user:A verificar bytes de um utilizador desconhecido
+You can send an e-mail to:Pode enviar um email a
+Welcome to tty.pt!:Bem vindo ao tty.pt!
+To confirm that this e-mail address belongs to you, go to the page at:Para confirmar que este endereço de e-mail lhe pertence, vá á pagina
+You will then be able to use your account.:Poderá usar a sua conta depois disso.
+Thank you!:Obrigado!
+Registration complete:Registo completo
+Please click the link sent to your e-mail to activate your account.:Por favor clique no link enviado para o seu e-mail para activar a sua conta.
+The account was not activated:A conta não foi activada
+No such user:Esse utilizador não existe
+Cookie policy:Política de cookies
+Unauthorized:Não autorizado
+No such user:Utilizador inexistente
+The account was not activated:A conta não foi activada
