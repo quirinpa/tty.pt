@@ -11,7 +11,7 @@ rmtmp() {
 }
 
 trap 'rmtmp' EXIT
-# trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
+trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
 
 # env >&2
 # echo METHOD: $REQUEST_METHOD URI: $DOCUMENT_URI QS: $QUERY_STRING >&2
@@ -46,18 +46,17 @@ export LD_LIBRARY_PATH=/usr/local/lib
 test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
 	STATUS_STR="Status: "
 
-___() {
+__() {
 	local res
-	local query
-	read res query
+	read res
 	test "$res" = "-1" && echo "$@" || echo "$res"
 }
 
 export qdb=qdb
 # export qdb=$DOCUMENT_ROOT/usr/local/bin/qdb
 
-__() {
-	$qdb -g"$@" $DOCUMENT_ROOT/items/i18n-$lang.db:s | ___ "$@" || echo "$@"
+_() {
+	$qdb -rg"$@" $DOCUMENT_ROOT/items/i18n-$lang.db | __ "$@" || echo "$@"
 }
 
 public() {
@@ -102,7 +101,7 @@ NormalHead() {
 }
 
 Head() {
-	cat<<!
+	cat <<!
 <!DOCTYPE html>
 <html lang="$htmllang">
 	<head>
@@ -130,11 +129,15 @@ Cat() {
 	_Cat template/$1
 }
 
-CCat() {
+CCat_title() {
 	test ! -f $notitle || _TITLE=
 	test -z "$_TITLE" || \
 		_TITLE="<h2 id='title' class='ttc tac'>$_TITLE $SUBINDEX_ICON</h2>"
 	export _TITLE
+}
+
+CCat() {
+	CCat_title
 	_Cat $DOCUMENT_ROOT/components/$1
 }
 
@@ -146,12 +149,12 @@ SeeOther() {
 env > $DOCUMENT_ROOT/tmp/env
 
 RB() {
-	test -z "$2" || label="<label>`__ "$2"`</label>"
+	test -z "$2" || label="<label>`_ "$2"`</label>"
 	echo "<a href='$3'><span>$1</span>$label</a>"
 }
 
 JSB() {
-	test -z "$2" || label="<label>`__ "$2"`</label>"
+	test -z "$2" || label="<label>`_ "$2"`</label>"
 	echo "<div onclick=\"$3\"><span>$1</span>$label</div>"
 }
 
@@ -164,7 +167,7 @@ hidparams() {
 }
 
 IFB() {
-	test -z "$2" || label="<label>`__ "$2"`</label>"
+	test -z "$2" || label="<label>`_ "$2"`</label>"
 	cat <<!
 <form action='$3' method='POST'>
 <button class="h8"><span>$1</span>$label</button>
@@ -173,7 +176,7 @@ IFB() {
 }
 
 FB() {
-	test -z "$2" || label="`__ "$2"`"
+	test -z "$2" || label="`_ "$2"`"
 	cat <<!
 <form action='$3' method='$4' class='h8 f fic'>
 <span>$1</span>
@@ -249,11 +252,6 @@ Immediate() {
 	shift
 
 	SUBINDEX_ICON=""
-	if test -f $content; then
-		CONTENT="`INCEPTION=true . $content $@`"
-	else
-		CONTENT="`cat -`"
-	fi
 	if test -f $post ; then
 		echo IMM POST "$DOCUMENT_URI" >&2
 		cat $post
@@ -270,7 +268,6 @@ Immediate() {
 	export INDEX_ICON
 	export SUBINDEX_ICON
 	export FUNCTIONS
-	export CONTENT
 	export MENU_LEFT
 	export BOTTOM_CONTENT
 	export _TITLE
@@ -278,7 +275,14 @@ Immediate() {
 
 	test -f "$normal" || \
 		Normal $STATUS_CODE "$content"
-	CCat common
+	
+	CCat common-top
+	if test -f $content; then
+		INCEPTION=true . $content $@
+	else
+		cat -
+	fi
+	cat $DOCUMENT_ROOT/components/common-bottom.html
 	exit 0
 }
 
@@ -320,7 +324,7 @@ get_lang() {
 
 lang="`get_lang`"
 if test "$lang" = "pt_BR" || test "$lang" = "pt" || test "$lang" = "pt_PT"; then
-	lang=pt_PT
+	lang=pt
 else
 	lang=en
 fi
@@ -328,14 +332,6 @@ htmllang="`echo $lang | tr '_' ' ' | awk '{print $1}'`"
 export lang
 export LANG=$lang
 ILANG=$LANG
-
-_() {
-	arg="$@"
-	IFS='$'
-	TEXTDOMAIN=site
-	value="`cat $DOCUMENT_ROOT/locale/$TEXTDOMAIN-$lang.txt | sed -n "s|^$arg\|||p"`"
-	test -z "$value" && echo $arg || echo $value
-}
 
 export RB="btn round p16 ts20"
 export RBS="btn round p8"
@@ -759,8 +755,9 @@ Index() {
 	test "$REQUEST_METHOD" = "GET" || return 0
 
 	if test -z "$_TITLE"; then
-		TITLE="`zcat $MOD_PATH/title || echo $typ`"
-		_TITLE="`__ "$TITLE"`"
+		echo LANG! $typ $LANG $DOCUMENT_ROOT/items/i18n-$LANG.db >&2
+		_TITLE="`_ $typ`"
+		echo TITLE! $_TITLE >&2
 	fi
 
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
@@ -879,18 +876,18 @@ Add() {
 		test ! -z "$_TITLE" || _TITLE="`_ "Add item"`"
 		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
 
-		export FILES="<label>`__ files`<input required type='file' name='file[]' multiple></input></label>"
-		export FILE="<label>`__ file`<input required type='file' name='file'></input></label>"
+		export FILES="<label>`_ files`<input required type='file' name='file[]' multiple></input></label>"
+		export FILE="<label>`_ file`<input required type='file' name='file'></input></label>"
 
 		Immediate - <<!
 <form action="/$MOD/add" method="POST" class="v f fic" enctype="multipart/form-data">
 	<label>
-		`__ title`
+		`_ title`
 		<input required name="title" value="$HTTP_PARAM_title"></input>
 	</label>
 	`. $template`
 	<div>$_DESCRIPTION</div>
-	<button>`__ submit`</button>
+	<button>`_ submit`</button>
 </form>
 !
 		exit 0
@@ -900,7 +897,7 @@ Add() {
 
 	title="`fd title`"
 	link="`echo "$title" | translate`"
-	item_id="`$qdb -p "$link:1 $title" index.db:s`"
+	item_id="`$qdb -p"$link:1 $title" index.db`"
 
 	mkdir -p $item_id
 	cd $item_id
@@ -916,7 +913,7 @@ Delete() {
 	test ! -z "$REMOTE_USER" || Forbidden
 
 	if test "$REQUEST_METHOD" = "GET"; then
-		test ! -z "$_TITLE" || _TITLE="`__ delete`"
+		test ! -z "$_TITLE" || _TITLE="`_ delete`"
 		test ! -z "$INDEX_ICON" || INDEX_ICON="🗂"
 
 		Immediate - <<!
@@ -924,8 +921,8 @@ Delete() {
 	<div class="f v fic">
 		<div>Are you sure you wish to delete this item?</div>
 		<div class="h tac">
-			<button class='cf15 c9'>`__ yes`</button>
-			<a href="./.."><button type='button'>`__ no`</button></a>
+			<button class='cf15 c9'>`_ yes`</button>
+			<a href="./.."><button type='button'>`_ no`</button></a>
 		</div>
 	</div>
 </form>

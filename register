@@ -47,7 +47,7 @@ if test "$password" != "$password2"; then
 	Fatal 400 The passwords don\'t match
 fi
 
-if grep -q "^$email$" $DOCUMENT_ROOT/.blacklist; then
+if test -e "$DOCUMENT_ROOT/.blacklist" && grep -q "^$email$" $DOCUMENT_ROOT/.blacklist; then
 	Forbidden
 fi
 
