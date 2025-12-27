@@ -4,13 +4,6 @@ export REQ_PID=$$
 export LD_LIBRARY_PATH=/usr/local/lib
 export PATH=$DOCUMENT_ROOT/usr/bin:$DOCUMENT_ROOT/usr/local/bin:$DOCUMENT_ROOT/bin:$PATH:$DOCUMENT_ROOT/usr/sbin:$DOCUMENT_ROOT/usr/local/sbin
 
-rmtmp() {
-	rm -rf $headers $normal $post $fun \
-		$bottom $ncat $settings $notitle \
-		$full_size || true
-}
-
-trap 'rmtmp' EXIT
 trap 'echo "ERROR! $0:$LINENO" >&2; exit 1' ERR
 
 # env >&2
@@ -21,19 +14,25 @@ if ! echo $DOCUMENT_URI | grep -q '/$'; then
 		|| DOCUMENT_URI="$DOCUMENT_URI/"
 fi
 
-export rid="`openssl rand -base64 10 | cut -c1-13 | tr -d '/'`"
-export headers="$DOCUMENT_ROOT/tmp/headers$rid"
-export normal="$DOCUMENT_ROOT/tmp/normal$rid"
-export post="$DOCUMENT_ROOT/tmp/post$rid"
-export fun="$DOCUMENT_ROOT/tmp/fun$rid"
-export bottom="$DOCUMENT_ROOT/tmp/bottom$rid"
-export ncat="$DOCUMENT_ROOT/tmp/ncat$rid"
-export settings="$DOCUMENT_ROOT/tmp/settings$rid.db"
-export notitle="$DOCUMENT_ROOT/tmp/notitle$rid.db"
-export full_size="$DOCUMENT_ROOT/tmp/full_size$rid.db"
-
 umask 002
 set -e
+
+export fds="$DOCUMENT_ROOT/tmp/cache/fds"
+export my_cache="$fds/$$"
+
+rm -rf $my_cache || true
+mkdir -p $my_cache || true
+export headers="$my_cache/headers"
+# export normal="$my_cache/normal"
+export post="$my_cache/post"
+export fun="$my_cache/fun"
+export bottom="$my_cache/bottom"
+export ncat="$my_cache/ncat"
+export settings="$my_cache/settings.db"
+export notitle="$my_cache/notitle.db"
+export full_size="$my_cache/full_size.db"
+
+comp=$DOCUMENT_ROOT/components
 
 test -z "$VERY_COMMON" || return 0
 VERY_COMMON=y
@@ -46,17 +45,18 @@ export LD_LIBRARY_PATH=/usr/local/lib
 test "$SERVER_SOFTWARE" != "OpenBSD httpd" || \
 	STATUS_STR="Status: "
 
+more_fun() {
+	echo "$@" >> $fds/$$/fun
+}
+
 __() {
 	local res
 	read res
 	test "$res" = "-1" && echo "$@" || echo "$res"
 }
 
-export qdb=qdb
-# export qdb=$DOCUMENT_ROOT/usr/local/bin/qdb
-
 _() {
-	$qdb -rg"$@" $DOCUMENT_ROOT/items/i18n-$lang.db | __ "$@" || echo "$@"
+	qmap -rg"$@" $DOCUMENT_ROOT/items/i18n-$lang.db | __ "$@" || echo "$@"
 }
 
 public() {
@@ -115,8 +115,32 @@ Head() {
 !
 }
 
+export RB="btn round p16 ts20"
+export RBS="btn round p8"
+export RBXS="btn round p4 tss"
+export SRB="btn round ps tsl"
+
+Menu() {
+	local user_name
+	local user_icon
+	if test ! -z "$REMOTE_USER"; then
+		user_icon="`RB 😊 "me" /$REMOTE_USER`"
+	else
+		user_icon="`RB 🔑 "login" /login?ret=$DOCUMENT_URI`"
+	fi
+	echo $user_icon
+}
+
+UserNormal() {
+	NormalHead "$1"
+	echo "Link: <http://$HTTP_HOST/$DOCUMENT_URI$3>; rel=\"alternate\"; hreflang=\"x-default\""
+	echo
+	Head
+	export MENU="`Menu`"
+}
+
 _Cat() {
-	cat $normal
+	# cat $normal
 	if test $# -lt 1; then
 		htmlsh | envsubst
 	elif test -f $1.html; then
@@ -125,26 +149,32 @@ _Cat() {
 	echo "</html>"
 }
 
-Cat() {
-	_Cat template/$1
-}
-
-CCat_title() {
+CCat() {
 	test ! -f $notitle || _TITLE=
 	test -z "$_TITLE" || \
 		_TITLE="<h2 id='title' class='ttc tac'>$_TITLE</h2>"
 	export _TITLE
-}
-
-CCat() {
-	CCat_title
 	_Cat $DOCUMENT_ROOT/components/$1
 }
 
-SeeOther() {
-	header "Location: $1"
-	Fatal 303 "See Other"
+finish_it() {
+	export INDEX_ICON
+	export MENU
+	export FUNCTIONS="$FUNCTIONS`test -f $fun && cat $fun || echo " "`"
+
+	if test -e $my_cache/fatal; then
+		cat $my_cache/fatal
+	else
+		OK
+		CCat common-top
+		cat $my_cache/content \
+			$comp/common-bottom.html
+	fi
+
+	rm -rf $my_cache 2>/dev/null || true
 }
+
+trap 'finish_it' EXIT
 
 env > $DOCUMENT_ROOT/tmp/env
 
@@ -247,49 +277,36 @@ TB() {
 	fi
 }
 
+content() {
+	if test -f $content; then
+		CONTENT="`. $content $@ | tee $my_cache/content`"
+	else
+		cat - > $my_cache/content
+	fi
+}
+
 Immediate() {
 	content="$1"
 	shift
 
 	SUBINDEX_ICON=""
-	if test -f $post ; then
-		echo IMM POST "$DOCUMENT_URI" >&2
-		cat $post
-		return 0
-	fi
 	test ! -z "$PRECLASS" || PRECLASS="v f fic"
-	FUNCTIONS="`test -f $fun && cat $fun || echo " "`"
-	BOTTOM_CONTENT="`test ! -f $bottom || cat $bottom`"
 
 	test -z "$INDEX_ICON" \
 		|| INDEX_ICON="`RB $INDEX_ICON "go up"  ./..`"
 
-	export MENU="`Menu`"
 	export INDEX_ICON
 	export SUBINDEX_ICON
-	export FUNCTIONS
-	export MENU_LEFT
-	export BOTTOM_CONTENT
-	export _TITLE
 	export PRECLASS
 
-	test -f "$normal" || \
-		Normal $STATUS_CODE "$content"
-	
-	CCat common-top
-	if test -f $content; then
-		INCEPTION=true . $content $@
-	else
-		cat -
-	fi
-	cat $DOCUMENT_ROOT/components/common-bottom.html
+	content $content $@
 	exit 0
 }
 
-INCEPTION=false
 _Fatal() {
 	local status_code=$1
 	shift 1
+	echo $status_code > $my_cache/stat
 	export _TITLE="$status_code: `_ "$@"`"
 	if test "$HTTP_ACCEPT" = "text/plain"; then
 		NormalHead $status_code
@@ -299,18 +316,20 @@ _Fatal() {
 	fi
 	export _TITLE
 	STATUS_CODE=$status_code
-	Normal "$STATUS_CODE" $DOCUMENT_URI
-	$INCEPTION && echo $_TITLE || Immediate - $@
-}
-
-Fin() {
-	cat - > $post
-	exit 0
+	UserNormal $STATUS_CODE
+	CCat common-top
+	echo $_TITLE
+	cat $comp/common-bottom.html
 }
 
 Fatal() {
-	_Fatal $@
+	_Fatal $@ > $my_cache/fatal
 	exit 0
+}
+
+SeeOther() {
+	header "Location: $1"
+	Fatal 303 "See Other"
 }
 
 get_lang() {
@@ -333,22 +352,6 @@ export lang
 export LANG=$lang
 ILANG=$LANG
 
-export RB="btn round p16 ts20"
-export RBS="btn round p8"
-export RBXS="btn round p4 tss"
-export SRB="btn round ps tsl"
-
-Menu() {
-	local user_name
-	local user_icon
-	if test ! -z "$REMOTE_USER"; then
-		user_icon="`RB 😊 "me" /$REMOTE_USER`"
-	else
-		user_icon="`RB 🔑 "login" /login?ret=$DOCUMENT_URI`"
-	fi
-	echo $user_icon
-}
-
 Unauthorized() {
 	header "Date: `TZ=GMT date '+%a, %d %b %Y %T %Z'`"
 	header "WWW-Authenticate: Basic realm='tty-pt'"
@@ -369,41 +372,8 @@ no_html() {
 	sed -e 's/</\&lt\;/g' -e 's/>/\&gt\;/g' 
 }
 
-Whisper() {
-	WHISPER_PATH=$DOCUMENT_ROOT/users/$REMOTE_USER/.whisper
-	WHISPER="`zcat $WHISPER_PATH | no_html`"
-	if test -z "$WHISPER"; then
-		return
-	fi
-
-	echo "<pre>$WHISPER</pre>"
-	rm $WHISPER_PATH
-}
-
-UserNormal() {
-	NormalHead "$1"
-	echo "Link: <http://$HTTP_HOST/$DOCUMENT_URI$3>; rel=\"alternate\"; hreflang=\"x-default\""
-	echo
-	export HEAD="`Head`"
-	export WHISPER="`Whisper`"
-	export MENU="`Menu`"
-}
-
-_Normal() {
-	UserNormal $@
-	echo "$HEAD"
-	echo "$WHISPER"
-}
-
-Normal() {
-	# test using non logged in nd
-	if test -f $post ; then
-		cat $post
-		exit 0
-	fi
-
-	_Normal $@ > $normal
-	public $normal
+OK() {
+	UserNormal 200
 }
 
 uname=`uname`
@@ -515,22 +485,6 @@ revlines() {
 	rev | tr '\n' '~' | rev | tr '~' '\n'
 }
 
-_see_other() {
-	Fin <<!
-${STATUS_STR}303 See Other
-Location: $1
-
-!
-}
-
-see_other() {
-	Fin <<!
-${STATUS_STR}303 See Other
-Location: /e/$1$2
-
-!
-}
-
 if test "$uname" = "Linux"; then
 	fsize() {
 		stat --format %s $1
@@ -546,13 +500,6 @@ id_query() {
 	awk '{print $1}' | while read line; do
 		echo "-$1$line$2"
 	done
-}
-
-## COMPONENTS
-
-NormalCat() {
-	Normal 200 $SCRIPT $1
-	Cat $SCRIPT
 }
 
 SCRIPT="`echo $DOCUMENT_URI | awk -F '/' '{print $2}'`"
@@ -636,8 +583,8 @@ Buttons3() {
 	local aflags="$5"
 	test ! -z "$aflags" || aflags="1"
 	local title
-	$qdb -l ./index`ilang`.db:s | while read link flags title; do
-	test $link != "-1" && test "$(($flags & $aflags))" = "$aflags" || continue;
+	qmap -l ./index`ilang`.db | while read link flags title; do
+	# test $link != "-1" && test "$(($flags & $aflags))" = "$aflags" || continue;
 		cat <<!
 <div><a class="btn wsnw h $cla" href="$where$link/$extra">
 	$title
@@ -741,7 +688,6 @@ Index() {
 		*)
 			if valid_cgi $MOD_PATH/$1; then
 				Immediate $MOD_PATH/$1 $@
-				exit 0
 			elif test ! -f "$MOD_PATH/over-index" || test -f "$MOD_PATH/index"; then
 				INDEX_ICON="$SUBINDEX_ICON"
 				SUBINDEX_ICON=" "
@@ -761,35 +707,17 @@ Index() {
 	test ! -z "$INDEX_ICON" || INDEX_ICON="🏠"
 	INDEX_ICON="`RB $INDEX_ICON "home" ./..`"
 
-	if test -z "$FUNCTIONS"; then
-		FUNCTIONS="`test -z "$REMOTE_USER" || test ! -f $MOD_PATH/add || AddBtn`"
-	fi
+	export FUNCTIONS="$FUNCTIONS`test -z "$REMOTE_USER" || test ! -f $MOD_PATH/add || AddBtn`"
 
 	if test -z "$CONTENT"; then
 		if test -f "$MOD_PATH/over-index"; then
-			CONTENT="`. "$MOD_PATH/over-index"`"
+			. "$MOD_PATH/over-index"
 			test ! -f $full_size || \
 				export FULL_SIXE="svfv"
 		else
-			CONTENT="`zcat template/index.html || Buttons3 'tsxl cap' items /$typ/`"
+			zcat template/index.html || Buttons3 'tsxl cap' items /$typ/
 		fi
-	fi
-
-	if test -f $normal ; then
-		cat $normal
-		exit 0
-	fi
-
-	FUNCTIONS="$FUNCTIONS`test -f $fun && cat $fun || echo " "`"
-
-	export _TITLE
-	export INDEX_ICON
-	export SUBINDEX_ICON
-	export BOTTOM_CONTENT
-	export CONTENT
-	export FUNCTIONS
-	Normal 200 $typ
-	CCat common
+	fi > $my_cache/content
 	exit 0
 }
 
@@ -822,7 +750,6 @@ SubIndex() {
 			if test -f $DOCUMENT_ROOT/items/$typ/$1; then
 				_TITLE="`_ $1` $INDEX_ICON"
 				Immediate $DOCUMENT_ROOT/items/$typ/$1 $@
-				exit 0
 			else
 				NotFound
 			fi
@@ -895,7 +822,7 @@ Add() {
 
 	title="`fd title`"
 	link="`echo "$title" | translate`"
-	item_id="`$qdb -p"$link:1 $title" index.db`"
+	item_id="`qmap -p"$link:1 $title" index.db`"
 
 	mkdir -p $item_id
 	cd $item_id
@@ -903,7 +830,7 @@ Add() {
 	echo "$title" > title
 
 	. $template
-	SeeOther /$MOD/$link/edit/ | Immediate - $@
+	SeeOther /$MOD/$link/edit/
 }
 
 Delete() {
@@ -940,7 +867,7 @@ Delete() {
 
 	test ! -f delete || . ./delete
 
-	$qdb -rd "$iid" ./../index.db:s >/dev/null || true
+	qmap -rd "$iid" ./../index.db:s >/dev/null || true
 	rm -rf ./../$iid
 	SeeOther ../../
 }
@@ -1010,8 +937,7 @@ if test ! -z "$1"; then
 				Index $@
 			elif test -d  ./home/$1; then
 				_TITLE="$1"
-				. ./me/index $@
-				exit 0
+				Immediate ./me/index $@
 			elif test -d  ./$1; then
 				_TITLE="$1"
 				. ./$1/index $@
@@ -1019,7 +945,6 @@ if test ! -z "$1"; then
 			elif test -f  ./$1; then
 				_TITLE="$1"
 				Immediate ./$1 $@
-				# . ./.$1 $@
 			else
 				path="$DOCUMENT_ROOT/htdocs/$DOCUMENT_URI"
 				if test ! -f "$path"; then

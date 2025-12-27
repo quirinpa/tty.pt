@@ -19,7 +19,6 @@ env
 envsubst
 sendmail
 smtpctl
-/usr/lib/libevent.so.4.1
 femail
 file
 find
@@ -91,7 +90,6 @@ chgrp
 pwd
 realpath
 /usr/bin/install
-/usr/lib/x86_64-linux-gnu/libdb-5.3.so
 /etc/pam.d
 /etc/pam.conf
 /lib/x86_64-linux-gnu/security
@@ -100,5 +98,5 @@ realpath
 /etc/shells
 mktemp
 iconv
-gdb
 /usr/share/mk
+qmap

@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <qmap.h>
 
 char *crypt_it(const char *password) {
 	static char *result;
@@ -54,7 +53,6 @@ int main(int argc, char *argv[]) {
 	char *mapped = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	char copy[sb.st_size];
 	memcpy(copy, mapped, sb.st_size);
-	int pwd_hd = qmap_open(QM_STR, QM_STR, 0, 0);
 
 	for (int i = 0; i < sb.st_size; i++) {
 		char *s = &copy[i];
@@ -74,17 +72,18 @@ int main(int argc, char *argv[]) {
 		if (!eoc)
 			eoc = eol;
 
-		*eoc = '\0';
-		colon[63] = '\0';
-		qmap_put(pwd_hd, s, colon + 1);
+		if (!strncmp(s, login, strlen(login))) {
+			char hash[64];
+
+			memcpy(hash, colon + 1, 60);
+			hash[60] = '\0';
+
+			return crypt_checkpass(password, hash)
+				? EXIT_FAILURE : EXIT_SUCCESS;
+		}
+
 		i += eol - s;
 	}
 
-	size_t len;
-	const char *hash = qmap_get(pwd_hd, login);
-	if (!hash)
-		return EXIT_FAILURE;
-
-	return crypt_checkpass(password, hash)
-		? EXIT_FAILURE : EXIT_SUCCESS;
+	return EXIT_FAILURE;
 }

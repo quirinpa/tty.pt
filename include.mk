@@ -1,17 +1,12 @@
 include env.mk
 
-npm-root != npm root
-prefix := ${pwd} \
-	  ${npm-lib:%=${npm-root}/%} \
-	  ${npm-lib:%=${npm-root-dir}/../../%} \
-	  /usr/local
+prefix := ${pwd} /usr/local
 CFLAGS += -g ${prefix:%=-I%/include}
-LDFLAGS	+= ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
+LDFLAGS	+= ${prefix:%=-L%/lib}
 
 bin := $(exe:%=$(DESTDIR)$(PREFIX)/bin/%)
 
 $(bin): ${exe:%=src/%.c}
-	echo ROOT ${npm-root}
 	@install -d ${DESTDIR}${PREFIX}/bin
 	${CC} ${CFLAGS} -o $@ ${@:${DESTDIR}${PREFIX}/bin/%=src/%.c} ${LDFLAGS}
 

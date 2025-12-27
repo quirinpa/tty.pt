@@ -1,0 +1,3 @@
+[submodule "mk"]
+	path = mk
+	url = git@github.com:tty-pt/mk.git

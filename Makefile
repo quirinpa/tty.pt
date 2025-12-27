@@ -19,8 +19,8 @@ sudo-Linux := sudo
 sudo-OpenBSD := doas
 sudo := ${sudo-${uname}}
 sudo-root := ${sudo}
-LDFLAGS := -L/usr/local/lib
-CFLAGS := -g -I/usr/local/include
+# LDFLAGS := -L/usr/local/lib
+# CFLAGS := -g -I/usr/local/include
 lcrypt-Linux := -lcrypt
 lcrypt := ${lcrypt-${uname}}
 all-Linux := etc/shadow
@@ -30,14 +30,10 @@ shell-OpenBSD := /bin/ksh
 shell-Linux := /bin/bash
 shell := ${shell-${uname}}
 no-shell := /sbin/nologin
-npm-root != npm root
-npm-lib := @tty-pt/qdb
-prefix := ${npm-lib:%=${npm-root}/%} /usr/local
-CFLAGS += ${prefix:%=-I%/include}
+prefix := /usr
+CFLAGS += -g ${prefix:%=-I%/include}
 LDFLAGS += ${prefix:%=-L%/lib} ${prefix:%=-Wl,-rpath,%/lib}
 LINK.bin := ${LINK.c} ${CFLAGS}
-qdb := node_modules/@tty-pt/qdb/bin/qdb
-ndc := node_modules/@tty-pt/ndc/bin/ndc
 
 nods-Linux := dev/ptmx dev/pts dev/urandom dev/null dev/zero
 nods := ${nods-${uname}}
@@ -51,7 +47,7 @@ htdocs/vim.css: FORCE
 
 bin/htpasswd: src/htpasswd/htpasswd.c
 	@mkdir bin 2>/dev/null || true
-	${LINK.bin} -o $@ src/htpasswd/htpasswd.c -lqmap -ldb ${lcrypt} ${LDFLAGS}
+	${LINK.bin} -o $@ src/htpasswd/htpasswd.c ${lcrypt} ${LDFLAGS}
 
 bin/htmlsh: src/htmlsh/htmlsh.c
 	@mkdir bin 2>/dev/null || true
@@ -86,9 +82,6 @@ mod-dirs:
 		mkdir items/$$dir/items ; \
 		done
 
-usr/local/bin/qdb:
-	${MAKE} -C node_modules/@tty-pt/qdb DESTDIR=${PWD} install
-
 usr/bin/make: .all-install
 
 .all-install: items .links .install
@@ -102,7 +95,7 @@ usr/bin/make: .all-install
 		done | while read dep; do ./rldd $$dep ; done | sort -u > .all-install
 
 all: .all-install chroot pnpm-i usr/local/lib/ \
-	usr/local/bin/ usr/local/bin/qdb htdocs/vim.css \
+	usr/local/bin/ htdocs/vim.css \
        	bin/htpasswd etc/passwd etc/group dev/urandom \
 	${all-${uname}} etc/group etc/passwd \
 	etc/resolv.conf mod-bin ${src-bin}
@@ -208,12 +201,13 @@ module:
 $(indexes): ${i18ns}
 	@echo ${mod-y} | tr ' ' '\n' \
 		| while read mod; do \
-		title=`${qdb} -rg $$mod ${@:items/index-%=items/i18n-%}` ; \
+		title=`qmap -rg $$mod ${@:items/index-%=items/i18n-%}` ; \
 		test "$$title" != "-1" || title=$$mod; \
 		echo $$mod 2 `cat ${PWD}/items/$$mod/icon` \
 		$$title \
 		| while read mmod flag icon title; do \
-		${qdb} -p "$$mod:$$flag $$icon $$title" \
+		echo qmap -p "$$mod:$$flag $$icon $$title" $@ >&2 ; \
+		qmap -p "$$mod:$$flag $$icon $$title" \
 		$@; \
 		done; done
 
@@ -225,7 +219,7 @@ $(i18ns): ${i18ns:items/i18n-%.db=locale/site-%.txt}
 		done; done \
 		| cat - ${@:items/i18n-%.db=locale/site-%.txt} \
 		| while read line; do \
-		${qdb} -p"$$line" $@; \
+		qmap -p"$$line" $@; \
 		done
 
 FORCE:

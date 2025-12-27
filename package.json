@@ -14,7 +14,6 @@
   "dependencies": {
     "@tty-pt/mk": "^0.1.18",
     "@tty-pt/ndc": "^0.15.0",
-    "@tty-pt/qdb": "^0.4.1",
     "@tty-pt/qsys": "^0.0.11",
     "@tty-pt/qmap": "^0.3.1",
     "@tty-pt/vim.css": "^0.0.3"

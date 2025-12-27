@@ -1,7 +1,10 @@
 #!/bin/sh
+
+set -- `echo $DOCUMENT_URI | tr '/' ' '`
 PUSER=$1
 HOME=$DOCUMENT_ROOT/home/$PUSER
 shift
+echo USER $PUSER >&2
 
 case "$1" in
 	"") ;;
@@ -17,13 +20,20 @@ esac
 
 _TITLE="`_ User` - $PUSER"
 
-cat > /tmp/contents <<!
+forks="$DOCUMENT_ROOT/home/$PUSER/.items"
+
+if test -d $forks; then
+	cat <<!
 <h3>`_ Forks`</h3>
-`ls $DOCUMENT_ROOT/home/$PUSER/.items | \
+`ls $forks | \
 while read type; do ls $DOCUMENT_ROOT/home/$PUSER/.items/$type | while read item; do
 	echo "<a href='/$PUSER/$type/$item'>$type/$item</a>"
 done; done`
 <hr />
+!
+fi
+
+cat <<!
 <div class="tac tsxl f">
 	<a class="btn" href="~$PUSER">`_ Page`</a>
 </div>
@@ -32,8 +42,3 @@ done; done`
 	<a class="btn" href="logout">`_ Logout`</a>
 </div>
 !
-
-export INDEX_ICON="`RB 🏠 "Home" ./..`"
-export CONTENT="`cat /tmp/contents`"
-Normal 200 me
-CCat /common

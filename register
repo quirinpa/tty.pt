@@ -1,7 +1,64 @@
 #!/bin/sh
 
-if test $REQUEST_METHOD = GET; then
-	cat <<!
+if test $REQUEST_METHOD = POST; then
+	if test ! -z "$REMOTE_USER"; then
+		Fatal 400 Logout first
+	fi
+
+	username="`urldecode $HTTP_PARAM_username`"
+	password="`urldecode $HTTP_PARAM_password`"
+	password2="`urldecode $HTTP_PARAM_password2`"
+	email="`urldecode $HTTP_PARAM_email`"
+
+	if invalid_id $username || test "$username" = "www"; then
+		Fatal 400 Not a valid username
+	fi
+
+	if invalid_password $password; then
+		Fatal 400 Not a valid password
+	fi
+
+	if test "$password" != "$password2"; then
+		Fatal 400 The passwords don\'t match
+	fi
+
+	if test -e "$DOCUMENT_ROOT/.blacklist" && grep -q "^$email$" $DOCUMENT_ROOT/.blacklist; then
+		Forbidden
+	fi
+
+	if grep -q "^$username:" $DOCUMENT_ROOT/etc/$shadow; then
+		Fatal 400 User already exists
+	fi
+
+	USER_DIR=$DOCUMENT_ROOT/users/$username
+	DF_USER=anonymous
+	mkdir -p $USER_DIR
+	echo $email > $USER_DIR/email
+	mkdir -p $DOCUMENT_ROOT/home/$username
+	enc="`htpasswd $username $password | sed 's/.*://'`"
+	# groupadd $username
+	useradd -gwww -Gwww -p"$enc" $username
+	which femail || SeeOther welcome
+
+	rand_str="`rand_str_1`"
+	echo "$rand_str" > $USER_DIR/rcode
+	femail -f noreply@tty.pt $email <<!
+Subject: `_ "Registration on tty.pt"`
+
+`_ "Welcome to tty.pt!"`
+
+`_ "To confirm that this e-mail address belongs to you, go to the page at:"`
+https://tty.pt/confirm?username=$username&rcode=$rand_str
+
+`_ "You will then be able to use your account."`
+
+`_ "Thank you!"`
+!
+
+	SeeOther welcome
+fi
+
+cat <<!
 <form action="register" method="post" class="f v fic">
 	<label>
 		`_ Username`: <input required name="username"></input>
@@ -19,67 +76,11 @@ if test $REQUEST_METHOD = GET; then
 	<button>`_ Submit`</button>
 </form>
 
-<a class="btn c1" href="cookie">
+<a class="btn c1" href="/cookie">
 	`_ "Cookie policy"`
 </a>
 
-<a class="btn" href="login">
+<a class="btn" href="/login">
 	`_ Login`
 </a>
 !
-	exit 0
-fi
-
-username="`urldecode $HTTP_PARAM_username`"
-password="`urldecode $HTTP_PARAM_password`"
-password2="`urldecode $HTTP_PARAM_password2`"
-email="`urldecode $HTTP_PARAM_email`"
-
-if invalid_id $username || test "$username" = "www"; then
-	Fatal 400 Not a valid username
-fi
-
-if invalid_password $password; then
-	Fatal 400 Not a valid password
-fi
-
-if test "$password" != "$password2"; then
-	Fatal 400 The passwords don\'t match
-fi
-
-if test -e "$DOCUMENT_ROOT/.blacklist" && grep -q "^$email$" $DOCUMENT_ROOT/.blacklist; then
-	Forbidden
-fi
-
-if grep -q "^$username:" $DOCUMENT_ROOT/etc/$shadow; then
-	Fatal 400 User already exists
-fi
-
-USER_DIR=$DOCUMENT_ROOT/users/$username
-DF_USER=anonymous
-mkdir -p $USER_DIR
-echo $email > $USER_DIR/email
-mkdir -p $DOCUMENT_ROOT/home/$username
-enc="`htpasswd $username $password | sed 's/.*://'`"
-# groupadd $username
-useradd -gwww -Gwww -p"$enc" $username
-git config --global user.email $REMOTE_USER@tty.pt
-git config --global user.name $REMOTE_USER
-which femail || SeeOther welcome
-
-rand_str="`rand_str_1`"
-echo "$rand_str" > $USER_DIR/rcode
-femail -f noreply@tty.pt $email <<!
-Subject: `_ "Registration on tty.pt"`
-
-`_ "Welcome to tty.pt!"`
-
-`_ "To confirm that this e-mail address belongs to you, go to the page at:"`
-https://tty.pt/confirm?username=$username&rcode=$rand_str
-
-`_ "You will then be able to use your account."`
-
-`_ "Thank you!"`
-!
-
-SeeOther welcome
